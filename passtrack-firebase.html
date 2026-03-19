@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a1d23">
+<title>PassTrack</title>
+
+<!-- ══════════════════════════════════════════
+     🔧 설정 영역 — 여기만 수정하면 됩니다
+══════════════════════════════════════════ -->
+<script>
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyBfV_MSCkk4tzGNEOssjGw9lO-tzYgEjEI",
+  authDomain:        "passtrack-3dffb.firebaseapp.com",
+  projectId:         "passtrack-3dffb",
+  storageBucket:     "passtrack-3dffb.firebasestorage.app",
+  messagingSenderId: "211486160044",
+  appId:             "1:211486160044:web:26013078f06f85b1dc9b09"
+};
+const GEMINI_API_KEY = "AIzaSyAEj8jkT2kM5BeV5QBzC1EYGWfXqoyGr1E";
+</script>
+<!-- ══════════════════════════════════════════ -->
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f5f6fa;--sur:#fff;--sur2:#f0f1f5;--sur3:#e8eaf0;
+  --bd:rgba(0,0,0,0.08);--t1:#1a1d23;--t2:#5a5f6e;--t3:#9ca3af;
+  --gr:#059669;--gr-bg:#d1fae5;--am:#d97706;--am-bg:#fef3c7;--am-txt:#92400e;
+  --re:#dc2626;--re-bg:#fee2e2;--nav:#fff;--nav-bd:rgba(0,0,0,0.07);
+  --crim:#e05252;--pol:#4b6bfb;--con:#0891b2;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1)}
+.app{max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--bg)}
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 0 70px;scrollbar-width:none}
+.screen::-webkit-scrollbar{display:none}
+
+/* Nav */
+.bnav{position:absolute;bottom:0;left:0;right:0;height:58px;background:var(--nav);border-top:0.5px solid var(--nav-bd);display:flex;z-index:100}
+.nb{flex:1;background:none;border:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--t3);font-size:9px;font-family:inherit}
+.nb.on{color:var(--t1)}
+.nb svg{width:20px;height:20px}
+
+/* Cards */
+.card{background:var(--sur);border-radius:14px;padding:13px;margin-bottom:9px;border:0.5px solid var(--bd)}
+.card-sm{background:var(--sur);border-radius:11px;padding:9px 11px;margin-bottom:9px;border:0.5px solid var(--bd)}
+.st{font-size:11px;color:var(--t2);font-weight:700;margin-bottom:6px;letter-spacing:.3px}
+.cl{font-size:11px;color:var(--t2);font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.ph{display:flex;justify-content:space-between;align-items:center;padding:16px 16px 8px}
+.pt{font-size:19px;font-weight:800;color:var(--t1)}
+
+/* Buttons */
+.btn-pri{background:var(--t1);color:#fff;border:none;border-radius:11px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;width:100%;font-family:inherit}
+.btn-sec{background:var(--sur2);color:var(--t2);border:0.5px solid var(--bd);border-radius:10px;padding:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+.btn-text{background:var(--t1);border:none;border-radius:9px;padding:5px 11px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit}
+.btn-chip{background:var(--sur2);border:0.5px solid var(--bd);border-radius:20px;padding:4px 11px;font-size:11px;color:var(--t2);cursor:pointer;font-family:inherit;white-space:nowrap}
+.btn-chip.on{background:var(--t1);color:#fff;border-color:var(--t1)}
+
+/* Inputs */
+.inp{width:100%;background:var(--sur2);border:0.5px solid var(--bd);border-radius:9px;padding:9px 12px;font-size:13px;color:var(--t1);font-family:inherit;outline:none}
+.inp:focus{border-color:var(--t1)}
+.fsel{width:100%;background:var(--sur2);border:0.5px solid var(--bd);border-radius:9px;padding:9px 12px;font-size:13px;color:var(--t1);font-family:inherit;outline:none}
+
+/* Tags */
+.tag{font-size:10px;border-radius:5px;padding:1px 6px;font-weight:600}
+.tag-개념{background:#eff6ff;color:#1d4ed8}.tag-실수{background:var(--am-bg);color:var(--am-txt)}
+.tag-함정{background:#f5f0ff;color:#5b21b6}.tag-시간{background:var(--re-bg);color:var(--re)}
+
+.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.prog-wrap{height:5px;background:var(--sur3);border-radius:3px;overflow:hidden}
+.prog-bar{height:100%;background:var(--t1);border-radius:3px;transition:width .3s}
+.ir{display:flex;justify-content:space-between;align-items:center;padding:5px 0}
+
+/* Modal */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:flex-end;justify-content:center}
+.modal{background:var(--sur);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:430px;max-height:85vh;overflow-y:auto}
+.modal-handle{width:36px;height:4px;background:var(--sur3);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:17px;font-weight:800;color:var(--t1);margin-bottom:16px}
+
+/* Toast */
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:var(--t1);color:#fff;border-radius:12px;padding:10px 16px;font-size:12px;font-weight:600;z-index:300;display:flex;align-items:center;gap:8px;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+
+/* Loading */
+.loading{position:fixed;inset:0;background:rgba(255,255,255,0.92);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.spinner{width:32px;height:32px;border:3px solid var(--sur3);border-top-color:var(--t1);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Login screen */
+.login-screen{position:fixed;inset:0;background:var(--bg);z-index:400;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px}
+
+/* Empty */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 20px;text-align:center}
+.empty-icon{width:52px;height:52px;background:var(--sur2);border-radius:16px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:0.5px solid var(--bd)}
+
+/* AI result */
+.ai-result{background:var(--sur2);border-radius:11px;padding:12px;font-size:13px;color:var(--t1);line-height:1.7;white-space:pre-wrap;margin-top:10px}
+
+/* Sync indicator */
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--gr);display:inline-block;margin-left:6px}
+.sync-dot.syncing{background:var(--am);animation:pulse .8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <div style="font-size:13px;color:var(--t2)">불러오는 중...</div>
+</div>
+
+<!-- Login -->
+<div class="login-screen" id="login-screen" style="display:none">
+  <div style="width:60px;height:60px;background:var(--t1);border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+  </div>
+  <div style="font-size:26px;font-weight:800;color:var(--t1);margin-bottom:8px">PassTrack</div>
+  <div style="font-size:14px;color:var(--t3);margin-bottom:40px;text-align:center">경찰 9급 공채<br>수험생 학습 관리 앱</div>
+  <button onclick="signInGoogle()" style="display:flex;align-items:center;gap:10px;background:var(--sur);border:0.5px solid var(--bd);border-radius:12px;padding:13px 20px;font-size:14px;font-weight:600;color:var(--t1);cursor:pointer;font-family:inherit;width:100%;justify-content:center;max-width:280px">
+    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    Google로 로그인
+  </button>
+  <div style="font-size:11px;color:var(--t3);margin-top:16px;text-align:center">로그인하면 모든 기기에서<br>데이터가 자동으로 동기화돼요</div>
+</div>
+
+<!-- App -->
+<div class="app" id="app" style="display:none">
+
+  <!-- HOME -->
+  <div id="tab-home" class="screen">
+    <div class="ph" style="padding-top:20px">
+      <div style="cursor:pointer" onclick="openModal('exam-modal')">
+        <div style="font-size:10px;color:var(--t3);font-weight:600;letter-spacing:1px">D-DAY <span style="font-size:9px;opacity:.5">탭하여 설정</span></div>
+        <div style="font-size:32px;font-weight:800;color:var(--t1);line-height:1.1" id="dday-num">—</div>
+      </div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <div style="background:var(--sur2);border-radius:9px;padding:6px 9px;text-align:center;border:0.5px solid var(--bd)">
+          <div style="font-size:9px;color:var(--t3);margin-bottom:2px">오늘</div>
+          <div style="font-size:13px;font-weight:700;color:var(--t1)" id="today-min">0m</div>
+        </div>
+        <div style="background:var(--sur2);border-radius:9px;padding:6px 9px;text-align:center;border:0.5px solid var(--bd)">
+          <div style="font-size:9px;color:var(--t3);margin-bottom:2px">이번 주</div>
+          <div style="font-size:13px;font-weight:700;color:var(--t1)" id="week-min">0m</div>
+        </div>
+        <span id="sync-indicator" class="sync-dot" title="동기화 완료"></span>
+      </div>
+    </div>
+    <div style="padding:0 16px">
+      <div class="card-sm">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-size:11px;font-weight:600;color:var(--t2)">오늘 할 일</span>
+          <span style="font-size:11px;font-weight:700;color:var(--t1)" id="progress-text">0 / 0 완료</span>
+        </div>
+        <div class="prog-wrap"><div class="prog-bar" id="progress-bar" style="width:0%"></div></div>
+      </div>
+      <div class="card">
+        <div class="cl">오늘 복습 예정 <span id="review-badge" style="margin-left:auto;background:var(--sur2);color:var(--t2);font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;border:0.5px solid var(--bd)"></span></div>
+        <div id="today-review-list"></div>
+      </div>
+      <div id="focus-forecast"></div>
+    </div>
+  </div>
+
+  <!-- LECTURE -->
+  <div id="tab-lecture" class="screen" style="display:none">
+    <div class="ph" style="padding-top:20px">
+      <span class="pt">강의 진도</span>
+      <button class="btn-text" onclick="openModal('add-lecture-modal')">+ 강의 추가</button>
+    </div>
+    <div style="padding:0 16px" id="lecture-list"></div>
+  </div>
+
+  <!-- STUDY -->
+  <div id="tab-study" class="screen" style="display:none">
+    <div class="ph" style="padding-top:20px">
+      <span class="pt">학습</span>
+      <button class="btn-text" onclick="openModal('add-wrong-modal')">+ 오답 추가</button>
+    </div>
+    <div style="padding:0 16px">
+      <div style="display:flex;background:var(--sur2);border-radius:9px;padding:3px;gap:2px;margin-bottom:12px;border:0.5px solid var(--bd)">
+        <button onclick="switchStudySub('wrong')" id="sub-wrong" style="flex:1;background:var(--sur);border:none;border-radius:7px;padding:5px 4px;font-size:11px;color:var(--t1);cursor:pointer;font-weight:700;font-family:inherit">오답노트</button>
+        <button onclick="switchStudySub('review')" id="sub-review" style="flex:1;background:none;border:none;border-radius:7px;padding:5px 4px;font-size:11px;color:var(--t3);cursor:pointer;font-weight:600;font-family:inherit">복습</button>
+      </div>
+      <div id="wrong-section">
+        <div style="display:flex;gap:5px;overflow-x:auto;margin-bottom:10px;padding-bottom:2px;scrollbar-width:none" id="wrong-filters">
+          <button class="btn-chip on" onclick="filterWrong(this,'all')">전체</button>
+          <button class="btn-chip" onclick="filterWrong(this,'형사법')">형사법</button>
+          <button class="btn-chip" onclick="filterWrong(this,'경찰학개론')">경찰학개론</button>
+          <button class="btn-chip" onclick="filterWrong(this,'헌법')">헌법</button>
+        </div>
+        <div id="wrong-list"></div>
+      </div>
+      <div id="review-section" style="display:none">
+        <div style="display:flex;gap:5px;margin-bottom:10px">
+          <button class="btn-chip on" onclick="switchReviewTab(this,'today')">오늘</button>
+          <button class="btn-chip" onclick="switchReviewTab(this,'all')">전체</button>
+        </div>
+        <div id="review-items"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCORE -->
+  <div id="tab-score" class="screen" style="display:none">
+    <div class="ph" style="padding-top:20px">
+      <span class="pt">성적</span>
+      <button class="btn-text" onclick="openModal('add-score-modal')">+ 성적 추가</button>
+    </div>
+    <div style="padding:0 16px" id="score-list"></div>
+  </div>
+
+  <!-- MANAGE -->
+  <div id="tab-manage" class="screen" style="display:none">
+    <div class="ph" style="padding-top:20px"><span class="pt">관리</span></div>
+    <div style="padding:0 16px">
+      <div class="st">오늘 기록</div>
+      <div class="card">
+        <div class="cl">수면</div>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <div style="flex:1">
+            <div style="font-size:10px;color:var(--t3);margin-bottom:4px">취침</div>
+            <div style="display:flex;align-items:center;background:var(--sur2);border-radius:9px;padding:6px 10px;gap:5px;border:0.5px solid var(--bd)">
+              <input type="time" id="sleep-bed" value="23:30" style="flex:1;background:none;border:none;color:var(--t1);font-size:12px;font-family:inherit;outline:none;min-width:0">
+            </div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:10px;color:var(--t3);margin-bottom:4px">기상</div>
+            <div style="display:flex;align-items:center;background:var(--sur2);border-radius:9px;padding:6px 10px;gap:5px;border:0.5px solid var(--bd)">
+              <input type="time" id="sleep-wake" value="06:30" style="flex:1;background:none;border:none;color:var(--t1);font-size:12px;font-family:inherit;outline:none;min-width:0">
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:5px;align-items:center;margin-bottom:14px">
+          <span style="font-size:11px;color:var(--t2);margin-right:2px">수면 질</span>
+          <button onclick="setSleepQ(this,'쾌')" class="btn-chip on" id="sq-쾌" style="flex:1">쾌</button>
+          <button onclick="setSleepQ(this,'보통')" class="btn-chip" id="sq-보통" style="flex:1">보통</button>
+          <button onclick="setSleepQ(this,'나쁨')" class="btn-chip" id="sq-나쁨" style="flex:1">나쁨</button>
+        </div>
+        <div class="cl">식사</div>
+        <div style="display:flex;gap:5px;margin-bottom:14px">
+          <button onclick="toggleMeal(this,'아침')" class="btn-chip" style="flex:1">아침</button>
+          <button onclick="toggleMeal(this,'점심')" class="btn-chip" style="flex:1">점심</button>
+          <button onclick="toggleMeal(this,'저녁')" class="btn-chip" style="flex:1">저녁</button>
+        </div>
+        <div class="cl">운동</div>
+        <input class="inp" id="exercise-inp" placeholder="예: 달리기 30분" style="margin-bottom:14px">
+        <button class="btn-pri" onclick="saveDailyLog()">저장</button>
+      </div>
+
+      <!-- AI 분석 -->
+      <div class="st">AI 학습 분석</div>
+      <div class="card">
+        <div style="font-size:12px;color:var(--t2);line-height:1.6;margin-bottom:12px">오답노트와 성적 데이터를 기반으로 AI가 학습 패턴을 분석해 드려요.</div>
+        <button class="btn-pri" onclick="runAiAnalysis()" id="ai-btn">AI 분석 시작</button>
+        <div id="ai-result-area"></div>
+      </div>
+
+      <div class="st">루틴 체크</div>
+      <div class="card">
+        <div id="routine-list"></div>
+        <div style="display:flex;gap:7px;margin-top:8px">
+          <input class="inp" id="routine-inp" placeholder="새 루틴 입력" style="flex:1">
+          <button class="btn-text" onclick="addRoutine()">추가</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bnav">
+    <button class="nb on" onclick="switchTab('home',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>홈
+    </button>
+    <button class="nb" onclick="switchTab('lecture',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/></svg>진도
+    </button>
+    <button class="nb" onclick="switchTab('study',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>학습
+    </button>
+    <button class="nb" onclick="switchTab('score',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>성적
+    </button>
+    <button class="nb" onclick="switchTab('manage',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>관리
+    </button>
+  </nav>
+</div>
+
+<!-- MODALS -->
+<div id="exam-modal" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('exam-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">시험일 설정</div>
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">시험 목표</label>
+    <input class="inp" id="exam-target-inp" placeholder="예: 경찰 9급 공채" style="margin-bottom:12px">
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">시험 예정일</label>
+    <input type="date" class="inp" id="exam-date-inp" style="margin-bottom:16px">
+    <button class="btn-pri" onclick="saveExamDate()">저장</button>
+  </div>
+</div>
+
+<div id="add-lecture-modal" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('add-lecture-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">강의 추가</div>
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">과목</label>
+    <select class="fsel" id="lec-subject" style="margin-bottom:12px"><option>형사법</option><option>경찰학개론</option><option>헌법</option></select>
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">강의명</label>
+    <input class="inp" id="lec-title" placeholder="예: 형사법 기본이론" style="margin-bottom:12px">
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">강사명</label>
+    <input class="inp" id="lec-instructor" placeholder="예: 박철민" style="margin-bottom:12px">
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">총 강의 수</label>
+    <input type="number" class="inp" id="lec-total" placeholder="60" min="1" style="margin-bottom:12px">
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">목표 완료일</label>
+    <input type="date" class="inp" id="lec-target" style="margin-bottom:16px">
+    <div style="display:flex;gap:7px">
+      <button class="btn-sec" style="flex:1" onclick="closeModal('add-lecture-modal')">취소</button>
+      <button class="btn-pri" style="flex:1" onclick="saveLecture()">등록</button>
+    </div>
+  </div>
+</div>
+
+<div id="lec-detail-modal" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('lec-detail-modal')">
+  <div class="modal"><div class="modal-handle"></div><div id="lec-detail-content"></div></div>
+</div>
+
+<div id="add-wrong-modal" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('add-wrong-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">오답 추가</div>
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">과목</label>
+    <select class="fsel" id="wn-subject" style="margin-bottom:12px"><option>형사법</option><option>경찰학개론</option><option>헌법</option></select>
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">단원 / 주제</label>
+    <input class="inp" id="wn-topic" placeholder="예: 긴급체포 요건" style="margin-bottom:12px">
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">문제 내용</label>
+    <textarea class="inp" id="wn-question" placeholder="문제 내용 입력" rows="3" style="resize:none;margin-bottom:12px"></textarea>
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">정답 / 해설</label>
+    <textarea class="inp" id="wn-answer" placeholder="정답과 해설 입력" rows="3" style="resize:none;margin-bottom:12px"></textarea>
+    <label style="font-size:12px;color:var(--t2);margin-bottom:6px;display:block">오답 유형</label>
+    <div style="display:flex;gap:5px;margin-bottom:16px;flex-wrap:wrap" id="wrong-type-btns">
+      <button class="btn-chip on" onclick="selType(this,'개념 부족')">개념 부족</button>
+      <button class="btn-chip" onclick="selType(this,'실수')">실수</button>
+      <button class="btn-chip" onclick="selType(this,'시간 부족')">시간 부족</button>
+      <button class="btn-chip" onclick="selType(this,'함정 문제')">함정 문제</button>
+    </div>
+    <div style="display:flex;gap:7px">
+      <button class="btn-sec" style="flex:1" onclick="closeModal('add-wrong-modal')">취소</button>
+      <button class="btn-pri" style="flex:1" onclick="saveWrongNote()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div id="wrong-detail-modal" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('wrong-detail-modal')">
+  <div class="modal"><div class="modal-handle"></div><div id="wrong-detail-content"></div></div>
+</div>
+
+<div id="add-score-modal" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('add-score-modal')">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">성적 추가</div>
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">시험명</label>
+    <input class="inp" id="sc-name" placeholder="예: 26년 1차 경찰시험" style="margin-bottom:12px">
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">시험일</label>
+    <input type="date" class="inp" id="sc-date" style="margin-bottom:14px">
+    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+      <div style="display:flex;align-items:center;gap:4px;width:80px;flex-shrink:0"><div class="dot" style="background:#e05252"></div><span style="font-size:11px;color:var(--t2)">형사법</span></div>
+      <input type="number" class="inp" id="sc-형사법" placeholder="0" max="100" min="0" style="width:64px;text-align:center"><span style="font-size:11px;color:var(--t3)">/ 100</span>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+      <div style="display:flex;align-items:center;gap:4px;width:80px;flex-shrink:0"><div class="dot" style="background:#4b6bfb"></div><span style="font-size:11px;color:var(--t2)">경찰학개론</span></div>
+      <input type="number" class="inp" id="sc-경찰학개론" placeholder="0" max="100" min="0" style="width:64px;text-align:center"><span style="font-size:11px;color:var(--t3)">/ 100</span>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;align-items:center">
+      <div style="display:flex;align-items:center;gap:4px;width:80px;flex-shrink:0"><div class="dot" style="background:#0891b2"></div><span style="font-size:11px;color:var(--t2)">헌법</span></div>
+      <input type="number" class="inp" id="sc-헌법" placeholder="0" max="100" min="0" style="width:64px;text-align:center"><span style="font-size:11px;color:var(--t3)">/ 100</span>
+    </div>
+    <div style="display:flex;gap:7px">
+      <button class="btn-sec" style="flex:1" onclick="closeModal('add-score-modal')">취소</button>
+      <button class="btn-pri" style="flex:1" onclick="saveScore()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" style="display:none">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6ee7b7" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-msg">저장 완료</span>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════════
+const SC={형사법:'#e05252',경찰학개론:'#4b6bfb',헌법:'#0891b2'};
+const RD=[1,3,7,14,30];
+const SUBS=['형사법','경찰학개론','헌법'];
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let db=null, uid=null;
+let lectures=[], wrongNotes=[], reviewLogs=[], scores=[], routines=[], dailyLogs={}, config={};
+let selWrongType='개념 부족', wFilter='all', rvTab='today', studySub='wrong', selMeals=[], selSleepQ='쾌';
+let unsubs=[];
+
+// ══════════════════════════════════════════
+// FIREBASE INIT
+// ══════════════════════════════════════════
+function initFirebase(){
+  try{
+    firebase.initializeApp(FIREBASE_CONFIG);
+    db=firebase.firestore();
+    firebase.auth().onAuthStateChanged(user=>{
+      if(user){
+        uid=user.uid;
+        document.getElementById('login-screen').style.display='none';
+        document.getElementById('app').style.display='flex';
+        document.getElementById('loading').style.display='none';
+        setupListeners();
+      } else {
+        document.getElementById('loading').style.display='none';
+        document.getElementById('login-screen').style.display='flex';
+        document.getElementById('app').style.display='none';
+      }
+    });
+  } catch(e){
+    console.error('Firebase 초기화 실패:', e);
+    // Firebase 미설정 시 로컬 모드로 전환
+    fallbackLocal();
+  }
+}
+
+function fallbackLocal(){
+  document.getElementById('loading').style.display='none';
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('sync-indicator').style.display='none';
+  loadFromLocal();
+  renderHome();
+  showToast('⚠️ 로컬 모드 — Firebase 미설정');
+}
+
+function signInGoogle(){
+  const provider=new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider).catch(e=>showToast('로그인 실패: '+e.message));
+}
+
+// ══════════════════════════════════════════
+// FIRESTORE REALTIME LISTENERS
+// ══════════════════════════════════════════
+function col(name){return db.collection('users').doc(uid).collection(name);}
+function docRef(name){return db.collection('users').doc(uid).collection('_config').doc(name);}
+
+function setupListeners(){
+  // 기존 리스너 해제
+  unsubs.forEach(u=>u());unsubs=[];
+  setSyncing(true);
+
+  let loaded=0;
+  const check=()=>{if(++loaded>=5){setSyncing(false);renderHome();}};
+
+  unsubs.push(col('lectures').orderBy('createdAt').onSnapshot(s=>{lectures=s.docs.map(d=>({id:d.id,...d.data()}));check();renderLectures();},err=>console.error(err)));
+  unsubs.push(col('wrongNotes').orderBy('createdAt').onSnapshot(s=>{wrongNotes=s.docs.map(d=>({id:d.id,...d.data()}));check();if(studySub==='wrong')renderWrongList();},err=>console.error(err)));
+  unsubs.push(col('reviewLogs').onSnapshot(s=>{reviewLogs=s.docs.map(d=>({id:d.id,...d.data()}));check();renderHome();},err=>console.error(err)));
+  unsubs.push(col('scores').orderBy('examDate','desc').onSnapshot(s=>{scores=s.docs.map(d=>({id:d.id,...d.data()}));check();renderScores();},err=>console.error(err)));
+  unsubs.push(docRef('config').onSnapshot(s=>{config=s.exists?s.data():{};check();renderHome();},err=>console.error(err)));
+
+  // routines & dailyLogs (less critical)
+  unsubs.push(col('routines').orderBy('createdAt').onSnapshot(s=>{routines=s.docs.map(d=>({id:d.id,...d.data()}));renderRoutines();},err=>console.error(err)));
+  unsubs.push(col('dailyLogs').onSnapshot(s=>{dailyLogs={};s.docs.forEach(d=>dailyLogs[d.id]=d.data());},err=>console.error(err)));
+}
+
+function setSyncing(v){
+  const el=document.getElementById('sync-indicator');
+  if(el){el.className='sync-dot'+(v?' syncing':'');}
+}
+
+// ══════════════════════════════════════════
+// LOCAL FALLBACK (Firebase 미설정 시)
+// ══════════════════════════════════════════
+function ld(k){try{return JSON.parse(localStorage.getItem('pt_'+k)||'null')}catch{return null}}
+function sv(k,v){localStorage.setItem('pt_'+k,JSON.stringify(v))}
+function loadFromLocal(){
+  lectures=ld('lectures')||[];wrongNotes=ld('wrongNotes')||[];
+  reviewLogs=ld('reviewLogs')||[];scores=ld('scores')||[];
+  routines=ld('routines')||[];dailyLogs=ld('dailyLogs')||{};
+  config=ld('config')||{};
+}
+function saveLocal(){
+  sv('lectures',lectures);sv('wrongNotes',wrongNotes);sv('reviewLogs',reviewLogs);
+  sv('scores',scores);sv('routines',routines);sv('dailyLogs',dailyLogs);sv('config',config);
+}
+
+// ══════════════════════════════════════════
+// FIRESTORE WRITE HELPERS
+// ══════════════════════════════════════════
+async function fsAdd(colName, data){
+  if(db&&uid){
+    const ref=await col(colName).add({...data,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+    return ref.id;
+  }
+  return 'local_'+Date.now();
+}
+async function fsSet(colName, id, data){
+  if(db&&uid) await col(colName).doc(id).set(data,{merge:true});
+  else saveLocal();
+}
+async function fsDel(colName, id){
+  if(db&&uid) await col(colName).doc(id).delete();
+  else saveLocal();
+}
+async function fsSetConfig(data){
+  if(db&&uid) await docRef('config').set(data,{merge:true});
+  else{Object.assign(config,data);sv('config',config);}
+}
+
+// ══════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════
+function today(){return new Date().toISOString().slice(0,10)}
+function addDays(d,n){const dt=new Date(d);dt.setDate(dt.getDate()+n);return dt.toISOString().slice(0,10)}
+function diffDays(a,b){return Math.round((new Date(a)-new Date(b))/86400000)}
+function fmt(d){if(!d)return'';const dt=new Date(d);return`${dt.getMonth()+1}/${dt.getDate()}`}
+function openModal(id){document.getElementById(id).style.display='flex'}
+function closeModal(id){document.getElementById(id).style.display='none'}
+function showToast(msg,good=true){
+  const t=document.getElementById('toast');
+  t.querySelector('svg').setAttribute('stroke',good?'#6ee7b7':'#fca5a5');
+  document.getElementById('toast-msg').textContent=msg;
+  t.style.display='flex';t.style.opacity='1';
+  clearTimeout(t._t);t._t=setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.style.display='none',300)},2400);
+}
+function calcSh(bed,wake){
+  const[bh,bm]=(bed||'23:30').split(':').map(Number),[wh,wm]=(wake||'06:30').split(':').map(Number);
+  let m=(wh*60+wm)-(bh*60+bm);if(m<0)m+=1440;return m/60;
+}
+
+// ══════════════════════════════════════════
+// TAB SWITCH
+// ══════════════════════════════════════════
+function switchTab(id,btn){
+  ['home','lecture','study','score','manage'].forEach(t=>document.getElementById('tab-'+t).style.display=t===id?'block':'none');
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  ({home:renderHome,lecture:renderLectures,study:renderStudy,score:renderScores,manage:renderManage})[id]?.();
+}
+
+// ══════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════
+function renderHome(){
+  const dd=document.getElementById('dday-num');
+  if(config.examDate){
+    const d=diffDays(config.examDate,today());
+    dd.textContent=d>=0?d:'종료';
+    document.getElementById('exam-date-inp').value=config.examDate;
+    document.getElementById('exam-target-inp').value=config.examTarget||'';
+  }else dd.textContent='—';
+
+  const td=today();
+  const due=reviewLogs.filter(r=>r.scheduledAt===td&&!r.completedAt);
+  const done=reviewLogs.filter(r=>r.scheduledAt===td&&r.completedAt);
+  document.getElementById('review-badge').textContent=`미완료 ${due.length}개`;
+  const total=due.length+done.length;
+  document.getElementById('progress-text').textContent=`${done.length} / ${total} 완료`;
+  document.getElementById('progress-bar').style.width=total?`${Math.round(done.length/total*100)}%`:'0%';
+
+  const rl=document.getElementById('today-review-list');
+  const all=[...due,...done];
+  if(!all.length){rl.innerHTML=`<div style="text-align:center;padding:14px 0;color:var(--t3);font-size:12px">오늘 복습 예정이 없어요</div>`;return;}
+  rl.innerHTML=all.map((r,i)=>{
+    const n=wrongNotes.find(x=>x.id===r.noteId);if(!n)return'';
+    const c=SC[n.subject]||'#888';const dn=!!r.completedAt;
+    return`<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;${i<all.length-1?'border-bottom:0.5px solid var(--bd)':''};${dn?'opacity:.45':''}">
+      <div style="display:flex;align-items:center;gap:7px"><div class="dot" style="background:${c}"></div>
+        <div><div style="font-size:12px;font-weight:500;color:var(--t1);${dn?'text-decoration:line-through':''}">${n.topic}</div><div style="font-size:10px;color:var(--t3)">${n.subject} · ${r.round}회차</div></div>
+      </div>
+      ${!dn?`<button onclick="completeReview('${r.id}')" style="background:var(--sur2);color:var(--t2);font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:pointer;font-family:inherit">완료</button>`:'<span style="font-size:13px;color:var(--gr);font-weight:700">✓</span>'}
+    </div>`;
+  }).join('');
+
+  // Focus forecast
+  const log=dailyLogs[td]||{};
+  const sh=calcSh(log.sleepBed,log.sleepWake);const low=sh<6;
+  document.getElementById('focus-forecast').innerHTML=low
+    ?`<div class="card-sm" style="border-left:3px solid var(--am)"><div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--am)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg><span style="font-size:12px;font-weight:700;color:var(--t1)">집중력 저하 주의</span></div><div style="font-size:11px;color:var(--t2)">수면 ${sh.toFixed(1)}h — 암기보다 강의 청취 위주 권장.</div></div>`
+    :`<div class="card-sm" style="border-left:3px solid var(--gr);display:flex;align-items:center;gap:7px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg><div><div style="font-size:12px;font-weight:700;color:var(--t1)">컨디션 양호</div><div style="font-size:11px;color:var(--t2)">수면 ${sh.toFixed(1)}h · 오늘 집중력 정상 예상</div></div></div>`;
+}
+
+async function completeReview(id){
+  setSyncing(true);
+  const r=reviewLogs.find(x=>x.id===id);if(!r)return;
+  await fsSet('reviewLogs',id,{...r,completedAt:new Date().toISOString()});
+  setSyncing(false);showToast('복습 완료!');
+}
+async function saveExamDate(){
+  const d=document.getElementById('exam-date-inp').value;
+  const t=document.getElementById('exam-target-inp').value;
+  await fsSetConfig({examDate:d,examTarget:t});
+  config.examDate=d;config.examTarget=t;
+  closeModal('exam-modal');renderHome();showToast('시험일이 저장됐어요');
+}
+
+// ══════════════════════════════════════════
+// LECTURES
+// ══════════════════════════════════════════
+function renderLectures(){
+  const el=document.getElementById('lecture-list');if(!el)return;
+  if(!lectures.length){el.innerHTML=`<div class="empty"><div class="empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/></svg></div><div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px">강의가 없어요</div><div style="font-size:12px;color:var(--t3)">+ 강의 추가 버튼으로 추가해 보세요</div></div>`;return;}
+  el.innerHTML=lectures.map(l=>{
+    const c=SC[l.subject]||'#888';const p=l.totalEp?Math.round(l.currentEp/l.totalEp*100):0;
+    const dL=l.targetDate?diffDays(l.targetDate,today()):null;
+    return`<div class="card" style="cursor:pointer;border-left:3px solid ${c}" onclick="openLecDetail('${l.id}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div style="font-size:13px;font-weight:700;color:var(--t1)">${l.title}</div><div style="font-size:10px;color:var(--t3);margin-top:2px">${l.instructor?l.instructor+' · ':''}${l.subject}</div></div>
+        ${dL!==null?`<span style="font-size:10px;color:${dL<=7?'var(--re)':'var(--t3)'}">D-${dL}</span>`:''}
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:11px;color:var(--t2)">${l.currentEp}/${l.totalEp}강</span><span style="font-size:11px;font-weight:600;color:${p===100?'var(--gr)':'var(--t2)'}">${p===100?'완강':p+'%'}</span></div>
+      <div class="prog-wrap"><div class="prog-bar" style="width:${p}%;background:${c}"></div></div>
+    </div>`;
+  }).join('');
+}
+async function saveLecture(){
+  const title=document.getElementById('lec-title').value.trim();
+  if(!title){showToast('강의명을 입력해 주세요',false);return;}
+  setSyncing(true);
+  const data={subject:document.getElementById('lec-subject').value,title,instructor:document.getElementById('lec-instructor').value.trim(),totalEp:parseInt(document.getElementById('lec-total').value)||0,currentEp:0,targetDate:document.getElementById('lec-target').value};
+  await fsAdd('lectures',data);
+  setSyncing(false);closeModal('add-lecture-modal');
+  ['lec-title','lec-instructor','lec-total'].forEach(k=>document.getElementById(k).value='');
+  showToast('강의가 추가됐어요');
+}
+function openLecDetail(id){
+  const l=lectures.find(x=>x.id===id);if(!l)return;
+  const c=SC[l.subject]||'#888';const p=l.totalEp?Math.round(l.currentEp/l.totalEp*100):0;
+  document.getElementById('lec-detail-content').innerHTML=`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px"><div class="dot" style="background:${c}"></div><span style="font-size:11px;color:var(--t2)">${l.subject}</span></div>
+    <div class="modal-title">${l.title}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div style="background:var(--sur2);border-radius:10px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:800;color:var(--t1)">${l.currentEp}</div><div style="font-size:10px;color:var(--t3)">수강 완료</div></div>
+      <div style="background:var(--sur2);border-radius:10px;padding:10px;text-align:center"><div style="font-size:20px;font-weight:800;color:var(--t1)">${l.totalEp}</div><div style="font-size:10px;color:var(--t3)">전체 강의</div></div>
+    </div>
+    <div class="prog-wrap" style="margin-bottom:14px"><div class="prog-bar" style="width:${p}%;background:${c}"></div></div>
+    <label style="font-size:12px;color:var(--t2);margin-bottom:4px;display:block">현재 강 수 업데이트</label>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+      <input type="number" id="lec-cur-ep" value="${l.currentEp}" min="0" max="${l.totalEp}" class="inp" style="flex:1;text-align:center">
+      <span style="font-size:12px;color:var(--t3);white-space:nowrap">/ ${l.totalEp}강</span>
+    </div>
+    <div style="display:flex;gap:7px">
+      <button class="btn-sec" style="flex:1" onclick="deleteLecture('${l.id}')">삭제</button>
+      <button class="btn-pri" style="flex:1" onclick="updateLecEp('${l.id}')">저장</button>
+    </div>`;
+  openModal('lec-detail-modal');
+}
+async function updateLecEp(id){
+  const l=lectures.find(x=>x.id===id);if(!l)return;
+  const ep=Math.min(parseInt(document.getElementById('lec-cur-ep').value)||0,l.totalEp);
+  setSyncing(true);
+  await fsSet('lectures',id,{...l,currentEp:ep});
+  setSyncing(false);closeModal('lec-detail-modal');
+  showToast(ep===l.totalEp?'완강 완료! 수고했어요 🎉':'진도가 업데이트됐어요');
+}
+async function deleteLecture(id){
+  setSyncing(true);await fsDel('lectures',id);setSyncing(false);
+  closeModal('lec-detail-modal');showToast('강의가 삭제됐어요');
+}
+
+// ══════════════════════════════════════════
+// STUDY
+// ══════════════════════════════════════════
+function renderStudy(){switchStudySub(studySub);}
+function switchStudySub(sub){
+  studySub=sub;const wo=sub==='wrong';
+  document.getElementById('sub-wrong').style.cssText=`flex:1;background:${wo?'var(--sur)':'none'};border:none;border-radius:7px;padding:5px 4px;font-size:11px;color:${wo?'var(--t1)':'var(--t3)'};cursor:pointer;font-weight:${wo?'700':'600'};font-family:inherit`;
+  document.getElementById('sub-review').style.cssText=`flex:1;background:${!wo?'var(--sur)':'none'};border:none;border-radius:7px;padding:5px 4px;font-size:11px;color:${!wo?'var(--t1)':'var(--t3)'};cursor:pointer;font-weight:${!wo?'700':'600'};font-family:inherit`;
+  document.getElementById('wrong-section').style.display=wo?'block':'none';
+  document.getElementById('review-section').style.display=wo?'none':'block';
+  if(wo)renderWrongList();else renderReviewSection();
+}
+function filterWrong(btn,f){
+  wFilter=f;document.querySelectorAll('#wrong-filters .btn-chip').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderWrongList();
+}
+function renderWrongList(){
+  const el=document.getElementById('wrong-list');if(!el)return;
+  let ns=wrongNotes;if(wFilter!=='all')ns=ns.filter(n=>n.subject===wFilter);
+  if(!ns.length){el.innerHTML=`<div class="empty"><div class="empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg></div><div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px">오답이 없어요</div><div style="font-size:12px;color:var(--t3)">${wFilter!=='all'?'다른 필터를 선택해 보세요':'+ 오답 추가 버튼으로 추가해 보세요'}</div></div>`;return;}
+  const tc={'개념 부족':'tag-개념','실수':'tag-실수','함정 문제':'tag-함정','시간 부족':'tag-시간'};
+  el.innerHTML=ns.map(n=>{
+    const c=SC[n.subject]||'#888';const pend=reviewLogs.filter(r=>r.noteId===n.id&&!r.completedAt).length;
+    return`<div class="card" style="cursor:pointer;border-left:3px solid ${c}" onclick="openWrongDetail('${n.id}')">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px"><div class="dot" style="background:${c}"></div><span style="font-size:11px;font-weight:600;color:var(--t2)">${n.subject}</span><span class="tag ${tc[n.wrongType]||''}">${n.wrongType}</span>${pend?`<span style="margin-left:auto;font-size:10px;color:var(--re);font-weight:600">복습 ${pend}건</span>`:''}
+      </div><div style="font-size:13px;font-weight:600;color:var(--t1)">${n.topic}</div>
+    </div>`;
+  }).join('');
+}
+function selType(btn,t){
+  selWrongType=t;document.getElementById('wrong-type-btns').querySelectorAll('.btn-chip').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+}
+async function saveWrongNote(){
+  const topic=document.getElementById('wn-topic').value.trim();
+  if(!topic){showToast('단원/주제를 입력해 주세요',false);return;}
+  setSyncing(true);
+  const noteId=await fsAdd('wrongNotes',{subject:document.getElementById('wn-subject').value,topic,question:document.getElementById('wn-question').value.trim(),answer:document.getElementById('wn-answer').value.trim(),wrongType:selWrongType});
+  const td=today();
+  await Promise.all(RD.map((d,i)=>fsAdd('reviewLogs',{noteId,round:i+1,scheduledAt:addDays(td,d),completedAt:null})));
+  setSyncing(false);closeModal('add-wrong-modal');
+  ['wn-topic','wn-question','wn-answer'].forEach(k=>document.getElementById(k).value='');
+  showToast('저장 완료 · 복습 일정 5회차가 생성됐어요');
+}
+function openWrongDetail(id){
+  const n=wrongNotes.find(x=>x.id===id);if(!n)return;
+  const c=SC[n.subject]||'#888';const logs=reviewLogs.filter(r=>r.noteId===id);
+  const tc={'개념 부족':'tag-개념','실수':'tag-실수','함정 문제':'tag-함정','시간 부족':'tag-시간'};
+  document.getElementById('wrong-detail-content').innerHTML=`
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px"><div class="dot" style="background:${c}"></div><span style="font-size:11px;font-weight:600;color:var(--t2)">${n.subject}</span><span class="tag ${tc[n.wrongType]||''}">${n.wrongType}</span></div>
+    <div class="modal-title">${n.topic}</div>
+    ${n.question?`<div style="background:var(--sur2);border-radius:9px;padding:10px;margin-bottom:10px"><div style="font-size:10px;color:var(--t3);font-weight:600;margin-bottom:4px">문제</div><div style="font-size:12px;color:var(--t1);line-height:1.6">${n.question}</div></div>`:''}
+    ${n.answer?`<div style="background:var(--gr-bg);border-radius:9px;padding:10px;margin-bottom:14px"><div style="font-size:10px;color:var(--gr);font-weight:600;margin-bottom:4px">정답 / 해설</div><div style="font-size:12px;color:var(--t1);line-height:1.6">${n.answer}</div></div>`:''}
+    <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">복습 일정</div><div style="background:var(--sur2);border-radius:9px;padding:8px 12px">${logs.map(r=>`<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0"><span style="color:var(--t2)">${r.round}회차 · ${fmt(r.scheduledAt)}</span><span style="${r.completedAt?'color:var(--gr);font-weight:600':'color:var(--t3)'}">${r.completedAt?'완료':'예정'}</span></div>`).join('')}</div></div>
+    <div style="display:flex;gap:7px"><button class="btn-sec" style="flex:1" onclick="deleteWrong('${id}')">삭제</button><button class="btn-pri" style="flex:1" onclick="closeModal('wrong-detail-modal')">닫기</button></div>`;
+  openModal('wrong-detail-modal');
+}
+async function deleteWrong(id){
+  setSyncing(true);
+  await fsDel('wrongNotes',id);
+  const logs=reviewLogs.filter(r=>r.noteId===id);
+  await Promise.all(logs.map(r=>fsDel('reviewLogs',r.id)));
+  setSyncing(false);closeModal('wrong-detail-modal');showToast('오답이 삭제됐어요');
+}
+function switchReviewTab(btn,t){rvTab=t;btn.parentElement.querySelectorAll('.btn-chip').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderReviewSection();}
+function renderReviewSection(){
+  const el=document.getElementById('review-items');if(!el)return;const td=today();
+  let logs=rvTab==='today'?reviewLogs.filter(r=>r.scheduledAt===td):reviewLogs;
+  logs=[...logs].sort((a,b)=>a.scheduledAt.localeCompare(b.scheduledAt));
+  if(!logs.length){el.innerHTML=`<div class="empty"><div class="empty-icon" style="background:var(--gr-bg)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px">${rvTab==='today'?'오늘 복습 완료!':'복습 기록 없음'}</div></div>`;return;}
+  el.innerHTML=logs.map(r=>{
+    const n=wrongNotes.find(x=>x.id===r.noteId);if(!n)return'';
+    const c=SC[n.subject]||'#888';const dn=!!r.completedAt;
+    return`<div class="card" style="border-left:3px solid ${c};${dn?'opacity:.45':''}">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;align-items:center;gap:7px"><div class="dot" style="background:${c}"></div>
+          <div><div style="font-size:12px;font-weight:600;color:var(--t1);${dn?'text-decoration:line-through':''}">${n.topic}</div><div style="font-size:10px;color:var(--t3)">${n.subject} · ${r.round}회차 · ${fmt(r.scheduledAt)}</div></div>
+        </div>
+        ${!dn?`<button onclick="completeReview('${r.id}')" style="background:var(--sur2);color:var(--t2);font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:pointer;font-family:inherit">완료</button>`:'<span style="font-size:14px;color:var(--gr);font-weight:700">✓</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// SCORES
+// ══════════════════════════════════════════
+function renderScores(){
+  const el=document.getElementById('score-list');if(!el)return;
+  if(!scores.length){el.innerHTML=`<div class="empty"><div class="empty-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div><div style="font-size:14px;font-weight:700;color:var(--t1);margin-bottom:6px">성적 기록이 없어요</div><div style="font-size:12px;color:var(--t3)">+ 성적 추가 버튼으로 추가해 보세요</div></div>`;return;}
+  el.innerHTML=scores.map(s=>{
+    const sb=Object.entries(s.subjects||{});const avg=sb.length?Math.round(sb.reduce((a,[,v])=>a+v,0)/sb.length):0;
+    return`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px"><div><div style="font-size:13px;font-weight:700;color:var(--t1)">${s.examName}</div><div style="font-size:10px;color:var(--t3);margin-top:2px">${fmt(s.examDate)}</div></div><div style="text-align:right"><div style="font-size:22px;font-weight:800;color:var(--t1)">${avg}</div><div style="font-size:10px;color:var(--t3)">평균</div></div></div>
+      <div style="display:flex;gap:7px">${sb.map(([k,v])=>`<div style="flex:1;background:var(--sur2);border-radius:8px;padding:7px;text-align:center"><div style="font-size:15px;font-weight:700;color:${SC[k]||'var(--t1)'}">${v}</div><div style="font-size:9px;color:var(--t3);margin-top:1px">${k}</div></div>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+async function saveScore(){
+  const name=document.getElementById('sc-name').value.trim(),date=document.getElementById('sc-date').value;
+  if(!name||!date){showToast('시험명과 날짜를 입력해 주세요',false);return;}
+  const subjects={};SUBS.forEach(s=>{const v=parseInt(document.getElementById('sc-'+s).value);if(!isNaN(v)&&v>=0)subjects[s]=v;});
+  setSyncing(true);await fsAdd('scores',{examName:name,examDate:date,subjects});setSyncing(false);
+  closeModal('add-score-modal');['sc-name','sc-형사법','sc-경찰학개론','sc-헌법'].forEach(k=>document.getElementById(k).value='');
+  showToast('성적이 저장됐어요');
+}
+
+// ══════════════════════════════════════════
+// MANAGE
+// ══════════════════════════════════════════
+function renderManage(){
+  renderRoutines();
+  const log=dailyLogs[today()]||{};
+  if(log.sleepBed)document.getElementById('sleep-bed').value=log.sleepBed;
+  if(log.sleepWake)document.getElementById('sleep-wake').value=log.sleepWake;
+  if(log.exercise)document.getElementById('exercise-inp').value=log.exercise||'';
+  selMeals=log.meals||[];selSleepQ=log.sleepQ||'쾌';
+  ['쾌','보통','나쁨'].forEach(q=>document.getElementById('sq-'+q).classList.toggle('on',q===selSleepQ));
+  ['아침','점심','저녁'].forEach(m=>{const b=document.querySelector(`[onclick="toggleMeal(this,'${m}')"]`);if(b)b.classList.toggle('on',selMeals.includes(m));});
+}
+function setSleepQ(btn,q){selSleepQ=q;['쾌','보통','나쁨'].forEach(x=>document.getElementById('sq-'+x).classList.remove('on'));btn.classList.add('on');}
+function toggleMeal(btn,m){if(selMeals.includes(m))selMeals=selMeals.filter(x=>x!==m);else selMeals.push(m);btn.classList.toggle('on',selMeals.includes(m));}
+async function saveDailyLog(){
+  const key=today();
+  const data={sleepBed:document.getElementById('sleep-bed').value,sleepWake:document.getElementById('sleep-wake').value,sleepQ:selSleepQ,meals:[...selMeals],exercise:document.getElementById('exercise-inp').value.trim()};
+  setSyncing(true);
+  if(db&&uid)await col('dailyLogs').doc(key).set(data,{merge:true});
+  else{dailyLogs[key]=data;sv('dailyLogs',dailyLogs);}
+  setSyncing(false);showToast('오늘 기록이 저장됐어요');
+  renderHome();
+}
+function renderRoutines(){
+  const el=document.getElementById('routine-list');if(!el)return;
+  if(!routines.length){el.innerHTML=`<div style="text-align:center;padding:10px 0;font-size:12px;color:var(--t3)">루틴을 추가해 보세요</div>`;return;}
+  el.innerHTML=routines.map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--bd)">
+    <input type="checkbox" ${r.done?'checked':''} onchange="toggleRoutine('${r.id}',this.checked)" style="width:16px;height:16px;accent-color:var(--t1);cursor:pointer;flex-shrink:0">
+    <span style="flex:1;font-size:13px;color:var(--t1);${r.done?'text-decoration:line-through;opacity:.45':''}">${r.text}</span>
+    <button onclick="deleteRoutine('${r.id}')" style="background:none;border:none;cursor:pointer;color:var(--t3);font-size:18px;line-height:1;padding:0 4px">×</button>
+  </div>`).join('');
+}
+async function addRoutine(){
+  const v=document.getElementById('routine-inp').value.trim();if(!v)return;
+  await fsAdd('routines',{text:v,done:false});
+  document.getElementById('routine-inp').value='';
+}
+async function toggleRoutine(id,done){
+  const r=routines.find(x=>x.id===id);if(!r)return;
+  await fsSet('routines',id,{...r,done});
+}
+async function deleteRoutine(id){await fsDel('routines',id);}
+
+// ══════════════════════════════════════════
+// AI ANALYSIS (Gemini)
+// ══════════════════════════════════════════
+async function runAiAnalysis(){
+  const btn=document.getElementById('ai-btn');
+  const area=document.getElementById('ai-result-area');
+  if(!GEMINI_API_KEY||GEMINI_API_KEY==='여기에_입력'){
+    area.innerHTML=`<div class="ai-result" style="color:var(--re)">Gemini API 키를 파일 상단에 입력해 주세요.\n\nhttps://aistudio.google.com/app/apikey 에서 무료로 발급 가능해요.</div>`;return;
+  }
+  btn.disabled=true;btn.textContent='분석 중...';
+  area.innerHTML=`<div style="display:flex;align-items:center;gap:8px;margin-top:10px;color:var(--t3);font-size:12px"><div class="spinner" style="width:16px;height:16px;border-width:2px"></div>AI가 분석하고 있어요...</div>`;
+  try{
+    const prompt=buildAnalysisPrompt();
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{temperature:0.7,maxOutputTokens:800}})
+    });
+    const data=await res.json();
+    if(data.error)throw new Error(data.error.message);
+    const text=data.candidates?.[0]?.content?.parts?.[0]?.text||'분석 결과를 가져오지 못했어요.';
+    area.innerHTML=`<div class="ai-result">${text}</div>`;
+  }catch(e){
+    area.innerHTML=`<div class="ai-result" style="color:var(--re)">오류: ${e.message}</div>`;
+  }
+  btn.disabled=false;btn.textContent='AI 분석 시작';
+}
+
+function buildAnalysisPrompt(){
+  const wSummary=wrongNotes.slice(-20).map(n=>`- [${n.subject}] ${n.topic} (${n.wrongType})`).join('\n')||'없음';
+  const sSummary=scores.slice(-5).map(s=>{const avg=Object.values(s.subjects||{}).reduce((a,v)=>a+v,0)/Math.max(Object.keys(s.subjects||{}).length,1);return`- ${s.examName}: 평균 ${Math.round(avg)}점`;}).join('\n')||'없음';
+  const today=new Date().toLocaleDateString('ko-KR');
+  return`당신은 경찰 9급 공채 수험생의 학습 코치입니다. 아래 데이터를 분석해서 현실적이고 구체적인 학습 피드백을 한국어로 제공해 주세요.
+
+[오늘 날짜] ${today}
+[시험 목표] ${config.examTarget||'미설정'} / ${config.examDate||'날짜 미설정'}
+
+[최근 오답 노트 (최대 20개)]
+${wSummary}
+
+[최근 성적 (최대 5회)]
+${sSummary}
+
+다음 3가지를 중심으로 분석해 주세요:
+1. 가장 취약한 과목과 개념
+2. 오답 패턴 분석
+3. 이번 주 학습 우선순위 추천
+
+간결하게 500자 이내로 작성해 주세요.`;
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+initFirebase();
+</script>
+</body>
+</html>
