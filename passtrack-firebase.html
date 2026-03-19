@@ -140,7 +140,7 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
 <body>
 
 <!-- Loading -->
-<div class="loading" id="loading">
+<div class="loading" id="loading" style="display:none">
   <div class="spinner"></div>
   <div style="font-size:13px;color:var(--t2)">불러오는 중...</div>
 </div>
@@ -159,8 +159,13 @@ body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(
   <div style="font-size:11px;color:var(--t3);margin-top:16px;text-align:center">로그인하면 모든 기기에서<br>데이터가 자동으로 동기화돼요</div>
 </div>
 
+<!-- 로그인 배너 (앱 상단) -->
+<div id="login-banner" style="display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--t1);color:#fff;padding:10px 16px;z-index:90;align-items:center;justify-content:space-between;gap:10px">
+  <span style="font-size:12px">로그인하면 기기 간 동기화가 돼요</span>
+  <button onclick="signInGoogle()" style="background:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--t1);cursor:pointer;white-space:nowrap;font-family:inherit">Google 로그인</button>
+</div>
 <!-- App -->
-<div class="app" id="app" style="display:none">
+<div class="app" id="app">
 
   <!-- HOME -->
   <div id="tab-home" class="screen">
@@ -804,37 +809,49 @@ let unsubs=[];
 // FIREBASE INIT
 // ══════════════════════════════════════════
 function initFirebase(){
-  try{
+  // 앱은 이미 표시됨 — 로컬 모드로 먼저 시작
+  loadFromLocal();
+  renderHome();
+  checkOnboarding();
+
+  // Firebase를 백그라운드에서 연결 시도
+  try {
+    if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey === '여기에_입력') {
+      document.getElementById('sync-indicator').style.display='none';
+      return;
+    }
     firebase.initializeApp(FIREBASE_CONFIG);
-    db=firebase.firestore();
-    firebase.auth().onAuthStateChanged(user=>{
-      if(user){
-        uid=user.uid;
+    db = firebase.firestore();
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        uid = user.uid;
         document.getElementById('login-screen').style.display='none';
         document.getElementById('app').style.display='flex';
-        document.getElementById('loading').style.display='none';
+        setSyncing(true);
         setupListeners();
       } else {
-        document.getElementById('loading').style.display='none';
-        document.getElementById('login-screen').style.display='flex';
-        document.getElementById('app').style.display='none';
+        // 로그인 안 된 상태 — 로그인 버튼만 상단에 표시
+        uid = null;
+        db = null;
+        document.getElementById('sync-indicator').style.display='none';
+        showLoginBanner();
       }
     });
-  } catch(e){
-    console.error('Firebase 초기화 실패:', e);
-    // Firebase 미설정 시 로컬 모드로 전환
-    fallbackLocal();
+  } catch(e) {
+    console.error('Firebase 오류:', e);
+    document.getElementById('sync-indicator').style.display='none';
   }
 }
 
+function showLoginBanner(){
+  const banner = document.getElementById('login-banner');
+  if(banner) banner.style.display='flex';
+}
+
 function fallbackLocal(){
-  document.getElementById('loading').style.display='none';
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app').style.display='flex';
   document.getElementById('sync-indicator').style.display='none';
   loadFromLocal();
   renderHome();
-  showToast('⚠️ 로컬 모드 — Firebase 미설정');
 }
 
 function signInGoogle(){
