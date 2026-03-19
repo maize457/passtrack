@@ -1057,13 +1057,16 @@ function renderLectures(){
   el.innerHTML=lectures.map(l=>{
     const c=SC[l.subject]||'#888';const p=l.totalEp?Math.round(l.currentEp/l.totalEp*100):0;
     const dL=l.targetDate?diffDays(l.targetDate,today()):null;
-    return`<div class="card" style="cursor:pointer;border-left:3px solid ${c}" onclick="openLecDetail('${l.id}')">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-        <div><div style="font-size:13px;font-weight:700;color:var(--t1)">${l.title}</div><div style="font-size:10px;color:var(--t3);margin-top:2px">${l.instructor?l.instructor+' · ':''}${l.subject}</div></div>
-        ${dL!==null?`<span style="font-size:10px;color:${dL<=7?'var(--re)':'var(--t3)'}">D-${dL}</span>`:''}
+    return`<div class="card" style="border-left:3px solid ${c}">
+      <div style="cursor:pointer" onclick="openLecDetail('${l.id}')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div><div style="font-size:13px;font-weight:700;color:var(--t1)">${l.title}</div><div style="font-size:10px;color:var(--t3);margin-top:2px">${l.instructor?l.instructor+' · ':''}${l.subject}</div></div>
+          ${dL!==null?`<span style="font-size:10px;color:${dL<=7?'var(--re)':'var(--t3)'}">D-${dL}</span>`:''}
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:11px;color:var(--t2)">${l.currentEp}/${l.totalEp}강</span><span style="font-size:11px;font-weight:600;color:${p===100?'var(--gr)':'var(--t2)'}">${p===100?'완강':p+'%'}</span></div>
+        <div class="prog-wrap"><div class="prog-bar" style="width:${p}%;background:${c}"></div></div>
       </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:11px;color:var(--t2)">${l.currentEp}/${l.totalEp}강</span><span style="font-size:11px;font-weight:600;color:${p===100?'var(--gr)':'var(--t2)'}">${p===100?'완강':p+'%'}</span></div>
-      <div class="prog-wrap"><div class="prog-bar" style="width:${p}%;background:${c}"></div></div>
+      <button onclick="openPlaceModal('${l.id}')" style="margin-top:10px;width:100%;background:var(--sur2);border:0.5px solid var(--bd);border-radius:9px;padding:8px;font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;font-family:inherit">▶ 공부 시작</button>
     </div>`;
   }).join('');
 }
@@ -1158,13 +1161,14 @@ function openWrongDetail(id){
   const n=wrongNotes.find(x=>x.id===id);if(!n)return;
   const c=SC[n.subject]||'#888';const logs=reviewLogs.filter(r=>r.noteId===id);
   const tc={'개념 부족':'tag-개념','실수':'tag-실수','함정 문제':'tag-함정','시간 부족':'tag-시간'};
+  const quizBtn=n.question?`<button class="btn-text" style="flex:1;border-radius:10px;padding:9px;font-size:12px" onclick="closeModal('wrong-detail-modal');startQuiz('${id}')">다시 풀기</button>`:'';
   document.getElementById('wrong-detail-content').innerHTML=`
     <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px"><div class="dot" style="background:${c}"></div><span style="font-size:11px;font-weight:600;color:var(--t2)">${n.subject}</span><span class="tag ${tc[n.wrongType]||''}">${n.wrongType}</span></div>
     <div class="modal-title">${n.topic}</div>
     ${n.question?`<div style="background:var(--sur2);border-radius:9px;padding:10px;margin-bottom:10px"><div style="font-size:10px;color:var(--t3);font-weight:600;margin-bottom:4px">문제</div><div style="font-size:12px;color:var(--t1);line-height:1.6">${n.question}</div></div>`:''}
     ${n.answer?`<div style="background:var(--gr-bg);border-radius:9px;padding:10px;margin-bottom:14px"><div style="font-size:10px;color:var(--gr);font-weight:600;margin-bottom:4px">정답 / 해설</div><div style="font-size:12px;color:var(--t1);line-height:1.6">${n.answer}</div></div>`:''}
     <div style="margin-bottom:14px"><div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px">복습 일정</div><div style="background:var(--sur2);border-radius:9px;padding:8px 12px">${logs.map(r=>`<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0"><span style="color:var(--t2)">${r.round}회차 · ${fmt(r.scheduledAt)}</span><span style="${r.completedAt?'color:var(--gr);font-weight:600':'color:var(--t3)'}">${r.completedAt?'완료':'예정'}</span></div>`).join('')}</div></div>
-    <div style="display:flex;gap:7px"><button class="btn-sec" style="flex:1" onclick="deleteWrong('${id}')">삭제</button><button class="btn-pri" style="flex:1" onclick="closeModal('wrong-detail-modal')">닫기</button></div>`;
+    <div style="display:flex;gap:7px">${quizBtn}<button class="btn-sec" style="flex:1" onclick="openWrongEdit('${id}')">편집</button><button class="btn-sec" style="flex:1" onclick="deleteWrong('${id}')">삭제</button><button class="btn-pri" style="flex:1" onclick="closeModal('wrong-detail-modal')">닫기</button></div>`;
   openModal('wrong-detail-modal');
 }
 async function deleteWrong(id){
@@ -1231,6 +1235,7 @@ function renderManage(){
   selMeals=log.meals||[];selSleepQ=log.sleepQ||'쾌';
   ['쾌','보통','나쁨'].forEach(q=>document.getElementById('sq-'+q).classList.toggle('on',q===selSleepQ));
   ['아침','점심','저녁'].forEach(m=>{const b=document.querySelector(`[onclick="toggleMeal(this,'${m}')"]`);if(b)b.classList.toggle('on',selMeals.includes(m));});
+  loadPeriodData();
 }
 function setSleepQ(btn,q){selSleepQ=q;['쾌','보통','나쁨'].forEach(x=>document.getElementById('sq-'+x).classList.remove('on'));btn.classList.add('on');}
 function toggleMeal(btn,m){if(selMeals.includes(m))selMeals=selMeals.filter(x=>x!==m);else selMeals.push(m);btn.classList.toggle('on',selMeals.includes(m));}
@@ -1319,14 +1324,20 @@ ${sSummary}
 let graphFilter = 'avg';
 
 function switchScoreSub(sub) {
-  const isList = sub === 'list';
-  document.getElementById('score-list').style.display = isList ? 'block' : 'none';
-  document.getElementById('score-graph').style.display = isList ? 'none' : 'block';
-  const sl = document.getElementById('sc-sub-list');
-  const sg = document.getElementById('sc-sub-graph');
-  sl.style.cssText = `flex:1;background:${isList?'var(--sur)':'none'};border:none;border-radius:7px;padding:5px 4px;font-size:11px;color:${isList?'var(--t1)':'var(--t3)'};cursor:pointer;font-weight:${isList?'700':'600'};font-family:inherit`;
-  sg.style.cssText = `flex:1;background:${!isList?'var(--sur)':'none'};border:none;border-radius:7px;padding:5px 4px;font-size:11px;color:${!isList?'var(--t1)':'var(--t3)'};cursor:pointer;font-weight:${!isList?'700':'600'};font-family:inherit`;
-  if (!isList) renderScoreGraph(graphFilter);
+  const sections = {list:'score-list', graph:'score-graph', ox:'score-ox'};
+  Object.entries(sections).forEach(([k,id])=>{
+    const el=document.getElementById(id);
+    if(el) el.style.display = k===sub ? 'block' : 'none';
+  });
+  ['list','graph','ox'].forEach(s=>{
+    const btn=document.getElementById('sc-sub-'+s);
+    if(!btn) return;
+    btn.style.background = s===sub ? 'var(--sur)' : 'none';
+    btn.style.color = s===sub ? 'var(--t1)' : 'var(--t3)';
+    btn.style.fontWeight = s===sub ? '700' : '600';
+  });
+  if(sub==='graph') renderScoreGraph(graphFilter);
+
 }
 
 function filterGraph(btn, subject) {
@@ -1624,22 +1635,7 @@ function updatePomodoroDots() {
   ).join('');
 }
 
-// renderLectures 패치 — 시작 버튼 추가
-const _origRenderLectures = renderLectures;
-renderLectures = function() {
-  _origRenderLectures();
-  // 각 강의 카드에 시작 버튼 추가
-  lectures.forEach(l => {
-    const card = document.querySelector(`[onclick="openLecDetail('${l.id}')"]`);
-    if (!card) return;
-    const startBtn = document.createElement('button');
-    startBtn.className = 'btn-text';
-    startBtn.style.cssText = 'margin-top:10px;width:100%;border-radius:9px;padding:8px;font-size:12px';
-    startBtn.textContent = '▶ 공부 시작';
-    startBtn.onclick = (e) => { e.stopPropagation(); openPlaceModal(l.id); };
-    card.appendChild(startBtn);
-  });
-};
+
 
 // ══════════════════════════════════════════
 // 4. 생리 기록 달력
@@ -1747,12 +1743,7 @@ async function savePeriodData() {
   }
 }
 
-// renderManage 패치 — 달력 로드
-const _origRenderManage = renderManage;
-renderManage = function() {
-  _origRenderManage();
-  loadPeriodData();
-};
+
 
 // ══════════════════════════════════════════
 // 5. 다크모드
@@ -2017,26 +2008,7 @@ async function completeOnboarding() {
 // ══════════════════════════════════════════
 // 성적 탭 서브탭 확장 (OX 퀴즈)
 // ══════════════════════════════════════════
-const _origSwitchScoreSub = switchScoreSub;
-switchScoreSub = function(sub) {
-  const isOx = sub === 'ox';
-  const isList = sub === 'list';
-  const isGraph = sub === 'graph';
-  document.getElementById('score-list').style.display = isList ? 'block' : 'none';
-  document.getElementById('score-graph').style.display = isGraph ? 'block' : 'none';
-  const oxEl = document.getElementById('score-ox');
-  if (oxEl) oxEl.style.display = isOx ? 'block' : 'none';
 
-  ['list','graph','ox'].forEach(s => {
-    const btn = document.getElementById('sc-sub-'+s);
-    if (!btn) return;
-    const active = s === sub;
-    btn.style.background = active ? 'var(--sur)' : 'none';
-    btn.style.color = active ? 'var(--t1)' : 'var(--t3)';
-    btn.style.fontWeight = active ? '700' : '600';
-  });
-  if (isGraph) renderScoreGraph(graphFilter);
-};
 
 // OX 퀴즈 상태
 let oxQuestions = [], oxIdx = 0, oxCorrect = 0, oxWrong = [];
@@ -2186,35 +2158,6 @@ async function updateWrongNote(id) {
   showToast('오답이 수정됐어요');
 }
 
-// openWrongDetail 추가 패치 — 편집 버튼
-const _origOpenWrongDetail2 = openWrongDetail;
-openWrongDetail = function(id) {
-  _origOpenWrongDetail2(id);
-  setTimeout(() => {
-    const el = document.getElementById('wrong-detail-content');
-    if (!el) return;
-    const btnRow = el.querySelector('div[style*="display:flex;gap:7px"]');
-    if (btnRow) {
-      // 편집 버튼
-      const editBtn = document.createElement('button');
-      editBtn.className = 'btn-sec';
-      editBtn.style.cssText = 'flex:1;border-radius:10px;padding:9px;font-size:12px;order:-1';
-      editBtn.textContent = '편집';
-      editBtn.onclick = () => openWrongEdit(id);
-      btnRow.appendChild(editBtn);
-      // 다시 풀기 버튼 (문제 있을 때만)
-      const note = wrongNotes.find(x => x.id === id);
-      if (note?.question) {
-        const quizBtn = document.createElement('button');
-        quizBtn.className = 'btn-text';
-        quizBtn.style.cssText = 'flex:1;border-radius:10px;padding:9px;font-size:12px';
-        quizBtn.textContent = '다시 풀기';
-        quizBtn.onclick = () => { closeModal('wrong-detail-modal'); startQuiz(id); };
-        btnRow.insertBefore(quizBtn, btnRow.firstChild);
-      }
-    }
-  }, 50);
-};
 
 // 온보딩 체크는 setupListeners 내부에서 처리됨
 
