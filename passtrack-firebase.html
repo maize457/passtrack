@@ -39,8 +39,8 @@ const GEMINI_API_KEY = "AIzaSyAEj8jkT2kM5BeV5QBzC1EYGWfXqoyGr1E";
 }
 html,body{height:100%;overflow:hidden}
 body{font-family:'Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:var(--bg);color:var(--t1)}
-.app{max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden;background:var(--bg)}
-.screen{flex:1;overflow-y:auto;overflow-x:hidden;padding:0 0 70px;scrollbar-width:none}
+.app{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;height:100%;background:var(--bg);overflow:hidden}
+.screen{position:absolute;top:0;left:0;right:0;bottom:58px;overflow-y:auto;overflow-x:hidden;padding:0 0 12px;scrollbar-width:none}
 .screen::-webkit-scrollbar{display:none}
 
 /* Nav */
