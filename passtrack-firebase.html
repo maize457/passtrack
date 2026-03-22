@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https:; img-src 'self' data: blob: https:; connect-src 'self' https://generativelanguage.googleapis.com https://*.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net wss://*.firebaseio.com;">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f5f6fa">
 <title>PassTrack</title>
@@ -2159,10 +2160,13 @@ const FB_CFG = {
 const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 function getGeminiKey() {
-  return localStorage.getItem("passtrack_gemini_key") || "";
+  try {
+    const v = localStorage.getItem("passtrack_gemini_key");
+    return v ? atob(v) : "";
+  } catch(e) { return ""; }
 }
 function setGeminiKey(key) {
-  localStorage.setItem("passtrack_gemini_key", key.trim());
+  localStorage.setItem("passtrack_gemini_key", btoa(key.trim()));
 }
 function clearGeminiKey() {
   localStorage.removeItem("passtrack_gemini_key");
@@ -2344,7 +2348,15 @@ const calcSh = (bed,wake) => {
   let m = (wh*60+wm)-(bh*60+bm); if(m<0)m+=1440; return m/60;
 };
 const lsGet = k => { try{ return JSON.parse(localStorage.getItem(k)); }catch{return null;} };
-const lsSet = (k,v) => localStorage.setItem(k,JSON.stringify(v));
+const lsSet = (k,v) => {
+  try {
+    localStorage.setItem(k, JSON.stringify(v));
+  } catch(e) {
+    if(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'){
+      showToast('저장 공간이 부족합니다. 오래된 데이터를 삭제해주세요.');
+    }
+  }
+};
 
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
 
@@ -3497,6 +3509,10 @@ function renderHomeReview(){
 window.handleWNImage = async (input) => {
   const file = input.files[0];
   if(!file) return;
+  if(file.size > 20 * 1024 * 1024){
+    showToast('파일이 너무 큽니다. 20MB 이하 이미지를 선택해주세요.');
+    return;
+  }
   const zone = document.getElementById('wn-img-zone');
   const textarea = document.getElementById('wn-question');
   const previewUrl = URL.createObjectURL(file);
@@ -3540,9 +3556,9 @@ window.handleWNImage = async (input) => {
 
     const _vKey1 = getGeminiKey();
     if (!_vKey1) { openGeminiKeyModal(); return; }
-    const resp = await fetch(`${GEMINI_API_URL}?key=${_vKey1}`, {
+    const resp = await fetch(GEMINI_API_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', 'x-goog-api-key': _vKey1},
       body: JSON.stringify({
         contents: [{parts: [
           {inline_data: {mime_type: 'image/jpeg', data: b64}},
@@ -3599,6 +3615,10 @@ window.handleWNImage = async (input) => {
 window.handleWNAnsImage = async (input) => {
   const file = input.files[0];
   if(!file) return;
+  if(file.size > 20 * 1024 * 1024){
+    showToast('파일이 너무 큽니다. 20MB 이하 이미지를 선택해주세요.');
+    return;
+  }
   const zone = document.getElementById('wn-ans-img-zone');
   const textarea = document.getElementById('wn-answer');
 
@@ -3634,9 +3654,9 @@ window.handleWNAnsImage = async (input) => {
     });
     const _vKey2 = getGeminiKey();
     if (!_vKey2) { openGeminiKeyModal(); return; }
-    const resp = await fetch(`${GEMINI_API_URL}?key=${_vKey2}`, {
+    const resp = await fetch(GEMINI_API_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', 'x-goog-api-key': _vKey2},
       body: JSON.stringify({
         contents:[{parts:[
           {inline_data:{mime_type:mtA, data:b64a}},
@@ -4025,14 +4045,26 @@ window.saveScore = async () => {
   const crim = document.getElementById('score-crim').value;
   const pol  = document.getElementById('score-pol').value;
   const con  = document.getElementById('score-con').value;
+  // 점수 범위 검증 (0~100)
+  const checkScore = (v, label, max=100) => {
+    if(v==='') return true;
+    const n=Number(v);
+    if(isNaN(n)||n<0||n>max){ showToast(`${label} 점수는 0~${max} 사이여야 합니다`); return false; }
+    return true;
+  };
+  if(!checkScore(crim,'형사법')||!checkScore(pol,'경찰학개론')||!checkScore(con,'헌법',50)) return;
   const data = {
     examName:name, examDate:date, examType:_scoreAddType,
     subjects:{ '형사법':crim!==''?Number(crim):undefined, '경찰학개론':pol!==''?Number(pol):undefined, '헌법':con!==''?Number(con):undefined }
   };
   if(useLocal){
     data.id='sc_'+Date.now(); data.createdAt=nowISO();
-    D.scores.unshift(data); saveLocal(); renderScores();
-  } else { await fsAdd('scores',data); }
+    D.scores.unshift(data); saveLocal();
+  } else {
+    const ref = await fsAdd('scores',data);
+    data.id=ref?.id||('sc_'+Date.now()); D.scores.unshift(data);
+  }
+  renderScores(); updateAICounts();
   closeScreen('score-add');
   ['score-name','score-date','score-crim','score-pol','score-con'].forEach(id=>document.getElementById(id).value='');
   showToast('성적이 저장됐어요');
@@ -4105,9 +4137,9 @@ async function callGemini(prompt){
   const key = getGeminiKey();
   if (!key) { openGeminiKeyModal(); return ''; }
   try {
-    const res = await fetch(`${GEMINI_API_URL}?key=${key}`, {
+    const res = await fetch(GEMINI_API_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+      headers: {'Content-Type': 'application/json', 'x-goog-api-key': key},
       body: JSON.stringify({contents:[{parts:[{text:prompt}]}]})
     });
     const data = await res.json();
@@ -4125,6 +4157,8 @@ async function callGemini(prompt){
 
 window.runAIAnalysis = async (ctx) => {
   if (!requireGeminiKey()) return;
+  if(window._aiAnalysisRunning){ showToast('분석 중입니다. 잠시만 기다려주세요.'); return; }
+  window._aiAnalysisRunning = true;
   const cfg = D.config;
   const recentWN = D.wrongNotes.slice(0,20).map(w=>`[${w.subject}] ${w.topic}: ${w.wrongType||''}`).join('\n');
   const recentSc = D.scores.slice(0,5).map(s=>`${s.examName}(${s.examDate}): ${JSON.stringify(s.subjects)}`).join('\n');
@@ -4138,6 +4172,7 @@ window.runAIAnalysis = async (ctx) => {
     let txt=r||'분석 데이터가 부족해요.';
     try{const j=JSON.parse(r.replace(/```json?/g,'').replace(/```/g,'').trim());txt=j.summary||txt;}catch(e){}
     document.getElementById('score-ai-body').textContent=txt;
+    window._aiAnalysisRunning = false;
   } else {
     const aiResult=document.getElementById('manage-ai-result');
     const aiBody=document.getElementById('manage-ai-body');
@@ -4149,6 +4184,7 @@ window.runAIAnalysis = async (ctx) => {
     if(aiBody) aiBody.textContent=parsed?.summary||r||'분석 데이터가 부족해요.';
     const timeEl=document.getElementById('manage-ai-time');
     if(timeEl) timeEl.textContent='방금 전';
+    window._aiAnalysisRunning = false;
     const detailEl=document.getElementById('manage-ai-detail');
     const weakEl=document.getElementById('manage-weak-list');
     const actionEl=document.getElementById('manage-action-list');
@@ -4267,6 +4303,10 @@ window.answerOX = (i,chosen,correct) => {
 window.addOXToWrongNote = async (i) => {
   const q = _oxQuizList[i];
   if(!q) return;
+  // 중복 저장 방지 — 즉시 버튼 비활성화
+  const btnsEl = document.getElementById('ox-btns-'+i);
+  const addBtnEl = btnsEl?.querySelector('button');
+  if(addBtnEl){ addBtnEl.disabled=true; addBtnEl.textContent='저장 중...'; }
   const note = {
     question: q.q,
     answer:   `정답: ${q.a ? 'O' : 'X'}
