@@ -2034,6 +2034,7 @@ const FB_CFG = {
   appId:"1:211486160044:web:26013078f06f85b1dc9b09"
 };
 const GEMINI_KEY = "AIzaSyAEj8jkT2kM5BeV5QBzC1EYGWfXqoyGr1E";
+window.GEMINI_KEY = GEMINI_KEY;;
 window.GEMINI_KEY = GEMINI_KEY;
 
 let fbApp, auth, db;
@@ -2157,19 +2158,10 @@ async function fsSetCfg(data){
 }
 
 // ── AUTH ──────────────────────────────────────────────────
-// 즉시 localStorage로 초기 렌더 (Firebase 응답 기다리지 않음)
+// 즉시 localStorage로 초기 렌더
 loadLocal();
 renderAll();
-// localStorage에 onboarded 저장된 경우만 즉시 온보딩 숨김
-// Firebase 로그인 사용자는 setupListeners의 config 리스너에서 처리
-if(D.config.onboarded){
-  const ob=document.getElementById('onboarding');
-  if(ob) ob.style.display='none';
-} else if(!uid) {
-  // 비로그인 + 미온보딩: 온보딩 표시
-  checkOnboarding();
-}
-// uid가 있으면 setupListeners의 cfgUnsub에서 checkOnboarding 호출됨
+checkOnboarding();  // localStorage의 onboarded 값으로 즉시 판단 호출됨
 
 onAuthStateChanged(auth, async user => {
   uid = user ? user.uid : null;
@@ -2245,7 +2237,7 @@ async function setupListeners(){
   unsubscribers.push(dlUnsub);
   // config
   const cfgUnsub = onSnapshot(cfgDoc(), snap=>{
-    D.config = snap.exists() ? snap.data() : {};
+    D.config = snap.exists ? snap.data() : {};
     renderDDay(); renderSettings();
     checkOnboarding();   // ← config 로드 후 온보딩 상태 재확인
   });
@@ -2274,8 +2266,14 @@ function renderAll(){
 function checkOnboarding(){
   const ob = document.getElementById('onboarding');
   if(!ob) return;
-  if(!D.config.onboarded){ ob.style.display='flex'; ob.style.flexDirection='column'; }
-  else { ob.style.display='none'; }
+  if(!D.config.onboarded){
+    ob.style.display='flex';
+    ob.style.flexDirection='column';
+    ob.style.zIndex='400';
+  } else {
+    ob.style.display='none';
+    ob.style.zIndex='';
+  }
 }
 window.obNext = n => {
   document.querySelectorAll('.ob-step').forEach(el=>el.classList.remove('active'));
@@ -2296,7 +2294,8 @@ window.obFinish = async () => {
 };
 async function saveCfg(data){
   D.config = {...D.config, ...data};
-  if(useLocal){ lsSet('pt_cfg',D.config); } else { await fsSetCfg(data); }
+  lsSet('pt_cfg', D.config);          // 항상 로컬에도 저장 (즉각 반영 + 오프라인 폴백)
+  if(!useLocal){ await fsSetCfg(data); }
 }
 
 // ── D-DAY ─────────────────────────────────────────────────
@@ -3236,7 +3235,7 @@ window.handleWNAnsImage = async (input) => {
       };
       img.src = url;
     });
-    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${window.GEMINI_KEY||GEMINI_KEY}`,{
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,{
       method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         contents:[{parts:[
@@ -3696,7 +3695,7 @@ function updateAICounts(){
 
 async function callGemini(prompt){
   try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${window.GEMINI_KEY||GEMINI_KEY}`,{
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({contents:[{parts:[{text:prompt}]}]})
