@@ -2317,6 +2317,15 @@ window._app = {
 const D = window._app;
 
 // ── HELPERS ───────────────────────────────────────────────
+// 잘못 저장된 subject(OX 퀴즈 등) 보정
+function migrateWrongNoteSubjects(){
+  const valid=['형사법','경찰학개론','헌법'];
+  let changed=false;
+  D.wrongNotes.forEach(w=>{
+    if(!valid.includes(w.subject)){ w.subject='형사법'; changed=true; }
+  });
+  if(changed && useLocal) saveLocal();
+}
 // 날짜를 로컬 시간 기준으로 반환 (UTC 기준이면 KST에서 날짜가 틀어짐)
 const toLocalDate = (d) => {
   const dt = d || new Date();
@@ -2474,6 +2483,7 @@ async function setupListeners(){
 
 // ── RENDER ALL ────────────────────────────────────────────
 function renderAll(){
+  try { migrateWrongNoteSubjects(); } catch(e){}
   try { renderDDay(); } catch(e){}
   try { renderFocusForecast(); } catch(e){}
   try { renderHomeLec(); } catch(e){}
@@ -2711,6 +2721,9 @@ function renderHomeLec(){
 window.quickLecDone = async id => {
   const l = D.lectures.find(x=>x.id===id);
   if(!l) return;
+  // 중복 클릭 방지
+  if(window._quickLecDoneInProgress) return;
+  window._quickLecDoneInProgress = true;
   const newEp = Math.min((l.currentEp||0)+1, l.totalEp);
   await updateLecEp(id, newEp);
   // 오늘 세션 기록 추가 (홈 완료 버튼 클릭 시)
@@ -2719,6 +2732,7 @@ window.quickLecDone = async id => {
     sess.id='sess_'+Date.now(); sess.createdAt=nowISO();
     D.sessions.unshift(sess); saveLocal();
   } else { await fsAdd('sessions', sess); }
+  window._quickLecDoneInProgress = false;
   renderHomeLec(); renderTodayProgress();
 };
 
@@ -3099,7 +3113,10 @@ function resetWNAddForm(){
     c.classList.toggle('on', i===0);
   });
   _selectedWNType = '개념 부족';
-  // 이미지 존 초기화 (재클릭 가능하도록 원래 HTML 복원)
+  // 이미지 존 초기화 — 기존 중복 input 제거 후 재생성
+  ['wn-img-input','wn-img-cam-input','wn-ans-img-input','wn-ans-img-cam-input'].forEach(id=>{
+    const old=document.getElementById(id); if(old) old.remove();
+  });
   const imgZone = document.getElementById('wn-img-zone');
   if(imgZone){
     imgZone.innerHTML = `
@@ -3187,10 +3204,13 @@ window.saveWrongNote = async () => {
   const subject = document.getElementById('wn-subject')?.value||'형사법';
   const topic = (document.getElementById('wn-topic')?.value||'').trim();
   if(!topic){ showToast('단원/주제를 입력해주세요'); return; }
+  const question=(document.getElementById('wn-question')?.value||'').trim();
+  // 문제와 정답 모두 비어있으면 경고
+  const answer=(document.getElementById('wn-answer')?.value||'').trim();
+  if(!question&&!answer){ showToast('문제 또는 정답/해설을 입력해주세요'); return; }
   const data = {
     subject, topic,
-    question:(document.getElementById('wn-question')?.value||'').trim(),
-    answer:  (document.getElementById('wn-answer')?.value||'').trim(),
+    question, answer,
     wrongType:_selectedWNType,
     reason:document.getElementById('wn-reason')?.value.trim()||'',
     reference:document.getElementById('wn-reference')?.value.trim()||''
@@ -3201,6 +3221,8 @@ window.saveWrongNote = async () => {
     D.wrongNotes.unshift(data); saveLocal(); renderWN();
   } else {
     const ref = await fsAdd('wrongNotes', data); id=ref.id;
+    // Firestore 모드: 로컬 데이터에도 반영
+    data.id=id; D.wrongNotes.unshift(data);
   }
   // create 5 review logs
   const offsets=[1,3,7,14,30];
@@ -3209,9 +3231,14 @@ window.saveWrongNote = async () => {
     if(useLocal){
       rl.id='rl_'+Date.now()+'_'+i; rl.createdAt=nowISO();
       D.reviewLogs.push(rl);
-    } else { await fsAdd('reviewLogs',rl); }
+    } else {
+      const rlRef = await fsAdd('reviewLogs',rl);
+      rl.id=rlRef?.id||('rl_'+Date.now()+'_'+i); rl.createdAt=nowISO();
+      D.reviewLogs.push(rl);
+    }
   }
-  if(useLocal){ saveLocal(); renderReview(); renderHomeReview(); }
+  if(useLocal){ saveLocal(); }
+  renderWN(); renderReview(); renderHomeReview(); renderTodayProgress();
   closeScreen('wn-add');
   ['wn-topic','wn-question','wn-answer','wn-reason','wn-reference'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   _selectedWNType='';
@@ -3327,8 +3354,13 @@ window.updateWrongNote = async () => {
   if(useLocal){
     const i=D.wrongNotes.findIndex(x=>x.id===id);
     if(i>=0) D.wrongNotes[i]={...D.wrongNotes[i],...data};
-    saveLocal(); renderWN();
-  } else { await fsSet('wrongNotes',id,data); }
+    saveLocal();
+  } else {
+    await fsSet('wrongNotes',id,data);
+    const i=D.wrongNotes.findIndex(x=>x.id===id);
+    if(i>=0) D.wrongNotes[i]={...D.wrongNotes[i],...data};
+  }
+  renderWN();
   closeScreen('wn-edit');
   closeScreen('wn-detail');
   showToast('오답이 수정됐어요');
@@ -3413,10 +3445,13 @@ window.completeReview = async id => {
   if(!r) return;
   const isDone = !!r.completedAt;
   const newVal = isDone ? null : nowISO(); // 완료 → 미완료 토글
+  r.completedAt = newVal; // 로컬/Firestore 공통으로 선 반영
   if(useLocal){
-    r.completedAt = newVal;
-    saveLocal(); renderReview(); renderHomeReview(); renderTodayProgress();
-  } else { await fsSet('reviewLogs', id, {completedAt: newVal}); }
+    saveLocal();
+  } else {
+    await fsSet('reviewLogs', id, {completedAt: newVal});
+  }
+  renderReview(); renderHomeReview(); renderTodayProgress();
   showToast(isDone ? '미완료로 변경됐어요' : '복습 완료!');
 };
 
@@ -4144,6 +4179,14 @@ let _oxStats={total:0,correct:0,wrong:0};
 let _oxQuizList=[];
 window.generateOX = async () => {
   if (!requireGeminiKey()) return;
+  // 새 퀴즈 생성 시 통계 초기화
+  _oxStats={total:0,correct:0,wrong:0};
+  const totalEl=document.getElementById('ox-total');
+  const correctEl=document.getElementById('ox-correct');
+  const wrongEl=document.getElementById('ox-wrong');
+  if(totalEl) totalEl.textContent='0';
+  if(correctEl) correctEl.textContent='0';
+  if(wrongEl) wrongEl.textContent='0';
   const btn=document.getElementById('gen-ox-btn');
   btn.textContent='생성 중...'; btn.disabled=true;
   const wns=D.wrongNotes.slice(0,10).map(w=>`[${w.subject}|${w.topic}] ${w.question||w.answer||''}`).join('\n');
