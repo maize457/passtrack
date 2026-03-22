@@ -732,6 +732,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       <div style="display:flex;background:var(--sur2);border-radius:9px;padding:3px;gap:2px;border:0.5px solid var(--bd);margin-bottom:0">
         <button data-study-tab="wn" style="flex:1;background:var(--sur);border:none;border-radius:7px;padding:6px 4px;font-size:12px;color:var(--t1);cursor:pointer;font-weight:700" onclick="setStudySubTab('wn',this)">오답노트</button>
         <button data-study-tab="review" style="flex:1;background:none;border:none;border-radius:7px;padding:6px 4px;font-size:12px;color:var(--t3);cursor:pointer;font-weight:600" onclick="setStudySubTab('review',this)">복습</button>
+        <button data-study-tab="ox" style="flex:1;background:none;border:none;border-radius:7px;padding:6px 4px;font-size:12px;color:var(--t3);cursor:pointer;font-weight:600" onclick="setStudySubTab('ox',this)">OX 퀴즈</button>
       </div>
     </div>
 
@@ -751,6 +752,19 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
         <button class="chip" onclick="setWNFilter('type','함정 문제',this)">함정 문제</button>
       </div>
       <div style="padding:0 18px 20px" id="wn-list"></div>
+    </div>
+
+    <!-- OX sub -->
+    <div id="study-ox" style="display:none;padding:14px 18px">
+      <div class="card mb-14">
+        <div class="flex justify-between">
+          <div style="text-align:center;flex:1"><div style="font-size:20px;font-weight:800" id="ox-total">0</div><div class="fs-12 col-t3">전체</div></div>
+          <div style="text-align:center;flex:1"><div style="font-size:20px;font-weight:800;color:var(--gr)" id="ox-correct">0</div><div class="fs-12 col-t3">정답</div></div>
+          <div style="text-align:center;flex:1"><div style="font-size:20px;font-weight:800;color:var(--re)" id="ox-wrong">0</div><div class="fs-12 col-t3">오답</div></div>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full mb-14" onclick="generateOX()" id="gen-ox-btn">✨ OX 퀴즈 생성</button>
+      <div id="ox-quiz-area"></div>
     </div>
 
     <!-- REVIEW sub -->
@@ -777,7 +791,6 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       <div style="display:flex;background:var(--sur2);border-radius:9px;padding:3px;gap:2px;border:0.5px solid var(--bd)" id="score-sub-tabs">
         <button data-score-tab="scores" style="flex:1;background:var(--sur);border:none;border-radius:7px;padding:6px 4px;font-size:12px;color:var(--t1);cursor:pointer;font-weight:700" onclick="setScoreSubTab('scores',this)">성적</button>
         <button data-score-tab="ai" style="flex:1;background:none;border:none;border-radius:7px;padding:6px 4px;font-size:12px;color:var(--t3);cursor:pointer;font-weight:600" onclick="setScoreSubTab('ai',this)">AI 분석</button>
-        <button data-score-tab="ox" style="flex:1;background:none;border:none;border-radius:7px;padding:6px 4px;font-size:12px;color:var(--t3);cursor:pointer;font-weight:600" onclick="setScoreSubTab('ox',this)">OX 퀴즈</button>
       </div>
     </div>
 
@@ -837,18 +850,6 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       </div>
     </div>
 
-    <!-- OX sub -->
-    <div id="score-ox-sub" style="display:none;padding:14px 18px">
-      <div class="card mb-14">
-        <div class="flex justify-between">
-          <div style="text-align:center;flex:1"><div style="font-size:20px;font-weight:800" id="ox-total">0</div><div class="fs-12 col-t3">전체</div></div>
-          <div style="text-align:center;flex:1"><div style="font-size:20px;font-weight:800;color:var(--gr)" id="ox-correct">0</div><div class="fs-12 col-t3">정답</div></div>
-          <div style="text-align:center;flex:1"><div style="font-size:20px;font-weight:800;color:var(--re)" id="ox-wrong">0</div><div class="fs-12 col-t3">오답</div></div>
-        </div>
-      </div>
-      <button class="btn btn-primary btn-full mb-14" onclick="generateOX()" id="gen-ox-btn">✨ OX 퀴즈 생성</button>
-      <div id="ox-quiz-area"></div>
-    </div>
   </div><!-- /tab-scores -->
 
   <!-- MANAGE TAB -->
@@ -861,7 +862,12 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     </div>
 
     <!-- DAILY FORM -->
-    <div style="font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.5px;padding:0 14px 6px">오늘 기록</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 14px 6px">
+      <span style="font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.5px">오늘 기록</span>
+      <button onclick="showScreen('daily-log')" style="background:var(--sur);border:0.5px solid var(--bd);border-radius:8px;padding:3px 9px;font-size:11px;font-weight:600;color:var(--t2);cursor:pointer;display:flex;align-items:center;gap:3px">
+        기록 보기 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
     <div class="card" style="margin:0 14px 9px">
       <!-- 수면 -->
       <div style="padding-bottom:9px;margin-bottom:9px;border-bottom:0.5px solid var(--bd)">
@@ -1277,11 +1283,17 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
         <span style="font-size:10px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:1px 6px;font-weight:700">AI 자동 입력</span>
       </div>
       <!-- 이미지 업로드 영역 -->
-      <div id="wn-img-zone" style="background:var(--sur2);border:1.5px dashed var(--bd);border-radius:10px;padding:18px;text-align:center;cursor:pointer;margin-bottom:8px" onclick="document.getElementById('wn-img-input').click()">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5" style="margin-bottom:6px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <div style="font-size:12px;font-weight:600;color:var(--t2)">사진 또는 파일 업로드</div>
-        <div style="font-size:10px;color:var(--t3);margin-top:3px">JPG  PNG  PDF</div>
-        <input type="file" id="wn-img-input" accept="image/*,.pdf" style="display:none" onchange="handleWNImage(this)">
+      <div id="wn-img-zone" style="background:var(--sur2);border:1.5px dashed var(--bd);border-radius:10px;padding:18px;text-align:center;margin-bottom:8px">
+        <input type="file" id="wn-img-input" accept="image/*" style="display:none" onchange="handleWNImage(this)">
+        <input type="file" id="wn-img-cam-input" accept="image/*" capture="environment" style="display:none" onchange="handleWNImage(this)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button type="button" onclick="document.getElementById('wn-img-cam-input').click()"
+            style="padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--t1);font-size:11px;font-weight:600;cursor:pointer">촬영</button>
+          <button type="button" onclick="document.getElementById('wn-img-input').click()"
+            style="padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--t1);font-size:11px;font-weight:600;cursor:pointer">갤러리</button>
+        </div>
+        <div style="font-size:10px;color:var(--t3);margin-top:6px">JPG  PNG  스크린샷</div>
       </div>
       <div style="text-align:center;font-size:11px;color:var(--t3);margin-bottom:6px">또는 직접 입력</div>
       <textarea class="form-input" id="wn-question" placeholder="문제 내용 직접 입력"></textarea>
@@ -1292,11 +1304,17 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
         정답 / 해설
         <span style="font-size:10px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:1px 6px;font-weight:700">AI 자동 입력</span>
       </div>
-      <div id="wn-ans-img-zone" style="background:var(--sur2);border:1.5px dashed var(--bd);border-radius:10px;padding:18px;text-align:center;cursor:pointer;margin-bottom:8px" onclick="document.getElementById('wn-ans-img-input').click()">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5" style="margin-bottom:6px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <div style="font-size:12px;font-weight:600;color:var(--t2)">사진 또는 파일 업로드</div>
-        <div style="font-size:10px;color:var(--t3);margin-top:3px">JPG  PNG  PDF</div>
-        <input type="file" id="wn-ans-img-input" accept="image/*,.pdf" style="display:none" onchange="handleWNAnsImage(this)">
+      <div id="wn-ans-img-zone" style="background:var(--sur2);border:1.5px dashed var(--bd);border-radius:10px;padding:18px;text-align:center;margin-bottom:8px">
+        <input type="file" id="wn-ans-img-input" accept="image/*" style="display:none" onchange="handleWNAnsImage(this)">
+        <input type="file" id="wn-ans-img-cam-input" accept="image/*" capture="environment" style="display:none" onchange="handleWNAnsImage(this)">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button type="button" onclick="document.getElementById('wn-ans-img-cam-input').click()"
+            style="padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--t1);font-size:11px;font-weight:600;cursor:pointer">촬영</button>
+          <button type="button" onclick="document.getElementById('wn-ans-img-input').click()"
+            style="padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--t1);font-size:11px;font-weight:600;cursor:pointer">갤러리</button>
+        </div>
+        <div style="font-size:10px;color:var(--t3);margin-top:6px">JPG  PNG  스크린샷</div>
       </div>
       <div style="text-align:center;font-size:11px;color:var(--t3);margin-bottom:6px">또는 직접 입력</div>
       <textarea class="form-input" id="wn-answer" placeholder="정답 / 해설 직접 입력"></textarea>
@@ -1788,6 +1806,69 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
   </div>
 </div>
 
+<!-- DAILY LOG HISTORY -->
+<div id="fs-daily-log" class="fs-screen">
+  <div class="fs-header">
+    <button class="icon-btn" onclick="closeDailyLogEdit();closeScreen('daily-log')">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="fs-header-title">기록 히스토리</div>
+  </div>
+  <!-- 인라인 수정 패널 (평소에는 숨김) -->
+  <div id="daily-log-edit-panel" style="display:none;position:absolute;inset:0;z-index:10;background:var(--bg);overflow-y:auto;padding-bottom:80px">
+    <div style="position:sticky;top:0;background:var(--bg);padding:14px 16px 10px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--bd)">
+      <button class="icon-btn" onclick="closeDailyLogEdit()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="font-size:16px;font-weight:700" id="daily-edit-title">기록 수정</div>
+    </div>
+    <div style="padding:14px">
+      <!-- 수면 -->
+      <div class="card" style="margin-bottom:9px">
+        <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:8px">수면</div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px">
+          <div style="flex:1">
+            <div style="font-size:10px;color:var(--t3);margin-bottom:4px">취침</div>
+            <input type="time" id="edit-sleep-bed" style="width:100%;background:var(--sur2);border:0.5px solid var(--bd);border-radius:9px;padding:7px 10px;color:var(--t1);font-size:12px;font-family:inherit;outline:none">
+          </div>
+          <div style="flex:1">
+            <div style="font-size:10px;color:var(--t3);margin-bottom:4px">기상</div>
+            <input type="time" id="edit-sleep-wake" style="width:100%;background:var(--sur2);border:0.5px solid var(--bd);border-radius:9px;padding:7px 10px;color:var(--t1);font-size:12px;font-family:inherit;outline:none">
+          </div>
+        </div>
+        <div style="display:flex;gap:5px;align-items:center">
+          <span style="font-size:11px;color:var(--t2);white-space:nowrap;margin-right:2px">수면 질</span>
+          <button class="meal-chip" id="edit-qual-쾌" onclick="toggleEditQual('쾌',this)" style="flex:1;padding:5px 4px;border-radius:8px;font-size:11px;text-align:center">쾌</button>
+          <button class="meal-chip" id="edit-qual-보통" onclick="toggleEditQual('보통',this)" style="flex:1;padding:5px 4px;border-radius:8px;font-size:11px;text-align:center">보통</button>
+          <button class="meal-chip" id="edit-qual-나쁨" onclick="toggleEditQual('나쁨',this)" style="flex:1;padding:5px 4px;border-radius:8px;font-size:11px;text-align:center">나쁨</button>
+        </div>
+      </div>
+      <!-- 식사 -->
+      <div class="card" style="margin-bottom:9px">
+        <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:8px">식사</div>
+        <div style="display:flex;gap:4px">
+          <button class="meal-chip" id="edit-meal-아침" onclick="toggleEditMeal('아침',this)" style="flex:1;padding:7px 4px;border-radius:8px;font-size:11px;text-align:center;font-weight:600">아침</button>
+          <button class="meal-chip" id="edit-meal-점심" onclick="toggleEditMeal('점심',this)" style="flex:1;padding:7px 4px;border-radius:8px;font-size:11px;text-align:center;font-weight:600">점심</button>
+          <button class="meal-chip" id="edit-meal-저녁" onclick="toggleEditMeal('저녁',this)" style="flex:1;padding:7px 4px;border-radius:8px;font-size:11px;text-align:center;font-weight:600">저녁</button>
+        </div>
+      </div>
+      <!-- 운동 -->
+      <div class="card" style="margin-bottom:9px">
+        <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:8px">운동</div>
+        <textarea id="edit-exercise" class="form-input" placeholder="예: 달리기 30분" style="min-height:60px"></textarea>
+      </div>
+      <!-- 저장/삭제 -->
+      <div style="display:flex;gap:8px">
+        <button onclick="deleteDailyLog()" style="padding:11px;border-radius:10px;border:1px solid var(--re);background:none;color:var(--re);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">삭제</button>
+        <button onclick="saveDailyLogEdit()" style="flex:1;padding:11px;border-radius:10px;border:none;background:var(--t1);color:var(--bg);font-size:13px;font-weight:700;cursor:pointer">저장</button>
+      </div>
+    </div>
+  </div>
+  <div class="fs-body" id="daily-log-body" style="padding:14px">
+    <!-- renderDailyLog()이 채움 -->
+  </div>
+</div>
+
 <!-- SETTINGS -->
 <div id="fs-settings" class="fs-screen">
   <div class="fs-header">
@@ -1929,27 +2010,45 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
 <div class="modal-bg" id="period-date-sheet">
   <div class="sheet">
     <div class="sheet-handle"></div>
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px" id="period-sheet-date"></div>
-    <div style="font-size:12px;color:var(--t3);margin-bottom:16px">생리 기록을 입력하세요</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div style="font-size:16px;font-weight:700" id="period-sheet-date"></div>
+      <button id="period-delete-btn" onclick="deletePeriodDate()"
+        style="display:none;background:none;border:none;cursor:pointer;color:var(--re);padding:4px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+      </button>
+    </div>
+    <div style="font-size:12px;color:var(--t3);margin-bottom:16px" id="period-sheet-sub">생리 기록을 입력하세요</div>
     <div class="form-group">
       <div class="form-label">상태 선택</div>
-      <div class="flex gap-8">
+      <div class="flex gap-8" id="period-status-chips">
         <button class="chip" onclick="selectPeriodStatus('생리 중',this)">생리 중</button>
         <button class="chip" onclick="selectPeriodStatus('마무리',this)">마무리</button>
         <button class="chip" onclick="selectPeriodStatus('해당 없음',this)">해당 없음</button>
       </div>
     </div>
-    <div class="form-group">
+    <div class="form-group" id="period-flow-group">
       <div class="form-label">출혈량</div>
-      <div class="flex gap-8">
+      <div class="flex gap-8" id="period-flow-chips">
         <button class="chip" onclick="selectPeriodFlow('소',this)">소</button>
         <button class="chip" onclick="selectPeriodFlow('중',this)">중</button>
         <button class="chip" onclick="selectPeriodFlow('대',this)">대</button>
       </div>
     </div>
+    <div class="form-group">
+      <div class="form-label">증상 <span style="font-size:10px;color:var(--t3)">(복수 선택)</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px" id="period-symptom-chips">
+        <button class="chip" onclick="togglePeriodSymptom('복통',this)">복통</button>
+        <button class="chip" onclick="togglePeriodSymptom('피로',this)">피로</button>
+        <button class="chip" onclick="togglePeriodSymptom('두통',this)">두통</button>
+        <button class="chip" onclick="togglePeriodSymptom('부종',this)">부종</button>
+        <button class="chip" onclick="togglePeriodSymptom('기분 변화',this)">기분 변화</button>
+        <button class="chip" onclick="togglePeriodSymptom('집중력↓',this)">집중력↓</button>
+        <button class="chip" onclick="togglePeriodSymptom('무기력',this)">무기력</button>
+      </div>
+    </div>
     <div class="flex gap-10 mt-14">
       <button class="btn btn-secondary f1" onclick="closeSheet('period-date-sheet')">취소</button>
-      <button class="btn btn-primary f1" onclick="savePeriodDate()">저장</button>
+      <button class="btn btn-primary f1" id="period-save-btn" onclick="savePeriodDate()">저장</button>
     </div>
   </div>
 </div>
@@ -2205,9 +2304,17 @@ window._app = {
 const D = window._app;
 
 // ── HELPERS ───────────────────────────────────────────────
-const today = () => new Date().toISOString().slice(0,10);
+// 날짜를 로컬 시간 기준으로 반환 (UTC 기준이면 KST에서 날짜가 틀어짐)
+const toLocalDate = (d) => {
+  const dt = d || new Date();
+  const y = dt.getFullYear();
+  const m = String(dt.getMonth()+1).padStart(2,'0');
+  const day = String(dt.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+};
+const today = () => toLocalDate(new Date());
 const nowISO = () => new Date().toISOString();
-const addDays = (d,n) => { const r=new Date(d); r.setDate(r.getDate()+n); return r.toISOString().slice(0,10); };
+const addDays = (d,n) => { const r=new Date(d); r.setDate(r.getDate()+n); return toLocalDate(r); };
 const diffDays = (a,b) => Math.round((new Date(a)-new Date(b))/(1000*60*60*24));
 const calcSh = (bed,wake) => {
   if(!bed||!wake) return null;
@@ -2454,7 +2561,7 @@ function renderFocusForecast(){
     const cyc = Number(cfg.periodCycle)||28;
     let next = new Date(cfg.periodLast); next.setDate(next.getDate()+cyc);
     while(next<new Date()) next.setDate(next.getDate()+cyc);
-    const diff = diffDays(next.toISOString().slice(0,10), today());
+    const diff = diffDays(toLocalDate(next), today());
     if(diff>=0 && diff<=3){
       warn=true; periodTag='생리 D-'+diff;
       tagChips.push(`<span style="font-size:10px;background:var(--am-bg);color:var(--am-txt);border-radius:5px;padding:1px 6px">생리 전 증후군</span>`);
@@ -2541,14 +2648,21 @@ function renderLectures(){
   }).join('');
 }
 
+// 오늘 강의 풀 — renderHomeLec·renderTodayProgress 공유
+function getTodayLecPool(){
+  // 진도탭과 동일한 순서·목록 사용 (요일 필터 없이 미완료 강의 전체, 최대 3개)
+  return D.lectures.filter(l=>l.totalEp&&(l.currentEp||0)<l.totalEp).slice(0,3);
+}
+
 function renderHomeLec(){
   const el = document.getElementById('today-lec-list');
   const badge = document.getElementById('lec-badge');
-  const allActive = D.lectures.filter(l=>l.totalEp&&(l.currentEp||0)<l.totalEp);
-  const lecs = allActive.slice(0,3);
-  const todayDow0=['일','월','화','수','목','금','토'][new Date().getDay()];
-  const todaySessLecIds0 = new Set(D.sessions.filter(s=>s.date===today()).map(s=>s.lecId));
-  const todayPending = lecs.filter(l=>!todaySessLecIds0.has(l.id)).length;
+  const lecs = getTodayLecPool();
+  const todaySessLecIds0 = new Set(
+    D.sessions.filter(s=>s.date===today()&&s.lecId).map(s=>s.lecId)
+  );
+  // 뱃지: 오늘 세션 있고 실제 수강 기록(currentEp>0)인 강의만 완료 처리
+  const todayPending = lecs.filter(l=>!(todaySessLecIds0.has(l.id)&&(l.currentEp||0)>0)).length;
   if(badge){
     badge.textContent = todayPending>0 ? '미완료 '+todayPending+'개' : '오늘 완료 ✓';
     badge.style.color = todayPending>0 ? 'var(--t2)' : 'var(--gr)';
@@ -2564,18 +2678,19 @@ function renderHomeLec(){
     const dotColor = subj==='형사법'?'#e05252':subj==='경찰학개론'?'#4b6bfb':'#0891b2';
     const isLast = i===lecs.length-1;
     // 오늘 요일 기반 목표 강의 수
-    const todayDow=['일','월','화','수','목','금','토'][new Date().getDay()];
-    const dayGoal = l.weekdays?.[todayDow] || 1;
+    const _dow=['일','월','화','수','목','금','토'][new Date().getDay()];
+    const dayGoal = l.weekdays?.[_dow] || 1;
     // 오늘 이미 완료한 세션 수 (sessions에서 오늘 해당 강의)
     const todaySessDone = D.sessions.filter(s=>s.lecId===l.id&&s.date===today()).length;
-    const todayDone = todaySessDone > 0; // 오늘 세션 기록 있으면 완료로 간주
+    // 오늘 세션 기록이 있고 실제로 수강한 강이 1개 이상인 경우에만 완료
+    const todayDone = todaySessDone > 0 && (l.currentEp||0) > 0;
     return `<div style="display:flex;align-items:center;gap:7px;padding:4px 0;${isLast?'':'border-bottom:0.5px solid var(--bd)'};${todayDone?'opacity:.55':''}">
       <div style="width:7px;height:7px;border-radius:50%;background:${dotColor};flex-shrink:0"></div>
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${todayDone?'text-decoration:line-through':''}">${esc(l.title)}</div>
         <div style="font-size:10px;color:var(--t3)">목표 ${dayGoal}강 · ${l.currentEp||0}/${l.totalEp}</div>
       </div>
-      <button onclick="quickLecDone('${l.id}')" style="background:${todayDone?'var(--gr-bg)':'var(--sur2)'};color:${todayDone?'var(--gr-txt)':'var(--t2)'};font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:pointer;white-space:nowrap">${todayDone?'완료':'완료'}</button>
+      <button data-lecid="${l.id}" data-done="${todayDone}" onclick="if(!this.dataset.done||this.dataset.done==='false')quickLecDone(this.dataset.lecid)" style="background:${todayDone?'var(--gr-bg)':'var(--sur2)'};color:${todayDone?'var(--gr-txt)':'var(--t2)'};font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:${todayDone?'default':'pointer'};white-space:nowrap">${todayDone?'완료':'미완료'}</button>
     </div>`;
   }).join('');
 }
@@ -2731,15 +2846,15 @@ function renderTodayProgress(){
   const todayStr = today();
   const todayDow = ['일','월','화','수','목','금','토'][new Date().getDay()];
 
-  // 오늘 수업 예정 강의: weekdays에 오늘 요일이 있는 강의 우선, 없으면 미완료 강의 최대 3개
-  const activeLecs = D.lectures.filter(l=>l.totalEp&&(l.currentEp||0)<l.totalEp);
-  const todayLecs = activeLecs.filter(l=>l.weekdays?.[todayDow]>0);
-  const lecPool = todayLecs.length > 0 ? todayLecs.slice(0,3) : activeLecs.slice(0,3);
+  // renderHomeLec과 동일한 강의 풀 사용
+  const lecPool = getTodayLecPool();
   const lecTotal = lecPool.length;
 
   // 오늘 완료한 강의: sessions에서 오늘 해당 강의 기록 있는 것
-  const todaySessLecIds = new Set(D.sessions.filter(s=>s.date===todayStr).map(s=>s.lecId));
-  const lecDone = lecPool.filter(l=>todaySessLecIds.has(l.id)).length;
+  const todaySessLecIds = new Set(
+    D.sessions.filter(s=>s.date===todayStr&&s.lecId).map(s=>s.lecId)
+  );
+  const lecDone = lecPool.filter(l=>todaySessLecIds.has(l.id)&&(l.currentEp||0)>0).length;
 
   // 오늘 복습
   const rvToday   = D.reviewLogs.filter(r=>r.scheduledAt===todayStr);
@@ -2765,7 +2880,7 @@ function renderTodayProgress(){
   const days=['일','월','화','수','목','금','토'];
   const now=new Date(); const dow=now.getDay();
   const weekStart=new Date(now); weekStart.setDate(now.getDate()-dow);
-  const weekDates=[]; for(let i=0;i<7;i++){const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);weekDates.push(d.toISOString().slice(0,10));}
+  const weekDates=[]; for(let i=0;i<7;i++){const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);weekDates.push(toLocalDate(d));}
   const weekSess = D.sessions.filter(s=>weekDates.includes(s.date));
   const todaySess= D.sessions.filter(s=>s.date===today());
   const todayMin = todaySess.reduce((a,s)=>a+(s.minutes||0),0);
@@ -2973,20 +3088,32 @@ function resetWNAddForm(){
   const imgZone = document.getElementById('wn-img-zone');
   if(imgZone){
     imgZone.innerHTML = `
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5" style="margin-bottom:6px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      <div style="font-size:12px;font-weight:600;color:var(--t2)">사진 또는 파일 업로드</div>
-      <div style="font-size:10px;color:var(--t3);margin-top:3px">JPG  PNG  PDF</div>
-      <input type="file" id="wn-img-input" accept="image/*" style="display:none" onchange="handleWNImage(this)">`;
-    imgZone.onclick = () => document.getElementById('wn-img-input').click();
+      <input type="file" id="wn-img-input" accept="image/*" style="display:none" onchange="handleWNImage(this)">
+      <input type="file" id="wn-img-cam-input" accept="image/*" capture="environment" style="display:none" onchange="handleWNImage(this)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button type="button" onclick="event.stopPropagation();document.getElementById('wn-img-cam-input').click()"
+          style="padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--t1);font-size:11px;font-weight:600;cursor:pointer">촬영</button>
+        <button type="button" onclick="event.stopPropagation();document.getElementById('wn-img-input').click()"
+          style="padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--t1);font-size:11px;font-weight:600;cursor:pointer">갤러리</button>
+      </div>
+      <div style="font-size:10px;color:var(--t3);margin-top:6px">JPG  PNG  스크린샷</div>`;
+    imgZone.onclick = null;
   }
   const ansZone = document.getElementById('wn-ans-img-zone');
   if(ansZone){
     ansZone.innerHTML = `
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5" style="margin-bottom:6px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-      <div style="font-size:12px;font-weight:600;color:var(--t2)">사진 또는 파일 업로드</div>
-      <div style="font-size:10px;color:var(--t3);margin-top:3px">JPG  PNG  PDF</div>
-      <input type="file" id="wn-ans-img-input" accept="image/*" style="display:none" onchange="handleWNAnsImage(this)">`;
-    ansZone.onclick = () => document.getElementById('wn-ans-img-input').click();
+      <input type="file" id="wn-ans-img-input" accept="image/*" style="display:none" onchange="handleWNAnsImage(this)">
+      <input type="file" id="wn-ans-img-cam-input" accept="image/*" capture="environment" style="display:none" onchange="handleWNAnsImage(this)">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button type="button" onclick="event.stopPropagation();document.getElementById('wn-ans-img-cam-input').click()"
+          style="padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--t1);font-size:11px;font-weight:600;cursor:pointer">촬영</button>
+        <button type="button" onclick="event.stopPropagation();document.getElementById('wn-ans-img-input').click()"
+          style="padding:5px 12px;border-radius:8px;border:1px solid var(--bd);background:var(--sur);color:var(--t1);font-size:11px;font-weight:600;cursor:pointer">갤러리</button>
+      </div>
+      <div style="font-size:10px;color:var(--t3);margin-top:6px">JPG  PNG  스크린샷</div>`;
+    ansZone.onclick = null;
   }
 }
 // ── WRONG NOTES ───────────────────────────────────────────
@@ -3850,7 +3977,7 @@ window.setScoreSubTab = (t,el) => {
     b.style.background='none'; b.style.color='var(--t3)'; b.style.fontWeight='600';
   });
   if(el){ el.style.background='var(--sur)'; el.style.color='var(--t1)'; el.style.fontWeight='700'; }
-  ['score-scores-sub','score-ai-sub','score-ox-sub'].forEach(id=>document.getElementById(id).style.display='none');
+  ['score-scores-sub','score-ai-sub'].forEach(id=>document.getElementById(id).style.display='none');
   document.getElementById('score-'+t+'-sub').style.display='block';
 };
 
@@ -3945,8 +4072,23 @@ window.generateOX = async () => {
   if (!requireGeminiKey()) return;
   const btn=document.getElementById('gen-ox-btn');
   btn.textContent='생성 중...'; btn.disabled=true;
-  const wns=D.wrongNotes.slice(0,10).map(w=>`[${w.subject}] ${w.topic}: ${w.question||w.answer||''}`).join('\n');
-  const prompt=`다음 오답 노트를 바탕으로 OX 퀴즈 3개를 JSON 배열로 만들어주세요. 형식: [{"q":"문제","a":true,"exp":"해설"},...]  JSON만 응답하세요.\n${wns||'경찰학 기본 문제'}`;
+  const wns=D.wrongNotes.slice(0,10).map(w=>`[${w.subject}|${w.topic}] ${w.question||w.answer||''}`).join('\n');
+  const prompt=`당신은 경찰 9급 공채 시험 전문 출제위원입니다.
+아래 오답 노트를 참고하여, 실제 경찰 공채·경찰간부 기출 문제 스타일의 OX 퀴즈 5개를 만들어 주세요.
+
+[필수 준수 사항]
+1. 반드시 명확한 정답이 존재하는 문제만 출제 (정답이 학설·해석에 따라 달라지는 문제 금지)
+2. 형사소송법·형법·헌법·경찰관직무집행법 등 현행 법령 또는 대법원·헌법재판소 확정 판례에 근거할 것
+3. 해설(exp)에 반드시 근거 법조문 또는 판례번호 포함 (예: 형사소송법 제212조, 대법원 2019도1234)
+4. 문제 문장은 시험 지문처럼 명확하고 간결하게 작성
+5. 동일한 내용을 정반대 정답으로 출제하지 말 것
+
+[출력 형식] JSON 배열만 출력, 설명 없음:
+[{"q":"문제","a":true,"exp":"해설 (근거: 법조문/판례)","subject":"과목","topic":"단원","basis":"형사소송법 제000조"}, ...]
+subject는 형사법/경찰학개론/헌법 중 하나.
+
+[오답 노트 참고 자료]
+${wns||'현행범 체포, 영장주의, 적법절차, 기본권 제한'}`;
   const raw=await callGemini(prompt);
   btn.textContent='✨ OX 퀴즈 생성'; btn.disabled=false;
   try {
@@ -3961,14 +4103,28 @@ function renderOXQuiz(){
   if(!_oxQuizList.length){ el.innerHTML=''; return; }
   el.innerHTML=_oxQuizList.map((q,i)=>`
     <div class="card mb-10" id="ox-card-${i}">
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px">
+        ${q.subject?`<span style="font-size:9px;background:${q.subject==='형사법'?'#fee2e2':q.subject==='경찰학개론'?'#eff6ff':'#e0f2fe'};color:${q.subject==='형사법'?'#e05252':q.subject==='경찰학개론'?'#4b6bfb':'#0891b2'};border-radius:5px;padding:1px 6px;font-weight:700">${esc(q.subject)}</span>`:''}
+        ${q.topic?`<span style="font-size:9px;color:var(--t3)">${esc(q.topic)}</span>`:''}
+      </div>
       <div class="fs-14 fw-600 mb-10">${esc(q.q)}</div>
+      <div style="font-size:10px;color:var(--t3);margin-bottom:8px">모르겠으면 넘어가도 돼요 &nbsp;<span onclick="skipOX(${i})" style="cursor:pointer;text-decoration:underline;color:var(--t3)">건너뛰기</span></div>
       <div class="flex gap-10" id="ox-btns-${i}">
         <button class="btn btn-secondary f1" style="font-size:20px" onclick="answerOX(${i},true,${q.a})">O</button>
         <button class="btn btn-secondary f1" style="font-size:20px" onclick="answerOX(${i},false,${q.a})">X</button>
       </div>
-      <div id="ox-result-${i}" style="display:none;margin-top:10px;font-size:13px;color:var(--t2)">${esc(q.exp||'')}</div>
+      <div id="ox-result-${i}" style="display:none;margin-top:10px">
+        <div style="font-size:13px;color:var(--t2);line-height:1.6">${esc(q.exp||'')}</div>
+        ${q.basis?`<div style="margin-top:5px;font-size:10px;background:var(--sur2);border-radius:5px;padding:3px 7px;color:var(--t3);display:inline-block">근거: ${esc(q.basis)}</div>`:''}
+      </div>
     </div>`).join('');
 }
+
+window.skipOX = (i) => {
+  const btns=document.getElementById('ox-btns-'+i);
+  btns.innerHTML=`<div style="font-size:12px;color:var(--t3);padding:4px 0">건너뜀</div>`;
+  document.getElementById('ox-result-'+i).style.display='block';
+};
 
 window.answerOX = (i,chosen,correct) => {
   _oxStats.total++;
@@ -3978,13 +4134,72 @@ window.answerOX = (i,chosen,correct) => {
   document.getElementById('ox-correct').textContent=_oxStats.correct;
   document.getElementById('ox-wrong').textContent=_oxStats.wrong;
   const btns=document.getElementById('ox-btns-'+i);
-  btns.innerHTML=`<div class="fs-14 fw-700" style="color:${right?'var(--gr)':'var(--re)'}">${right?'정답!':'오답'} (정답: ${correct?'O':'X'})</div>`;
+  const q=_oxQuizList[i];
+  btns.innerHTML=`
+    <div style="width:100%">
+      <div class="fs-14 fw-700" style="color:${right?'var(--gr)':'var(--re)'}">
+        ${right?'정답!':'오답'} (정답: ${correct?'O':'X'})
+      </div>
+      ${!right?`<button onclick="addOXToWrongNote(${i})" style="margin-top:8px;width:100%;padding:8px;background:var(--re);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer">
+        오답 노트에 추가
+      </button>`:''}
+    </div>`;
   document.getElementById('ox-result-'+i).style.display='block';
+};
+
+window.addOXToWrongNote = async (i) => {
+  const q = _oxQuizList[i];
+  if(!q) return;
+  const note = {
+    question: q.q,
+    answer:   `정답: ${q.a ? 'O' : 'X'}
+해설: ${q.exp||''}`,
+    // Gemini 응답의 subject/topic 사용, 없으면 폴백
+    subject:  (['형사법','경찰학개론','헌법'].includes(q.subject) ? q.subject : '형사법'),
+    topic:    (q.topic || 'OX 퀴즈'),
+    wrongType:'개념 부족',
+    reason:   'OX 퀴즈 오답',
+    reviewCount: 0,
+    nextReview: addDays(today(), 1),
+    createdAt: nowISO()
+  };
+  if(useLocal){
+    note.id='wn_'+Date.now();
+    D.wrongNotes.unshift(note); saveLocal(); renderWN();
+  } else {
+    await fsAdd('wrongNotes', note);
+  }
+  // 버튼을 "추가됨"으로 교체
+  const btns=document.getElementById('ox-btns-'+i);
+  const addBtn=btns.querySelector('button');
+  if(addBtn){ addBtn.textContent='추가됨 ✓'; addBtn.disabled=true; addBtn.style.background='var(--t3)'; }
+  showToast('오답 노트에 추가됐어요');
 };
 
 // ── DAILY RECORD ──────────────────────────────────────────
 function loadTodayDailyForm(){
-  const log=D.dailyLogs[today()]||{};
+  const todayStr = today();
+  // 날짜가 바뀌었으면 폼 먼저 초기화
+  if(window._dailyFormDate && window._dailyFormDate !== todayStr){
+    const bedEl2=document.getElementById('sleep-bed');
+    const wakeEl2=document.getElementById('sleep-wake');
+    const exEl2=document.getElementById('exercise-input');
+    if(bedEl2) bedEl2.value='';
+    if(wakeEl2) wakeEl2.value='';
+    if(exEl2) exEl2.value='';
+    ['쾌','보통','나쁨'].forEach(q=>{
+      const b=document.getElementById('qual-'+q);
+      if(!b) return;
+      b.classList.remove('on'); b.style.background=''; b.style.fontWeight=''; b.style.border='';
+    });
+    ['아침','점심','저녁'].forEach(m=>{
+      const b=document.getElementById('meal-'+m);
+      if(!b) return;
+      b.classList.remove('on'); b.style.background=''; b.style.fontWeight=''; b.style.border='';
+    });
+  }
+  window._dailyFormDate = todayStr;
+  const log=D.dailyLogs[todayStr]||{};
   const bedEl=document.getElementById('sleep-bed');
   const wakeEl=document.getElementById('sleep-wake');
   const exEl=document.getElementById('exercise-input');
@@ -4045,8 +4260,10 @@ window.toggleQual = (q,el) => {
   saveDailyQuick();
 };
 window.saveDailyFull = async () => {
+  const targetDate = window._editingDate || today();
+  window._editingDate = null;
   await saveDailyQuick();
-  showToast('오늘 기록이 저장됐어요');
+  showToast(targetDate===today()?'오늘 기록이 저장됐어요':targetDate.slice(5).replace('-','월 ')+'일 기록이 수정됐어요');
 };
 window.saveDailyQuick = async () => {
   const meals=[];
@@ -4081,7 +4298,7 @@ function renderManagePeriodMini(){
   const last=new Date(cfg.periodLast);
   let next=new Date(last); next.setDate(next.getDate()+cyc);
   while(next<new Date()) next.setDate(next.getDate()+cyc);
-  const diff=diffDays(next.toISOString().slice(0,10), today());
+  const diff=diffDays(toLocalDate(next), today());
   const mon=last.getMonth()+1;
   if(monthLbl) monthLbl.textContent=mon+'월 주기 요약';
   if(nextLbl)  nextLbl.textContent='다음 예상 D-'+diff;
@@ -4091,7 +4308,7 @@ function renderManagePeriodMini(){
   // 생리 기간 일별 (1~dur)
   for(let i=0;i<dur;i++){
     const d=new Date(last); d.setDate(d.getDate()+i);
-    const ds=d.toISOString().slice(0,10);
+    const ds=toLocalDate(d);
     const day=d.getDate();
     const isEnd = i>=dur-2;
     html+=`<div style="flex-shrink:0;text-align:center">
@@ -4165,7 +4382,7 @@ window.toggleRoutine=async(id,el)=>{
 
 // ── PERIOD CALENDAR ───────────────────────────────────────
 let _periodViewYear=new Date().getFullYear(), _periodViewMonth=new Date().getMonth();
-let _selectedPeriodDate=null, _periodSheetStatus='생리 중', _periodSheetFlow='중';
+
 
 function renderPeriodCal(){
   const el=document.getElementById('period-cal-body');
@@ -4182,7 +4399,7 @@ function renderPeriodCal(){
       const s=new Date(start); s.setDate(s.getDate()+cyc*n);
       for(let d=0;d<dur;d++){
         const dd=new Date(s); dd.setDate(dd.getDate()+d);
-        predicted.add(dd.toISOString().slice(0,10));
+        predicted.add(toLocalDate(dd));
       }
     }
   }
@@ -4239,20 +4456,83 @@ window.savePeriodCfg=async()=>{
   const data={periodLast:document.getElementById('period-last').value,periodCycle:document.getElementById('period-cycle').value,periodDur:document.getElementById('period-dur').value};
   await saveCfg(data); renderPeriodCal(); renderFocusForecast();
 };
+let _selectedPeriodDate, _periodSheetStatus='', _periodSheetFlow='', _periodSheetSymptoms=new Set();
 window.openPeriodDateSheet=d=>{
   _selectedPeriodDate=d;
-  document.getElementById('period-sheet-date').textContent=d;
+  const existing=D.periodLogs.find(p=>p.date===d);
+  // 날짜 표시 한국어 형식
+  const [y,mo,day]=d.split('-');
+  document.getElementById('period-sheet-date').textContent=`${parseInt(mo)}월 ${parseInt(day)}일 ${existing?'수정':'기록'}`;
+  document.getElementById('period-sheet-sub').textContent=existing?`기록됨: ${existing.status}${existing.flow?' · 출혈량 '+existing.flow:''}${(existing.symptoms||[]).length?' · '+(existing.symptoms||[]).join(', '):''}` : '생리 기록을 입력하세요';
+  // 삭제 버튼 표시
+  const delBtn=document.getElementById('period-delete-btn');
+  if(delBtn) delBtn.style.display=existing?'block':'none';
+  // 저장 버튼 텍스트
+  const saveBtn=document.getElementById('period-save-btn');
+  if(saveBtn) saveBtn.textContent=existing?'수정 저장':'저장';
+  // 상태 chips pre-fill
+  _periodSheetStatus=existing?.status||'';
+  _periodSheetSymptoms=new Set(existing?.symptoms||[]);
+  _periodSheetFlow=existing?.flow||'';
+  document.getElementById('period-status-chips').querySelectorAll('.chip').forEach(c=>{
+    c.classList.toggle('on', c.textContent===_periodSheetStatus);
+  });
+  document.getElementById('period-flow-chips').querySelectorAll('.chip').forEach(c=>{
+    c.classList.toggle('on', c.textContent===_periodSheetFlow);
+  });
+  document.getElementById('period-symptom-chips').querySelectorAll('.chip').forEach(c=>{
+    c.classList.toggle('on', _periodSheetSymptoms.has(c.textContent));
+  });
+  // 해당없음이면 출혈량/증상 숨김
+  document.getElementById('period-flow-group').style.display=_periodSheetStatus==='해당 없음'?'none':'';
   showSheet('period-date-sheet');
 };
-window.selectPeriodStatus=(s,el)=>{ document.querySelectorAll('#period-date-sheet .chip').filter=()=>{}; el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); _periodSheetStatus=s; };
+window.selectPeriodStatus=(s,el)=>{
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  _periodSheetStatus=s;
+  document.getElementById('period-flow-group').style.display=s==='해당 없음'?'none':'';
+};
 window.selectPeriodFlow=(f,el)=>{ el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('on')); el.classList.add('on'); _periodSheetFlow=f; };
+window.togglePeriodSymptom=(s,el)=>{
+  el.classList.toggle('on');
+  if(el.classList.contains('on')) _periodSheetSymptoms.add(s);
+  else _periodSheetSymptoms.delete(s);
+};
+window.deletePeriodDate=async()=>{
+  const d=_selectedPeriodDate;
+  if(useLocal){
+    D.periodLogs=D.periodLogs.filter(p=>p.date!==d);
+    saveLocal();
+  } else {
+    const rec=D.periodLogs.find(p=>p.date===d);
+    if(rec?.id) await fsDel('periodLogs',rec.id);
+  }
+  closeSheet('period-date-sheet');
+  renderPeriodCal();
+  showToast('삭제됐어요');
+};
 window.savePeriodDate=async()=>{
   const d=_selectedPeriodDate;
-  if(_periodSheetStatus==='해당 없음'){ closeSheet('period-date-sheet'); return; }
-  const data={date:d,status:_periodSheetStatus,flow:_periodSheetFlow};
+  if(!_periodSheetStatus){ showToast('상태를 선택해주세요'); return; }
+  if(_periodSheetStatus==='해당 없음'){
+    // 해당없음은 기존 기록 삭제 처리
+    if(useLocal){
+      D.periodLogs=D.periodLogs.filter(p=>p.date!==d);
+      saveLocal();
+    } else {
+      const rec=D.periodLogs.find(p=>p.date===d);
+      if(rec?.id) await fsDel('periodLogs',rec.id);
+    }
+    closeSheet('period-date-sheet');
+    renderPeriodCal();
+    showToast('기록이 없음으로 처리됐어요');
+    return;
+  }
+  const data={date:d,status:_periodSheetStatus,flow:_periodSheetFlow,symptoms:[..._periodSheetSymptoms]};
   if(useLocal){
-    const existing=D.periodLogs.findIndex(p=>p.date===d);
-    if(existing>=0) D.periodLogs[existing]={...D.periodLogs[existing],...data};
+    const idx=D.periodLogs.findIndex(p=>p.date===d);
+    if(idx>=0) D.periodLogs[idx]={...D.periodLogs[idx],...data};
     else { data.id='per_'+Date.now(); data.createdAt=nowISO(); D.periodLogs.push(data); }
     saveLocal();
   } else { await fsAdd('periodLogs',data); }
@@ -4275,7 +4555,7 @@ async function renderPeriodPattern(){
   for(let i=0;i<sorted.length;i++){
     if(i===0) continue;
     const diff=diffDays(sorted[i].date, sorted[i-1].date);
-    if(diff>10) cycles.push({start:sorted[i].date, dur:diff});
+    if(diff>10) cycles.push({start:sorted[i].date, dur:diff, symptoms:sorted[i].symptoms||[]});
   }
   const recentCycles=cycles.slice(-6).reverse();
   // 증상 집계
@@ -4337,7 +4617,7 @@ async function renderPeriodPattern(){
           <div style="display:flex;align-items:center;padding:8px 0;${i<arr.length-1?'border-bottom:0.5px solid var(--bd)':''}">
             <div style="flex:2;font-size:12px;color:var(--t1)">${c.start.slice(5).replace('-','월 ')}일</div>
             <div style="flex:1;text-align:center;font-size:12px;color:var(--t2)">${c.dur}일</div>
-            <div style="flex:2;display:flex;gap:3px;flex-wrap:wrap">${(topSyms.slice(0,2)||[]).map(([s])=>`<span style="font-size:9px;background:var(--am-bg);color:var(--am-txt);border-radius:4px;padding:1px 5px">${s}</span>`).join('')}</div>
+            <div style="flex:2;display:flex;gap:3px;flex-wrap:wrap">${(c.symptoms||[]).slice(0,2).map(s=>`<span style="font-size:9px;background:var(--am-bg);color:var(--am-txt);border-radius:4px;padding:1px 5px">${s}</span>`).join('')}</div>
           </div>`).join('')}
       </div>`:'<div style="text-align:center;padding:20px;font-size:12px;color:var(--t3)">기록이 부족해요</div>'}
     </div>`;
@@ -4349,6 +4629,186 @@ async function renderPeriodPattern(){
   const bodyEl=document.getElementById('pattern-ai-body');
   if(bodyEl) bodyEl.textContent=ai||'생리 시작 2~3일 전에 집중력 저하가 반복적으로 나타나요. 이 기간엔 암기보다 강의 청취 위주로 공부하는 게 효과적이에요.';
 }
+
+// ── DAILY LOG HISTORY ────────────────────────────────────
+function renderDailyLog(){
+  const el = document.getElementById('daily-log-body');
+  if(!el) return;
+
+  // dailyLogs를 날짜 내림차순 정렬
+  const entries = Object.entries(D.dailyLogs)
+    .sort((a,b) => b[0] > a[0] ? 1 : -1)
+    .slice(0, 60); // 최근 60일
+
+  if(!entries.length){
+    el.innerHTML = `<div style="text-align:center;padding:48px 0;color:var(--t3);font-size:13px">기록이 없어요</div>`;
+    return;
+  }
+
+  const rows = entries.map(([date, log]) => {
+    const [y,m,d] = date.split('-');
+    const dateLabel = `${parseInt(m)}월 ${parseInt(d)}일`;
+    const dow = ['일','월','화','수','목','금','토'][new Date(date).getDay()];
+    const isToday = date === today();
+    const isSun = new Date(date).getDay() === 0;
+    const isSat = new Date(date).getDay() === 6;
+
+    // 수면 시간
+    const sh = calcSh(log.sleepBed, log.sleepWake);
+    const sleepTxt = sh ? sh.toFixed(1)+'h' : '-';
+    const sleepColor = sh ? (sh>=7?'var(--gr)':sh>=6?'var(--am)':'var(--re)') : 'var(--t3)';
+
+    // 식사
+    const meals = log.meals || [];
+    const mealTxt = meals.length ? meals.join(' · ') : '-';
+
+    // 운동
+    const exTxt = log.exercise ? log.exercise.slice(0,20)+(log.exercise.length>20?'…':'') : '-';
+
+    // 수면 질
+    const qualTxt = log.sleepQ || '';
+    const qualColor = qualTxt==='쾌'?'var(--gr)':qualTxt==='나쁨'?'var(--re)':'var(--t2)';
+
+    return `
+    <div style="background:var(--sur);border-radius:12px;border:0.5px solid var(--bd);padding:12px 14px;margin-bottom:8px${isToday?';border-color:var(--t1)':''}">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="font-size:13px;font-weight:700;color:var(--t1)">${dateLabel}</span>
+          <span style="font-size:11px;color:${isSun?'var(--re)':isSat?'var(--pol)':'var(--t3)'}">${dow}</span>
+          ${isToday?'<span style="font-size:9px;background:var(--t1);color:var(--bg);border-radius:4px;padding:1px 5px;font-weight:700">오늘</span>':''}
+        </div>
+        <button onclick="openDailyLogEdit('${date}')"
+          style="font-size:11px;color:var(--t2);background:var(--sur2);border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:pointer">
+          수정
+        </button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <div style="background:var(--sur2);border-radius:8px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--t3);margin-bottom:3px">수면</div>
+          <div style="font-size:13px;font-weight:700;color:${sleepColor}">${sleepTxt}</div>
+          ${qualTxt?`<div style="font-size:10px;color:${qualColor};margin-top:1px">${qualTxt}</div>`:''}
+        </div>
+        <div style="background:var(--sur2);border-radius:8px;padding:8px 10px">
+          <div style="font-size:10px;color:var(--t3);margin-bottom:3px">식사</div>
+          <div style="font-size:11px;font-weight:600;color:var(--t1)">${mealTxt}</div>
+        </div>
+        <div style="background:var(--sur2);border-radius:8px;padding:8px 10px;grid-column:1/-1">
+          <div style="font-size:10px;color:var(--t3);margin-bottom:3px">운동</div>
+          <div style="font-size:11px;color:var(--t1)">${exTxt}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  el.innerHTML = rows.join('');
+}
+
+window.openDailyLogEdit = (date) => {
+  const log = D.dailyLogs[date] || {};
+  window._editingDate = date;
+
+  // 패널 제목
+  const [,m,d] = date.split('-');
+  document.getElementById('daily-edit-title').textContent = `${parseInt(m)}월 ${parseInt(d)}일 수정`;
+
+  // 수면
+  const bed = document.getElementById('edit-sleep-bed');
+  const wake = document.getElementById('edit-sleep-wake');
+  if(bed) bed.value = log.sleepBed || '';
+  if(wake) wake.value = log.sleepWake || '';
+
+  // 수면 질
+  ['쾌','보통','나쁨'].forEach(q=>{
+    const b = document.getElementById('edit-qual-'+q);
+    if(!b) return;
+    const on = q === log.sleepQ;
+    b.classList.toggle('on', on);
+    b.style.background = on ? 'var(--t1)' : '';
+    b.style.fontWeight = on ? '700' : '';
+    b.style.border = on ? '0.5px solid var(--t1)' : '';
+  });
+
+  // 식사
+  ['아침','점심','저녁'].forEach(m=>{
+    const b = document.getElementById('edit-meal-'+m);
+    if(!b) return;
+    const on = (log.meals||[]).includes(m);
+    b.classList.toggle('on', on);
+    b.style.background = on ? 'var(--t1)' : '';
+    b.style.fontWeight = on ? '700' : '';
+    b.style.border = on ? '0.5px solid var(--t1)' : '';
+  });
+
+  // 운동
+  const ex = document.getElementById('edit-exercise');
+  if(ex) ex.value = log.exercise || '';
+
+  // 패널 표시
+  document.getElementById('daily-log-edit-panel').style.display = 'block';
+};
+
+window.closeDailyLogEdit = () => {
+  document.getElementById('daily-log-edit-panel').style.display = 'none';
+  window._editingDate = null;
+};
+
+window.toggleEditQual = (q, el) => {
+  ['쾌','보통','나쁨'].forEach(n=>{
+    const b = document.getElementById('edit-qual-'+n);
+    if(!b) return;
+    b.classList.remove('on');
+    b.style.background=''; b.style.fontWeight=''; b.style.border='';
+  });
+  el.classList.add('on');
+  el.style.background='var(--t1)'; el.style.fontWeight='700'; el.style.border='0.5px solid var(--t1)';
+};
+
+window.toggleEditMeal = (m, el) => {
+  el.classList.toggle('on');
+  const on = el.classList.contains('on');
+  el.style.background = on ? 'var(--t1)' : '';
+  el.style.fontWeight = on ? '700' : '';
+  el.style.border = on ? '0.5px solid var(--t1)' : '';
+};
+
+window.saveDailyLogEdit = async () => {
+  const date = window._editingDate;
+  if(!date) return;
+  const meals = ['아침','점심','저녁'].filter(m=>{
+    const b=document.getElementById('edit-meal-'+m);
+    return b?.classList.contains('on');
+  });
+  const sleepQ = ['쾌','보통','나쁨'].find(q=>document.getElementById('edit-qual-'+q)?.classList.contains('on')) || '';
+  const data = {
+    sleepBed:  document.getElementById('edit-sleep-bed')?.value  || '',
+    sleepWake: document.getElementById('edit-sleep-wake')?.value || '',
+    sleepQ,
+    meals,
+    exercise:  document.getElementById('edit-exercise')?.value   || '',
+  };
+  // 기존 데이터와 병합 (루틴체크 등 다른 필드 보존)
+  D.dailyLogs[date] = { ...(D.dailyLogs[date]||{}), ...data };
+  if(useLocal){ saveLocal(); }
+  else { await fsSet('dailyLogs', date, D.dailyLogs[date]); }
+  closeDailyLogEdit();
+  renderDailyLog();
+  showToast('수정됐어요');
+};
+
+window.deleteDailyLog = async () => {
+  const date = window._editingDate;
+  if(!date) return;
+  if(useLocal){
+    delete D.dailyLogs[date];
+    saveLocal();
+  } else {
+    await fsSet('dailyLogs', date, null);
+    delete D.dailyLogs[date];
+  }
+  closeDailyLogEdit();
+  renderDailyLog();
+  showToast('삭제됐어요');
+};
 
 // ── SETTINGS ─────────────────────────────────────────────
 function renderSettings(){
@@ -4632,7 +5092,8 @@ window.setStudySubTab = (t,el) => {
   if(el){ el.style.background='var(--sur)'; el.style.color='var(--t1)'; el.style.fontWeight='700'; }
   document.getElementById('study-wn').style.display    = t==='wn'?'block':'none';
   document.getElementById('study-review').style.display= t==='review'?'block':'none';
-  document.getElementById('study-add-btn').onclick = t==='wn' ? ()=>showScreen('wn-add') : null;
+  const oxEl=document.getElementById('study-ox'); if(oxEl) oxEl.style.display= t==='ox'?'block':'none';
+  document.getElementById('study-add-btn').onclick = t==='wn' ? ()=>showScreen('wn-add') : t==='ox' ? ()=>generateOX() : null;
 };
 
 // ── NAV ───────────────────────────────────────────────────
@@ -4660,7 +5121,8 @@ const screenMap = {
   'wn-add':'fs-wn-add', 'wn-detail':'fs-wn-detail', 'wn-edit':'fs-wn-edit',
   'retry':'fs-retry', 'score-add':'fs-score-add', 'score-edit':'fs-score-edit',
   'period-cal':'fs-period-cal', 'period-pattern':'fs-period-pattern', 'settings':'fs-settings',
-  'lec-complete':'fs-lec-complete', 'report':'fs-report', 'score-type-add':'fs-score-type-add', 'notif':'fs-notif'
+  'lec-complete':'fs-lec-complete', 'report':'fs-report', 'score-type-add':'fs-score-type-add', 'notif':'fs-notif',
+  'daily-log':'fs-daily-log'
 };
 window.showScreen = name => {
   const id=screenMap[name]; if(!id) return;
@@ -4675,6 +5137,7 @@ window.showScreen = name => {
   if(name==='period-pattern') renderPeriodPattern();
   if(name==='settings') renderSettings();
   if(name==='wn-add') resetWNAddForm();
+  if(name==='daily-log') renderDailyLog();
 };
 window.closeScreen = name => { const id=screenMap[name]; if(id) document.getElementById(id).classList.remove('show'); };
 
@@ -4682,6 +5145,17 @@ window.closeScreen = name => { const id=screenMap[name]; if(id) document.getElem
 window.showSheet = id => document.getElementById(id).classList.add('show');
 window.closeSheet = id => document.getElementById(id).classList.remove('show');
 // tap outside to close
+// 날짜 변경 감지 — 화면 복귀 시 날짜가 바뀌었으면 폼 리셋
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible'){
+    if(window._dailyFormDate && window._dailyFormDate !== today()){
+      loadTodayDailyForm();
+      renderTodayProgress();
+      renderHomeLec();
+    }
+  }
+});
+
 document.querySelectorAll('.modal-bg').forEach(bg=>{
   bg.addEventListener('click', e=>{ if(e.target===bg) bg.classList.remove('show'); });
 });
@@ -4748,7 +5222,7 @@ window.generateReport = async () => {
   const days = ['일','월','화','수','목','금','토'];
   const now = new Date(); const dow = now.getDay();
   const weekStart = new Date(now); weekStart.setDate(now.getDate()-dow);
-  const weekDates = []; for(let i=0;i<7;i++){const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);weekDates.push(d.toISOString().slice(0,10));}
+  const weekDates = []; for(let i=0;i<7;i++){const d=new Date(weekStart);d.setDate(weekStart.getDate()+i);weekDates.push(toLocalDate(d));}
   const weekSess = D.sessions.filter(s=>weekDates.includes(s.date));
   const byDay = {}; weekSess.forEach(s=>{byDay[s.date]=(byDay[s.date]||0)+(s.minutes||0);});
   const weekMin = weekSess.reduce((a,s)=>a+(s.minutes||0),0);
