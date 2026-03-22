@@ -1,0 +1,22 @@
+# Firebase
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+.firebaserc
+
+# Functions 환경변수 - 절대 커밋 금지
+functions/.env
+functions/.env.*
+functions/.secret.local
+
+# Node
+functions/node_modules/
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
