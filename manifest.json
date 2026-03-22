@@ -2,7 +2,7 @@
   "name": "PassTrack",
   "short_name": "PassTrack",
   "description": "경찰 9급 공채 수험생 학습 관리 앱",
-  "start_url": "./passtrack-firebase.html",
+  "start_url": "/passtrack/passtrack-firebase.html",
   "display": "standalone",
   "background_color": "#f5f6fa",
   "theme_color": "#1a1d23",
@@ -18,7 +18,5 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "categories": ["education", "productivity"],
-  "lang": "ko"
+  ]
 }

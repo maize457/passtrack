@@ -3,8 +3,7 @@
     "public": ".",
     "ignore": [
       "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+      "**/.*"
     ],
     "rewrites": [
       {
@@ -14,12 +13,8 @@
     ],
     "headers": [
       {
-        "source": "/sw.js",
+        "source": "**/*.html",
         "headers": [
-          {
-            "key": "Service-Worker-Allowed",
-            "value": "/"
-          },
           {
             "key": "Cache-Control",
             "value": "no-cache"
@@ -27,8 +22,5 @@
         ]
       }
     ]
-  },
-  "firestore": {
-    "rules": "firestore.rules"
   }
 }
