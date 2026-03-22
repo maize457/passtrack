@@ -380,8 +380,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .review-badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--sur2);color:var(--t3);white-space:nowrap}
 
 /* ===== WRONG NOTE DETAIL ===== */
-.wnd-question{background:var(--sur2);border-radius:11px;padding:13px;font-size:13px;line-height:1.7;margin-bottom:10px}
-.wnd-answer{background:var(--gr-bg);border-radius:11px;padding:13px;font-size:13px;line-height:1.7;color:var(--gr-txt)}
+.wnd-question{background:var(--sur2);border-radius:11px;padding:13px;font-size:13px;line-height:1.7;margin-bottom:10px;word-break:break-word}
+.wnd-answer{background:var(--gr-bg);border-radius:11px;padding:13px;font-size:13px;line-height:1.7;color:var(--gr-txt);word-break:break-word}
 .wnd-answer-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .review-sched{display:flex;flex-direction:column;gap:6px;margin-top:10px}
 .review-sched-item{display:flex;align-items:center;gap:8px;font-size:12px}
@@ -3217,9 +3217,9 @@ window.openWNDetail = id => {
       <span class="fs-12 col-t3">${w.subject||''}</span>
     </div>
     <div class="form-label mb-10">문제</div>
-    <div class="wnd-question">${esc(w.question||'문제 내용 없음')}</div>
+    <div class="wnd-question">${escNL(w.question||'문제 내용 없음')}</div>
     <div class="form-label mb-10">정답/해설</div>
-    <div class="wnd-answer">${esc(w.answer||'해설 없음')}</div>
+    <div class="wnd-answer">${escNL(w.answer||'해설 없음')}</div>
     <div class="form-label mt-14 mb-10">복습 일정</div>
     <div class="review-sched">
       ${logs.map((r,i)=>`
@@ -3586,7 +3586,7 @@ function renderRetry(){
   const pct = Math.round(_retryIdx/_retryList.length*100);
   document.getElementById('retry-prog-bar').style.width = pct+'%';
   document.getElementById('retry-question-box').textContent = w.question||w.topic||'문제 없음';
-  document.getElementById('retry-answer-content').textContent = w.answer||'해설 없음';
+  document.getElementById('retry-answer-content').innerHTML = escNL(w.answer||'해설 없음');
   document.getElementById('retry-answer-box').style.display='none';
   document.getElementById('retry-q-actions').style.display='block';
 }
@@ -5278,6 +5278,24 @@ window.generateReport = async () => {
 };
 
 function esc(str){ const d=document.createElement('div'); d.textContent=str||''; return d.innerHTML; }
+// 오답 상세용: 줄바꿈 + 선지번호 앞 개행 처리
+function escNL(str){
+  if(!str) return '';
+  const d=document.createElement('div');
+  d.textContent=str;
+  let s=d.innerHTML;
+  // \n → <br>
+  s=s.replace(/\n/g,'<br>');
+  // 선지 번호(① ② ③ ④ ⑤ ⑥) 앞에 줄바꿈 추가 (이미 <br> 없는 경우만)
+  s=s.replace(/(?<!<br>)([①②③④⑤⑥⑦⑧⑨])/g,'<br>$1');
+  // Q. 또는 숫자. 형식 앞 줄바꿈
+  s=s.replace(/(?<!<br>)(Q\.|[0-9]+\.)/g,'<br>$1');
+  // 연속 <br> 정리
+  s=s.replace(/(<br>){3,}/g,'<br><br>');
+  // 맨 앞 <br> 제거
+  s=s.replace(/^(<br>)+/,'');
+  return s;
+}
 
 // ── INITIAL RENDER ────────────────────────────────────────
 // Init bnav active icon color
