@@ -197,6 +197,8 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
   pointer-events:none;
 }
 .fs-screen.show{transform:translateY(0);pointer-events:all}
+#fs-settings{scrollbar-width:none;-ms-overflow-style:none}
+#fs-settings::-webkit-scrollbar{display:none}
 .fs-header {
   display:flex;align-items:center;gap:10px;
   padding:16px 18px 12px;position:sticky;top:0;background:var(--bg);z-index:5;
@@ -226,7 +228,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ===== SUBJECT DOTS ===== */
-.dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot{width:3px;height:16px;border-radius:2px;flex-shrink:0}
 .dot-형사법,.dot-crim{background:var(--crim)}
 .dot-경찰학개론,.dot-pol{background:var(--pol)}
 .dot-헌법,.dot-con{background:var(--con)}
@@ -234,7 +236,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 /* ===== SUBJECT LEFT BAR ===== */
 
 /* ===== SYNC DOT ===== */
-.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--gr)}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--gr)}
 .sync-dot.syncing{background:var(--am);animation:pulse 1.2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
@@ -340,7 +342,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .pomo-time{font-size:44px;font-weight:800;letter-spacing:-2px;font-variant-numeric:tabular-nums}
 .pomo-phase{font-size:14px;font-weight:600;margin-bottom:8px;letter-spacing:.5px}
 .pomo-sets{display:flex;gap:8px;margin:14px 0}
-.pomo-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.25)}
+.pomo-dot{width:3px;height:18px;border-radius:2px;background:rgba(255,255,255,.25)}
 .pomo-dot.done{background:#fff}
 .pomo-actions{display:flex;gap:12px;margin-top:20px}
 .pomo-btn {
@@ -443,7 +445,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .cal-day.empty{pointer-events:none}
 .cal-legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
 .cal-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--t2)}
-.cal-legend-dot{width:10px;height:10px;border-radius:50%}
+.cal-legend-dot{width:3px;height:18px;border-radius:2px}
 
 /* ===== SETTINGS ===== */
 .setting-group{margin-bottom:4px}
@@ -484,7 +486,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
 .ob-desc{font-size:14px;color:var(--t2);line-height:1.6;margin-bottom:24px}
 .ob-actions{margin-top:auto;padding-bottom:calc(28px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px}
 .ob-step-dots{display:flex;justify-content:center;gap:6px;padding:16px}
-.ob-step-dot{width:6px;height:6px;border-radius:50%;background:var(--sur3)}
+.ob-step-dot{width:3px;height:14px;border-radius:2px;background:var(--sur3)}
 .ob-step-dot.active{background:var(--t1);width:20px;border-radius:3px}
 
 /* ===== EMPTY STATE ===== */
@@ -601,12 +603,9 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
           <div style="font-size:9px;color:var(--t3);margin-bottom:2px">이번 주</div>
           <div style="font-size:14px;font-weight:700;color:var(--t1);line-height:1" id="home-week-min-lbl">0<span style="font-size:10px;font-weight:400;color:var(--t2)">m</span></div>
         </div>
-        <div style="display:flex;align-items:center;gap:4px">
-          <div class="sync-dot" id="sync-dot"></div>
-          <button style="background:none;border:none;cursor:pointer;padding:4px;color:var(--t2)" onclick="openSearch()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          </button>
-        </div>
+        <button style="background:none;border:none;cursor:pointer;padding:4px;color:var(--t2)" onclick="openSearch()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
       </div>
     </div>
 
@@ -739,12 +738,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
 
     <!-- WN sub -->
     <div id="study-wn">
-      <div class="chip-row" style="padding:10px 18px" id="wn-subj-filter">
-        <button class="chip on" onclick="setWNFilter('subj','전체',this)">전체</button>
-        <button class="chip" onclick="setWNFilter('subj','형사법',this)">형사법</button>
-        <button class="chip" onclick="setWNFilter('subj','경찰학개론',this)">경찰학개론</button>
-        <button class="chip" onclick="setWNFilter('subj','헌법',this)">헌법</button>
-      </div>
+      <div class="chip-row" style="padding:10px 18px" id="wn-subj-filter"></div>
       <div class="chip-row" style="padding:0 18px 10px" id="wn-type-filter">
         <button class="chip on" onclick="setWNFilter('type','전체',this)">전체 유형</button>
         <button class="chip" onclick="setWNFilter('type','개념 부족',this)">개념 부족</button>
@@ -804,12 +798,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
         <button class="chip" onclick="setScoreFilter('진도별',this)">진도별</button>
       </div>
       <!-- 과목 선택 칩 (평균/과목별 전환) -->
-      <div class="chip-row" style="padding:0 14px 10px" id="score-subj-filter">
-        <button class="chip on" id="subj-avg-btn" onclick="setSubjFilter('avg',this)">평균</button>
-        <button class="chip" id="subj-crim-btn" onclick="setSubjFilter('형사법',this)" style="display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:#e05252;display:inline-block"></span>형사법</button>
-        <button class="chip" id="subj-pol-btn" onclick="setSubjFilter('경찰학개론',this)" style="display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:#4b6bfb;display:inline-block"></span>경찰학</button>
-        <button class="chip" id="subj-con-btn" onclick="setSubjFilter('헌법',this)" style="display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:#0891b2;display:inline-block"></span>헌법</button>
-      </div>
+      <div class="chip-row" style="padding:0 14px 10px" id="score-subj-filter"></div>
       <!-- graph -->
       <div class="scores-graph-wrap">
         <div class="card" style="padding:14px">
@@ -1044,11 +1033,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     </div>
     <div class="form-group">
       <div class="form-label">과목</div>
-      <select class="form-input" id="lec-subject">
-        <option value="형사법">형사법</option>
-        <option value="경찰학개론">경찰학개론</option>
-        <option value="헌법">헌법</option>
-      </select>
+      <select class="form-input" id="lec-subject"></select>
     </div>
     <div class="form-group">
       <div class="form-label">총 강의 수 *</div>
@@ -1120,11 +1105,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     </div>
     <div class="form-group">
       <div class="form-label">과목</div>
-      <select class="form-input" id="lec-edit-subject">
-        <option value="형사법">형사법</option>
-        <option value="경찰학개론">경찰학개론</option>
-        <option value="헌법">헌법</option>
-      </select>
+      <select class="form-input" id="lec-edit-subject"></select>
     </div>
     <div class="form-group">
       <div class="form-label">총 강의 수 *</div>
@@ -1319,11 +1300,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     <!-- 과목 -->
     <div class="form-group">
       <div class="form-label">과목 *</div>
-      <select class="form-input" id="wn-subject">
-        <option value="형사법">형사법</option>
-        <option value="경찰학개론">경찰학개론</option>
-        <option value="헌법">헌법</option>
-      </select>
+      <select class="form-input" id="wn-subject"></select>
     </div>
     <!-- 단원/주제 -->
     <div class="form-group">
@@ -1470,21 +1447,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       <input type="date" class="form-input" id="score-date">
     </div>
     <div class="form-label" style="margin-bottom:8px">과목별 점수</div>
-    <div class="form-group" style="display:flex;align-items:center;gap:10px">
-      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t2);width:80px"><span style="width:8px;height:8px;border-radius:50%;background:#e05252;display:inline-block"></span>형사법</span>
-      <input type="number" class="form-input" id="score-crim" min="0" max="100" placeholder="0" style="flex:1">
-      <span style="font-size:12px;color:var(--t3);white-space:nowrap">/ 100</span>
-    </div>
-    <div class="form-group" style="display:flex;align-items:center;gap:10px">
-      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t2);width:80px"><span style="width:8px;height:8px;border-radius:50%;background:#4b6bfb;display:inline-block"></span>경찰학</span>
-      <input type="number" class="form-input" id="score-pol" min="0" max="100" placeholder="0" style="flex:1">
-      <span style="font-size:12px;color:var(--t3);white-space:nowrap">/ 100</span>
-    </div>
-    <div class="form-group" style="display:flex;align-items:center;gap:10px">
-      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t2);width:80px"><span style="width:8px;height:8px;border-radius:50%;background:#0891b2;display:inline-block"></span>헌법</span>
-      <input type="number" class="form-input" id="score-con" min="0" max="50" placeholder="0" style="flex:1">
-      <span style="font-size:12px;color:var(--t3);white-space:nowrap">/ 50</span>
-    </div>
+    <div id="score-inputs-add"></div>
     
   </div>
   <div class="fs-footer">
@@ -1517,18 +1480,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       <div class="form-label">시험일 *</div>
       <input type="date" class="form-input" id="score-edit-date">
     </div>
-    <div class="form-group">
-      <div class="form-label">형사법</div>
-      <input type="number" class="form-input" id="score-edit-crim" min="0" max="100">
-    </div>
-    <div class="form-group">
-      <div class="form-label">경찰학개론</div>
-      <input type="number" class="form-input" id="score-edit-pol" min="0" max="100">
-    </div>
-    <div class="form-group">
-      <div class="form-label">헌법 (0~50)</div>
-      <input type="number" class="form-input" id="score-edit-con" min="0" max="50">
-    </div>
+    <div id="score-inputs-edit"></div>
     <button class="btn btn-danger btn-full" onclick="deleteScoreConfirm()">이 기록 삭제</button>
   </div>
   <div class="fs-footer">
@@ -1608,21 +1560,21 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     <div class="form-label" style="margin-bottom:8px">과목 구성</div>
     <div id="st-subjects-list" style="margin-bottom:10px">
       <div class="st-subject-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="width:8px;height:8px;border-radius:50%;background:#e05252;flex-shrink:0"></span>
+        <span style="width:3px;height:16px;border-radius:2px;background:#e05252;flex-shrink:0"></span>
         <input type="text" class="form-input" value="형사법" style="flex:1">
         <input type="number" class="form-input" value="100" min="1" style="width:60px;text-align:center" placeholder="만점">
         <span style="font-size:12px;color:var(--t3)">점</span>
         <button onclick="removeSTSubject(this)" style="background:none;border:none;cursor:pointer;color:var(--t3);padding:2px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <div class="st-subject-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="width:8px;height:8px;border-radius:50%;background:#4b6bfb;flex-shrink:0"></span>
+        <span style="width:3px;height:16px;border-radius:2px;background:#4b6bfb;flex-shrink:0"></span>
         <input type="text" class="form-input" value="경찰학개론" style="flex:1">
         <input type="number" class="form-input" value="100" min="1" style="width:60px;text-align:center" placeholder="만점">
         <span style="font-size:12px;color:var(--t3)">점</span>
         <button onclick="removeSTSubject(this)" style="background:none;border:none;cursor:pointer;color:var(--t3);padding:2px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       <div class="st-subject-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-        <span style="width:8px;height:8px;border-radius:50%;background:#0891b2;flex-shrink:0"></span>
+        <span style="width:3px;height:16px;border-radius:2px;background:#0891b2;flex-shrink:0"></span>
         <input type="text" class="form-input" value="헌법" style="flex:1">
         <input type="number" class="form-input" value="100" min="1" style="width:60px;text-align:center" placeholder="만점">
         <span style="font-size:12px;color:var(--t3)">점</span>
@@ -1882,10 +1834,11 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
 <!-- PASS RECORD ADD -->
 <div id="fs-pass-add" class="fs-screen">
   <div class="fs-header">
-    <button class="icon-btn" onclick="closeScreen('pass-add')">
+    <button class="icon-btn" onclick="closePassAddScreen()">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
-    <div class="fs-header-title" id="pass-add-title">인증 추가</div>
+    <div class="fs-header-title" id="pass-add-title">기록 추가</div>
+    <button id="pass-delete-btn" onclick="deleteCurrentPassRecord()" style="display:none;background:none;border:none;cursor:pointer;color:var(--re);padding:4px;margin-left:auto"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg></button>
   </div>
   <div class="fs-body">
     <input type="hidden" id="pass-edit-id">
@@ -1893,12 +1846,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     <div class="form-group">
       <div class="form-label">과목 *</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap" id="pass-subject-chips">
-        <button class="chip on" onclick="selectPassSubject('한국사',this)">한국사</button>
-        <button class="chip" onclick="selectPassSubject('영어',this)">영어</button>
-        <button class="chip" onclick="selectPassSubject('형사법',this)">형사법</button>
-        <button class="chip" onclick="selectPassSubject('헌법',this)">헌법</button>
-        <button class="chip" onclick="selectPassSubject('경찰학개론',this)">경찰학개론</button>
-        <button class="chip" onclick="selectPassSubject('직접 입력',this)">직접 입력</button>
+        <!-- renderPassSubjectChips()가 채움 -->
       </div>
       <input type="text" class="form-input" id="pass-subject-custom" placeholder="과목명 직접 입력"
         style="display:none;margin-top:8px">
@@ -1945,13 +1893,61 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     </div>
   </div>
   <div class="fs-footer">
-    <button class="btn btn-secondary f1" onclick="closeScreen('pass-add')">취소</button>
+    <button class="btn btn-secondary f1" onclick="closePassAddScreen()">취소</button>
     <button class="btn btn-primary f1" onclick="savePassRecord()">저장</button>
   </div>
 </div>
 
 <!-- SETTINGS -->
 <div id="fs-settings" class="fs-screen">
+  <!-- 과목 편집 인라인 패널 -->
+  <div id="subject-edit-panel" style="display:none;position:absolute;inset:0;z-index:10;background:var(--bg);overflow-y:auto;padding-bottom:80px">
+    <div style="position:sticky;top:0;background:var(--bg);padding:14px 16px 10px;display:flex;align-items:center;gap:10px;border-bottom:0.5px solid var(--bd)">
+      <button class="icon-btn" onclick="closeSubjectEdit()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div style="font-size:16px;font-weight:700">과목 수정</div>
+    </div>
+    <div style="padding:14px">
+      <input type="hidden" id="subject-edit-idx">
+      <!-- 과목명 -->
+      <div class="card" style="margin-bottom:9px">
+        <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:8px">과목명 *</div>
+        <input type="text" class="form-input" id="subject-edit-name" placeholder="예: 형사법">
+      </div>
+      <!-- 만점 -->
+      <div class="card" style="margin-bottom:9px">
+        <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:8px">만점 기준</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <input type="number" class="form-input" id="subject-edit-max" min="1" max="1000" placeholder="100" style="flex:1">
+          <span style="font-size:13px;color:var(--t2)">점</span>
+        </div>
+      </div>
+      <!-- 색상 -->
+      <div class="card" style="margin-bottom:9px">
+        <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:10px">전용 색상</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="color" id="subject-edit-color-picker"
+            style="width:44px;height:44px;border:none;background:none;cursor:pointer;padding:0;border-radius:8px;overflow:hidden"
+            oninput="syncColorHex(this.value)">
+          <div style="flex:1">
+            <div style="font-size:10px;color:var(--t3);margin-bottom:4px">HEX 코드</div>
+            <input type="text" id="subject-edit-color-hex" class="form-input"
+              maxlength="7" placeholder="#e05252"
+              oninput="syncColorPicker(this.value)"
+              style="font-family:monospace;letter-spacing:1px">
+          </div>
+          <div id="subject-color-preview"
+            style="width:36px;height:36px;border-radius:50%;border:0.5px solid var(--bd);flex-shrink:0"></div>
+        </div>
+      </div>
+      <!-- 저장/삭제 -->
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button onclick="deleteSubjectFromEdit()" style="padding:11px;border-radius:10px;border:1px solid var(--re);background:none;color:var(--re);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap">삭제</button>
+        <button onclick="saveSubjectEdit()" style="flex:1;padding:11px;border-radius:10px;border:none;background:var(--t1);color:var(--bg);font-size:13px;font-weight:700;cursor:pointer">저장</button>
+      </div>
+    </div>
+  </div>
   <div class="fs-header">
     <button class="icon-btn" onclick="closeScreen('settings')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
     <div class="fs-header-title">설정</div>
@@ -2009,10 +2005,16 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       </div>
     </div>
 
-    <div class="setting-group-title">Pass 과목 인증</div>
-    <div id="pass-records-list" style="padding:0 16px"></div>
+    <div class="setting-group-title">과목 관리</div>
+    <div id="subject-manage-list"></div>
+    <div class="setting-item" onclick="openSubjectAdd()" style="cursor:pointer">
+      <span style="font-size:13px;color:var(--pol);font-weight:600">+ 과목 추가</span>
+    </div>
+
+    <div class="setting-group-title">Pass 과목 기록</div>
+    <div id="pass-records-list"></div>
     <div class="setting-item" onclick="openPassAddScreen()" style="cursor:pointer">
-      <span style="font-size:13px;color:var(--pol);font-weight:600">+ 인증 추가</span>
+      <span style="font-size:13px;color:var(--pol);font-weight:600">+ 기록 추가</span>
     </div>
 
     <div class="setting-group-title">AI 기능</div>
@@ -2024,6 +2026,14 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
     </div>
 
+    <div class="setting-group-title">앱 정보</div>
+    <div class="setting-item">
+      <span class="setting-label">동기화 상태</span>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span style="font-size:12px;color:var(--t3)" id="set-sync-status">로컬 저장</span>
+        <div class="sync-dot" id="sync-dot"></div>
+      </div>
+    </div>
     <div style="text-align:center;padding:24px;color:var(--t3);font-size:12px">PassTrack v1.0.0</div>
   </div>
 </div>
@@ -2389,17 +2399,42 @@ let unsubscribers = [];
 window._app = {
   lectures:[], wrongNotes:[], reviewLogs:[], scores:[],
   routines:[], dailyLogs:{}, sessions:[], periodLogs:[],
-  passRecords:[], config:{}
+  passRecords:[], config:{},
+  subjects:[] // 빈 배열이면 기본값 사용
 };
 const D = window._app;
 
 // ── HELPERS ───────────────────────────────────────────────
+const DEFAULT_SUBJECTS = [
+  {name:'형사법', color:'#e05252', maxScore:100},
+  {name:'경찰학개론', color:'#4b6bfb', maxScore:100},
+  {name:'헌법', color:'#0891b2', maxScore:100}
+];
+const SUBJECT_PALETTE = ['#e05252','#4b6bfb','#0891b2','#059669','#d97706','#7c3aed','#db2777','#ea580c'];
+
+// 현재 과목 목록 반환 (커스텀 없으면 기본값)
+function getSubjects(){
+  return (D.subjects && D.subjects.length) ? D.subjects : DEFAULT_SUBJECTS;
+}
+// 과목명으로 색상 조회
+function getSubjectColor(name){
+  const s = getSubjects().find(s=>s.name===name);
+  return s ? s.color : '#9ca3af';
+}
+// 과목명 배열만 반환
+function getSubjectNames(){
+  return getSubjects().map(s=>s.name);
+}
+async function saveSubjects(){
+  lsSet('pt_subj', D.subjects);
+  if(!useLocal) await fsSetCfg({subjectsData: JSON.stringify(D.subjects)});
+}
 // 잘못 저장된 subject(OX 퀴즈 등) 보정
 function migrateWrongNoteSubjects(){
-  const valid=['형사법','경찰학개론','헌법'];
+  const valid=getSubjectNames();
   let changed=false;
   D.wrongNotes.forEach(w=>{
-    if(!valid.includes(w.subject)){ w.subject='형사법'; changed=true; }
+    if(!valid.includes(w.subject)){ w.subject=valid[0]||'형사법'; changed=true; }
   });
   if(changed && useLocal) saveLocal();
 }
@@ -2444,6 +2479,7 @@ function loadLocal(){
   D.sessions    = lsGet('pt_sess')|| [];
   D.periodLogs  = lsGet('pt_per') || [];
   D.passRecords = lsGet('pt_pass')|| [];
+  D.subjects    = lsGet('pt_subj')|| [];
   D.config      = lsGet('pt_cfg') || {};
 }
 function saveLocal(){
@@ -2456,6 +2492,7 @@ function saveLocal(){
   lsSet('pt_sess',D.sessions);
   lsSet('pt_per', D.periodLogs);
   lsSet('pt_pass',D.passRecords);
+  lsSet('pt_subj',D.subjects);
   lsSet('pt_cfg', D.config);
 }
 
@@ -2524,7 +2561,13 @@ function updateSettingsUI(user){
 
 const setSyncDot = s => {
   const el = document.getElementById('sync-dot');
-  el.className = 'sync-dot' + (s==='syncing'?' syncing':'');
+  if(el) el.className = 'sync-dot' + (s==='syncing'?' syncing':'');
+  const txt = document.getElementById('set-sync-status');
+  if(txt){
+    if(s==='syncing')     { txt.textContent='동기화 중...'; txt.style.color='var(--am)'; }
+    else if(useLocal)     { txt.textContent='로컬 저장';    txt.style.color='var(--t3)'; }
+    else                  { txt.textContent='동기화 완료';  txt.style.color='var(--gr)'; }
+  }
 };
 
 // ── FIREBASE LISTENERS ────────────────────────────────────
@@ -2572,6 +2615,7 @@ async function setupListeners(){
 // ── RENDER ALL ────────────────────────────────────────────
 function renderAll(){
   try { migrateWrongNoteSubjects(); } catch(e){}
+  try { refreshAllSubjectUI(); } catch(e){}
   try { renderDDay(); } catch(e){}
   try { renderFocusForecast(); } catch(e){}
   try { renderHomeLec(); } catch(e){}
@@ -2716,7 +2760,7 @@ function renderLectures(){
   el.innerHTML = D.lectures.map(l => {
     const pct  = l.totalEp ? Math.round((l.currentEp||0)/l.totalEp*100) : 0;
     const sub  = l.subject||'형사법';
-    const col  = sub==='형사법'?'#e05252':sub==='경찰학개론'?'#4b6bfb':'#0891b2';
+    const col  = getSubjectColor(sub);
     const done = pct>=100;
     // week chips: show current ep rounded to nearest 5 as past sessions
     const chips = [];
@@ -2781,7 +2825,7 @@ function renderHomeLec(){
   el.innerHTML = lecs.map((l,i)=>{
     const pct = l.totalEp ? Math.round((l.currentEp||0)/l.totalEp*100) : 0;
     const subj = l.subject||'형사법';
-    const dotColor = subj==='형사법'?'#e05252':subj==='경찰학개론'?'#4b6bfb':'#0891b2';
+    const dotColor = getSubjectColor(subj);
     const isLast = i===lecs.length-1;
     // 오늘 요일 기반 목표 강의 수
     const _dow=['일','월','화','수','목','금','토'][new Date().getDay()];
@@ -2791,7 +2835,7 @@ function renderHomeLec(){
     // 오늘 세션 기록이 있고 실제로 수강한 강이 1개 이상인 경우에만 완료
     const todayDone = todaySessDone > 0 && (l.currentEp||0) > 0;
     return `<div style="display:flex;align-items:center;gap:7px;padding:4px 0;${isLast?'':'border-bottom:0.5px solid var(--bd)'};${todayDone?'opacity:.55':''}">
-      <div style="width:7px;height:7px;border-radius:50%;background:${dotColor};flex-shrink:0"></div>
+      <div style="width:3px;height:16px;border-radius:2px;background:${dotColor};flex-shrink:0"></div>
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${todayDone?'text-decoration:line-through':''}">${esc(l.title)}</div>
         <div style="font-size:10px;color:var(--t3)">목표 ${dayGoal}강 · ${l.currentEp||0}/${l.totalEp}</div>
@@ -2839,7 +2883,7 @@ function openCompleteScreen(l){
   if(others.length && nextEl){
     const nx = others[0];
     const col = (nx.subject||'형사법')==='형사법'?'#e05252':nx.subject==='경찰학개론'?'#4b6bfb':'#0891b2';
-    nextEl.innerHTML=`<div style="display:flex;align-items:center;gap:8px"><div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></div><div><div style="font-size:12px;font-weight:600;color:var(--t1)">${esc(nx.title)}</div><div style="font-size:10px;color:var(--t3)">${nx.currentEp||0}/${nx.totalEp}강 진행 중</div></div></div>`;
+    nextEl.innerHTML=`<div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></div><div><div style="font-size:12px;font-weight:600;color:var(--t1)">${esc(nx.title)}</div><div style="font-size:10px;color:var(--t3)">${nx.currentEp||0}/${nx.totalEp}강 진행 중</div></div></div>`;
   } else if(nextEl){ nextEl.innerHTML='<div style="font-size:12px;color:var(--t3)">다음 강의가 없어요</div>'; }
   showScreen('lec-complete');
 }
@@ -3267,7 +3311,7 @@ function renderWN(){
     const col = (w.subject||'형사법')==='형사법'?'#e05252':(w.subject==='경찰학개론'?'#4b6bfb':'#0891b2');
     const tagCls = tagClass(w.wrongType||'');
     return `<div style="background:var(--sur);border-radius:11px;padding:9px 10px;margin-bottom:6px;border:0.5px solid var(--bd);display:flex;align-items:center;gap:7px;cursor:pointer" onclick="openWNDetail('${w.id}')">
-      <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0;margin-top:3px"></div>
+      <div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0;margin-top:3px"></div>
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(w.topic)}</div>
         <div style="font-size:10px;color:var(--t3);margin-top:2px;display:flex;align-items:center;gap:3px;flex-wrap:wrap">
@@ -3404,7 +3448,7 @@ window.openWNEdit = () => {
   const w = D.wrongNotes.find(x=>x.id===_openWNId);
   if(!w) return;
   document.getElementById('wn-edit-id').value = w.id;
-  document.getElementById('wn-edit-subject').innerHTML = ['형사법','경찰학개론','헌법'].map(s=>`<option value="${s}" ${w.subject===s?'selected':''}>${s}</option>`).join('');
+  document.getElementById('wn-edit-subject').innerHTML = getSubjectNames().map(s=>`<option value="${s}" ${w.subject===s?'selected':''}>${s}</option>`).join('');
   document.getElementById('wn-edit-topic').value    = w.topic||'';
   document.getElementById('wn-edit-question').value = w.question||'';
   document.getElementById('wn-edit-answer').value   = w.answer||'';
@@ -3502,7 +3546,7 @@ function renderReview(){
     const wn   = D.wrongNotes.find(w=>w.id===r.noteId);
     const done = !!r.completedAt;
     const subj = wn?.subject||'형사법';
-    const col  = subj==='형사법'?'#e05252':subj==='경찰학개론'?'#4b6bfb':'#0891b2';
+    const col  = getSubjectColor(subj);
     const clickable = !!wn;
     return `<div
       style="background:var(--sur);border-radius:11px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:9px;border:0.5px solid var(--bd);${done?'opacity:.55':''};${clickable?'cursor:pointer':''}"
@@ -3511,7 +3555,7 @@ function renderReview(){
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${done?'text-decoration:line-through':''}">${esc(wn?.topic||'삭제된 항목')}</div>
         <div style="font-size:10px;color:var(--t3);margin-top:2px;display:flex;align-items:center;gap:4px">
-          <div style="width:6px;height:6px;border-radius:50%;background:${col}"></div>
+          <div style="width:3px;height:14px;border-radius:2px;background:${col}"></div>
           ${subj} · ${r.scheduledAt}
         </div>
       </div>
@@ -3558,11 +3602,11 @@ function renderHomeReview(){
     const wn = D.wrongNotes.find(w=>w.id===r.noteId);
     const done = !!r.completedAt;
     const subj = wn?.subject||'형사법';
-    const dotColor = subj==='형사법'?'#e05252':subj==='경찰학개론'?'#4b6bfb':'#0891b2';
+    const dotColor = getSubjectColor(subj);
     const isLast = i===arr.length-1;
     return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;${isLast?'':'border-bottom:0.5px solid var(--bd)'};${done?'opacity:.55':''}">
       <div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0;cursor:pointer" onclick="openWNDetail('${r.noteId}')">
-        <div style="width:7px;height:7px;border-radius:50%;background:${dotColor};flex-shrink:0"></div>
+        <div style="width:3px;height:16px;border-radius:2px;background:${dotColor};flex-shrink:0"></div>
         <div style="min-width:0">
           <div style="font-size:12px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${done?'text-decoration:line-through':''}">${esc(wn?.topic||'항목')}</div>
           <div style="font-size:10px;color:var(--t3)">${subj} ${r.round}회차</div>
@@ -3857,7 +3901,7 @@ function renderScores(){
   // 그래프 타이틀 업데이트
   const gtEl=document.getElementById('graph-title-lbl');
   if(gtEl){
-    const nameMap={'형사법':'형사법 성적 추이','경찰학개론':'경찰학개론 성적 추이','헌법':'헌법 성적 추이'};
+    const nameMap={}; getSubjects().forEach(s=>{ nameMap[s.name]=s.name+' 성적 추이'; });
     gtEl.textContent = _subjFilter!=='avg' ? (nameMap[_subjFilter]||'성적 추이') : '성적 추이';
   }
   renderScoreGraph(list);
@@ -3871,7 +3915,7 @@ function renderScores(){
     const hdrEl0 = document.getElementById('score-list-header');
     if(hdrEl0) hdrEl0.innerHTML = '';  // 과목별 모드에서 헤더 숨김
     const subj = _subjFilter;
-    const col = subj==='형사법'?'#e05252':subj==='경찰학개론'?'#4b6bfb':'#0891b2';
+    const col = getSubjectColor(subj);
     const shortName = subj==='경찰학개론'?'경찰학':subj;
     tableWrap.style.display='block';
     scoreList.style.display='none';
@@ -4016,7 +4060,7 @@ function renderScoreGraph(list){
       if(vals.length) allVals.push(vals.reduce((a,v)=>a+v,0)/vals.length);
     });
   } else {
-    const subjects = singleSubj ? [singleSubj] : ['형사법','경찰학개론','헌법'];
+    const subjects = singleSubj ? [singleSubj] : getSubjectNames();
     subjects.forEach(sub=>{
       list.forEach(s=>{ const v=s.subjects?.[sub]; if(v!==undefined&&v!=='') allVals.push(Number(v)); });
     });
@@ -4028,7 +4072,8 @@ function renderScoreGraph(list){
   const dataMax = Math.max(...allVals);
   const margin  = Math.max(5, Math.ceil((dataMax-dataMin)*0.2));
   let YMIN = Math.max(0,  Math.floor((dataMin-margin)/10)*10);
-  let YMAX = Math.min(isSubjMode&&singleSubj==='헌법'?50:100, Math.ceil((dataMax+margin)/10)*10);
+  const subjMaxScore = singleSubj ? (getSubjects().find(s=>s.name===singleSubj)?.maxScore||100) : 100;
+  let YMAX = Math.min(subjMaxScore, Math.ceil((dataMax+margin)/10)*10);
   if(YMAX<=YMIN) YMAX=YMIN+10;
   const range = YMAX-YMIN;
 
@@ -4058,8 +4103,8 @@ function renderScoreGraph(list){
   });
 
   // ── 라인 + 포인트
-  const colMap={'형사법':'#e05252','경찰학개론':'#4b6bfb','헌법':'#0891b2'};
-  const nameMap={'형사법':'형사법','경찰학개론':'경찰학','헌법':'헌법'};
+  const colMap={}; const nameMap={};
+  getSubjects().forEach(s=>{ colMap[s.name]=s.color; nameMap[s.name]=s.name.length>4?s.name.slice(0,4)+'..':s.name; });
 
   if(!isSubjMode){
     const pts = list.map((s,i)=>{
@@ -4082,7 +4127,7 @@ function renderScoreGraph(list){
     const lgEl=document.getElementById('graph-legend');
     if(lgEl) lgEl.innerHTML=`<span style="font-size:10px;color:var(--t2);display:flex;align-items:center;gap:3px"><span style="display:inline-block;width:14px;height:2px;background:var(--t1);border-radius:1px"></span>평균</span>`;
   } else {
-    const subjects = singleSubj ? [singleSubj] : ['형사법','경찰학개론','헌법'];
+    const subjects = singleSubj ? [singleSubj] : getSubjectNames();
     for(const sub of subjects){
       const col=colMap[sub];
       const pts=list.map((s,i)=>{
@@ -4113,20 +4158,20 @@ window.saveScore = async () => {
   const name = (document.getElementById('score-name')?.value||'').trim();
   const date = document.getElementById('score-date')?.value||'';
   if(!name){ showToast('시험명을 입력해주세요'); return; }
-  const crim = document.getElementById('score-crim').value;
-  const pol  = document.getElementById('score-pol').value;
-  const con  = document.getElementById('score-con').value;
-  // 점수 범위 검증 (0~100)
-  const checkScore = (v, label, max=100) => {
-    if(v==='') return true;
-    const n=Number(v);
-    if(isNaN(n)||n<0||n>max){ showToast(`${label} 점수는 0~${max} 사이여야 합니다`); return false; }
-    return true;
-  };
-  if(!checkScore(crim,'형사법')||!checkScore(pol,'경찰학개론')||!checkScore(con,'헌법',50)) return;
+  // 동적 과목별 점수 수집
+  const subs = getSubjects();
+  const subjects = {};
+  for(const s of subs){
+    const v = document.getElementById(`score_add_${s.name}`)?.value??'';
+    if(v!==''){
+      const n=Number(v);
+      if(isNaN(n)||n<0||n>s.maxScore){ showToast(`${s.name} 점수는 0~${s.maxScore} 사이여야 합니다`); return; }
+      subjects[s.name]=n;
+    }
+  }
   const data = {
     examName:name, examDate:date, examType:_scoreAddType,
-    subjects:{ '형사법':crim!==''?Number(crim):undefined, '경찰학개론':pol!==''?Number(pol):undefined, '헌법':con!==''?Number(con):undefined }
+    subjects
   };
   if(useLocal){
     data.id='sc_'+Date.now(); data.createdAt=nowISO();
@@ -4137,7 +4182,8 @@ window.saveScore = async () => {
   }
   renderScores(); updateAICounts();
   closeScreen('score-add');
-  ['score-name','score-date','score-crim','score-pol','score-con'].forEach(id=>document.getElementById(id).value='');
+  ['score-name','score-date'].forEach(id=>document.getElementById(id).value='');
+  getSubjects().forEach(s=>{const el=document.getElementById(`score_add_${s.name}`);if(el)el.value='';});
   showToast('성적이 저장됐어요');
 };
 
@@ -4149,23 +4195,25 @@ window.openScoreEdit = id => {
   document.getElementById('score-edit-id').value=s.id;
   document.getElementById('score-edit-name').value=s.examName||'';
   document.getElementById('score-edit-date').value=s.examDate||'';
-  document.getElementById('score-edit-crim').value=s.subjects?.['형사법']??'';
-  document.getElementById('score-edit-pol').value=s.subjects?.['경찰학개론']??'';
-  document.getElementById('score-edit-con').value=s.subjects?.['헌법']??'';
+  // 동적 과목 입력 채우기
+  renderScoreInputs(s.subjects||{});
   document.querySelectorAll('#score-edit-type-chips .chip').forEach(c=>{ if(c.textContent.trim()===s.examType) c.classList.add('on'); else c.classList.remove('on'); });
   _scoreEditType=s.examType||'경찰시험';
   showScreen('score-edit');
 };
 window.updateScore = async () => {
   const id=document.getElementById('score-edit-id').value;
-  const crim=document.getElementById('score-edit-crim').value;
-  const pol=document.getElementById('score-edit-pol').value;
-  const con=document.getElementById('score-edit-con').value;
+  const subs2 = getSubjects();
+  const subjects2 = {};
+  for(const s of subs2){
+    const v = document.getElementById(`score_edit_${s.name}`)?.value??'';
+    if(v!=='') subjects2[s.name]=Number(v);
+  }
   const data={
     examName:(document.getElementById('score-edit-name')?.value||'').trim(),
     examDate:document.getElementById('score-edit-date').value,
     examType:_scoreEditType,
-    subjects:{'형사법':crim!==''?Number(crim):undefined,'경찰학개론':pol!==''?Number(pol):undefined,'헌법':con!==''?Number(con):undefined}
+    subjects:subjects2
   };
   if(useLocal){
     const i=D.scores.findIndex(x=>x.id===id);
@@ -4261,13 +4309,13 @@ window.runAIAnalysis = async (ctx) => {
     const actionEl=document.getElementById('manage-action-list');
     if(detailEl&&parsed){
       detailEl.style.display='block';
-      const subColors={'형사법':'#e05252','경찰학개론':'#4b6bfb','헌법':'#0891b2'};
+      const subColors={}; getSubjects().forEach(s=>{ subColors[s.name]=s.color; });
       if(weakEl&&parsed.weakPoints) weakEl.innerHTML=(parsed.weakPoints||[]).map(w=>{
         const col=subColors[w.subject]||'var(--t2)';
         const tBg=w.type==='개념 부족'?'#f0f4ff':w.type==='실수'?'#fff0f0':w.type==='시간 부족'?'#fffbeb':'#e0f2fe';
         const tCl=w.type==='개념 부족'?'#4b6bfb':w.type==='실수'?'#e05252':w.type==='시간 부족'?'#b45309':'#0891b2';
         return `<div style="display:flex;align-items:center;gap:8px">
-          <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></div>
+          <div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></div>
           <div style="flex:1"><div style="font-size:11px;font-weight:600;color:var(--t1)">${esc(w.topic||'')}</div><div style="font-size:10px;color:var(--t3)">${esc(w.subject||'')}</div></div>
           ${w.type?`<span style="font-size:10px;font-weight:700;border-radius:5px;padding:1px 6px;background:${tBg};color:${tCl}">${esc(w.type)}</span>`:''}
         </div>`;
@@ -4309,7 +4357,7 @@ window.generateOX = async () => {
 
 [출력 형식] JSON 배열만 출력, 설명 없음:
 [{"q":"문제","a":true,"exp":"해설 (근거: 법조문/판례)","subject":"과목","topic":"단원","basis":"형사소송법 제000조"}, ...]
-subject는 형사법/경찰학개론/헌법 중 하나.
+subject는 반드시 ${getSubjectNames().join('/')} 중 하나.
 
 [오답 노트 참고 자료]
 ${wns||'현행범 체포, 영장주의, 적법절차, 기본권 제한'}`;
@@ -4383,7 +4431,7 @@ window.addOXToWrongNote = async (i) => {
     answer:   `정답: ${q.a ? 'O' : 'X'}
 해설: ${q.exp||''}`,
     // Gemini 응답의 subject/topic 사용, 없으면 폴백
-    subject:  (['형사법','경찰학개론','헌법'].includes(q.subject) ? q.subject : '형사법'),
+    subject:  (getSubjectNames().includes(q.subject) ? q.subject : getSubjectNames()[0]||'형사법'),
     topic:    (q.topic || 'OX 퀴즈'),
     wrongType:'개념 부족',
     reason:   'OX 퀴즈 오답',
@@ -5038,6 +5086,209 @@ window.deleteDailyLog = async () => {
   showToast('삭제됐어요');
 };
 
+// ── SUBJECT MANAGEMENT ───────────────────────────────────
+function renderSubjectManage(){
+  const el = document.getElementById('subject-manage-list');
+  if(!el) return;
+  const subs = getSubjects();
+  const isFirst = true;
+  el.innerHTML = subs.map((s,i)=>`
+    <div class="setting-item" onclick="openSubjectEdit(${i})" style="cursor:pointer${i===0?';border-top:0.5px solid var(--bd)':''}">
+      <div style="display:flex;align-items:center;gap:8px;flex:1;min-width:0">
+        <span style="width:3px;height:18px;border-radius:2px;background:${s.color};flex-shrink:0;display:inline-block"></span>
+        <span class="setting-label">${esc(s.name)}</span>
+        <span style="font-size:11px;color:var(--t3)">만점 ${s.maxScore}</span>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--t3)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </div>`).join('');
+}
+
+window.openSubjectEdit = (idx) => {
+  const subs = getSubjects();
+  const s = subs[idx];
+  if(!s) return;
+  document.getElementById('subject-edit-idx').value = idx;
+  document.getElementById('subject-edit-name').value = s.name;
+  document.getElementById('subject-edit-max').value  = s.maxScore;
+  // color picker + hex 설정
+  const picker = document.getElementById('subject-edit-color-picker');
+  const hexInput = document.getElementById('subject-edit-color-hex');
+  const preview = document.getElementById('subject-color-preview');
+  if(picker) picker.value = s.color;
+  if(hexInput) hexInput.value = s.color;
+  if(preview) preview.style.background = s.color;
+  window._editSubjectColor = s.color;
+  document.getElementById('subject-edit-panel').style.display = 'block';
+};
+
+window._editSubjectColor = null;
+
+window.syncColorHex = (val) => {
+  window._editSubjectColor = val;
+  const hexInput = document.getElementById('subject-edit-color-hex');
+  const preview  = document.getElementById('subject-color-preview');
+  if(hexInput) hexInput.value = val;
+  if(preview)  preview.style.background = val;
+};
+
+window.syncColorPicker = (val) => {
+  // hex 형식 검증 (#rrggbb)
+  if(!/^#[0-9a-fA-F]{6}$/.test(val)) return;
+  window._editSubjectColor = val;
+  const picker  = document.getElementById('subject-edit-color-picker');
+  const preview = document.getElementById('subject-color-preview');
+  if(picker)  picker.value = val;
+  if(preview) preview.style.background = val;
+};
+
+window.closeSubjectEdit = () => {
+  document.getElementById('subject-edit-panel').style.display = 'none';
+  window._editSubjectColor = null;
+};
+
+window.saveSubjectEdit = async () => {
+  const idx = parseInt(document.getElementById('subject-edit-idx').value);
+  const name = document.getElementById('subject-edit-name').value.trim();
+  const maxScore = Math.max(1, Math.min(1000, parseInt(document.getElementById('subject-edit-max').value)||100));
+  if(!name){ showToast('과목명을 입력해주세요'); return; }
+  if(!D.subjects.length) D.subjects = [...DEFAULT_SUBJECTS];
+  const subs = D.subjects.length ? D.subjects : [...DEFAULT_SUBJECTS];
+  // 이름 중복 체크 (자기 자신 제외)
+  if(subs.some((s,i)=>i!==idx && s.name===name)){ showToast('이미 있는 과목명이에요'); return; }
+  const oldColor = subs[idx]?.color || SUBJECT_PALETTE[0];
+  subs[idx] = {
+    name,
+    maxScore,
+    color: window._editSubjectColor || oldColor
+  };
+  D.subjects = subs;
+  await saveSubjects();
+  closeSubjectEdit();
+  renderSubjectManage();
+  refreshAllSubjectUI();
+  showToast('수정됐어요');
+};
+
+window.deleteSubjectFromEdit = () => {
+  const idx = parseInt(document.getElementById('subject-edit-idx').value);
+  deleteSubject(idx, true);
+};
+
+window.openSubjectAdd = () => {
+  const name = prompt('과목명을 입력하세요 (예: 형사법)');
+  if(!name || !name.trim()) return;
+  const maxStr = prompt('만점을 입력하세요 (기본 100)', '100');
+  const maxScore = Math.max(1, Math.min(1000, parseInt(maxStr)||100));
+  const subs = getSubjects();
+  if(subs.find(s=>s.name===name.trim())){ showToast('이미 있는 과목이에요'); return; }
+  const color = SUBJECT_PALETTE[subs.length % SUBJECT_PALETTE.length];
+  if(!D.subjects.length) D.subjects = [...DEFAULT_SUBJECTS];
+  D.subjects.push({name:name.trim(), color, maxScore});
+  saveSubjects();
+  renderSubjectManage();
+  refreshAllSubjectUI();
+  showToast('과목이 추가됐어요');
+};
+
+window.deleteSubject = (idx, fromEdit=false) => {
+  const subs = getSubjects();
+  const sub = subs[idx];
+  if(!sub) return;
+  showDeleteModal(`'${sub.name}' 과목을 삭제할까요?
+해당 과목의 오답/강의 데이터는 유지됩니다.`, async()=>{
+    if(!D.subjects.length) D.subjects = [...DEFAULT_SUBJECTS];
+    D.subjects.splice(idx, 1);
+    await saveSubjects();
+    if(fromEdit) closeSubjectEdit();
+    renderSubjectManage();
+    refreshAllSubjectUI();
+    showToast('삭제됐어요');
+  });
+};
+
+// 과목 목록이 바뀔 때 모든 UI 갱신
+function refreshAllSubjectUI(){
+  renderSubjectSelects();
+  renderWNSubjFilter();
+  renderScoreSubjFilter();
+  renderScoreInputs();
+  renderPassSubjectChips();
+}
+
+// select 요소들 채우기
+function renderSubjectSelects(){
+  const subs = getSubjectNames();
+  ['wn-subject','lec-subject','lec-edit-subject','wn-edit-subject'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const cur = el.value;
+    el.innerHTML = subs.map(s=>`<option value="${esc(s)}">${esc(s)}</option>`).join('');
+    if(subs.includes(cur)) el.value = cur;
+  });
+}
+
+// 오답노트 과목 필터 칩
+function renderWNSubjFilter(){
+  const el = document.getElementById('wn-subj-filter');
+  if(!el) return;
+  const subs = getSubjectNames();
+  el.innerHTML = `<button class="chip ${_wnSubjFilter==='전체'?'on':''}" onclick="setWNFilter('subj','전체',this)">전체</button>`
+    + subs.map(s=>`<button class="chip ${_wnSubjFilter===s?'on':''}" onclick="setWNFilter('subj','${s}',this)">${esc(s)}</button>`).join('');
+}
+
+// 성적 탭 과목 필터 칩
+function renderScoreSubjFilter(){
+  const el = document.getElementById('score-subj-filter');
+  if(!el) return;
+  const subs = getSubjects();
+  el.innerHTML = `<button class="chip on" id="subj-avg-btn" onclick="setSubjFilter('avg',this)">평균</button>`
+    + subs.map(s=>`<button class="chip" onclick="setSubjFilter('${esc(s.name)}',this)"
+        style="display:flex;align-items:center;gap:4px">
+        <span style="width:3px;height:14px;border-radius:2px;background:${s.color};display:inline-block"></span>
+        ${esc(s.name.length>4?s.name.slice(0,4)+'..':s.name)}
+      </button>`).join('');
+}
+
+// 성적 추가/편집 과목별 점수 입력
+function renderScoreInputs(scoreData){
+  const subs = getSubjects();
+  const makeRow = (s, inputId) => {
+    const val = scoreData?.[s.name]??'';
+    return `<div class="form-group" style="display:flex;align-items:center;gap:10px">
+      <span style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--t2);min-width:72px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+        <span style="width:3px;height:16px;border-radius:2px;background:${s.color};flex-shrink:0;display:inline-block"></span>
+        ${esc(s.name)}
+      </span>
+      <input type="number" class="form-input" id="${inputId}_${esc(s.name)}"
+        min="0" max="${s.maxScore}" placeholder="0" value="${val}" style="flex:1">
+      <span style="font-size:12px;color:var(--t3);white-space:nowrap">/ ${s.maxScore}</span>
+    </div>`;
+  };
+  const addEl = document.getElementById('score-inputs-add');
+  if(addEl) addEl.innerHTML = subs.map(s=>makeRow(s,'score_add')).join('');
+  const editEl = document.getElementById('score-inputs-edit');
+  if(editEl) editEl.innerHTML = subs.map(s=>makeRow(s,'score_edit')).join('');
+}
+
+// Pass 기록 추가 화면 과목 칩
+function renderPassSubjectChips(selected){
+  const el = document.getElementById('pass-subject-chips');
+  if(!el) return;
+  const extras = ['한국사','영어'];
+  const subjNames = getSubjectNames();
+  // 학습 과목 + 추가 과목 합치되 중복 제거
+  const all = [...new Set([...extras, ...subjNames])];
+  el.innerHTML = all.map((s,i)=>`
+    <button class="chip ${(selected||_passSubject)===s&&i===0&&!selected?'on':(selected||_passSubject)===s?'on':i===0&&!selected?'on':''}"
+      onclick="selectPassSubject('${esc(s)}',this)">${esc(s)}</button>`).join('')
+    + `<button class="chip ${(selected||_passSubject)==='직접 입력'?'on':''}"
+        onclick="selectPassSubject('직접 입력',this)">직접 입력</button>`;
+  if(!selected && !_passSubject) {
+    _passSubject = all[0]||'한국사';
+    el.querySelector('.chip')?.classList.add('on');
+  }
+}
+
 // ── PASS RECORDS ─────────────────────────────────────────
 let _passSubject = '한국사';
 let _passEditId  = null;
@@ -5065,7 +5316,7 @@ window.updatePassGradeInput = () => {
 
 function resetPassAddForm(){
   _passEditId = null;
-  document.getElementById('pass-add-title').textContent = '인증 추가';
+  document.getElementById('pass-add-title').textContent = '기록 추가';
   document.getElementById('pass-edit-id').value = '';
   document.getElementById('pass-grade-type').value = '점수 직접 입력';
   document.getElementById('pass-grade-score').value = '';
@@ -5080,18 +5331,28 @@ function resetPassAddForm(){
   document.querySelectorAll('#pass-subject-chips .chip').forEach((c,i)=>{
     c.classList.toggle('on', i===0);
   });
-  _passSubject = '한국사';
+  renderPassSubjectChips();
+  _passSubject = getSubjects()[0]?.name||'한국사';
+  const delBtn = document.getElementById('pass-delete-btn');
+  if(delBtn) delBtn.style.display = 'none';
 }
 
+window.closePassAddScreen = () => {
+  document.getElementById('fs-pass-add').classList.remove('show');
+  document.getElementById('fs-settings').classList.add('show');
+};
+
 window.openPassAddScreen = () => {
-  showScreen('pass-add');
+  document.getElementById('fs-settings').classList.remove('show');
+  resetPassAddForm();
+  document.getElementById('fs-pass-add').classList.add('show');
 };
 
 window.openPassEdit = (id) => {
   const rec = D.passRecords.find(r=>r.id===id);
   if(!rec) return;
   _passEditId = id;
-  document.getElementById('pass-add-title').textContent = '인증 수정';
+  document.getElementById('pass-add-title').textContent = '기록 수정';
   document.getElementById('pass-edit-id').value = id;
 
   // 과목 칩 선택
@@ -5125,7 +5386,11 @@ window.openPassEdit = (id) => {
   document.getElementById('pass-acquired-date').value = rec.acquiredDate||'';
   document.getElementById('pass-expire-date').value = rec.expireDate||'';
   document.getElementById('pass-memo').value = rec.memo||'';
-  showScreen('pass-add');
+  // 수정 모드: 헤더 삭제 버튼 표시
+  const delBtn = document.getElementById('pass-delete-btn');
+  if(delBtn) delBtn.style.display = 'block';
+  document.getElementById('fs-settings').classList.remove('show');
+  document.getElementById('fs-pass-add').classList.add('show');
 };
 
 window.savePassRecord = async () => {
@@ -5174,10 +5439,16 @@ window.savePassRecord = async () => {
     showToast('저장됐어요');
   }
   renderPassRecords();
-  closeScreen('pass-add');
+  closePassAddScreen();
 };
 
-window.deletePassRecord = async (id) => {
+window.deleteCurrentPassRecord = () => {
+  const id = document.getElementById('pass-edit-id').value;
+  if(!id) return;
+  deletePassRecord(id, true);
+};
+
+window.deletePassRecord = async (id, fromEdit=false) => {
   showDeleteModal('인증 기록을 삭제할까요?', async()=>{
     if(useLocal){
       D.passRecords = D.passRecords.filter(r=>r.id!==id);
@@ -5187,6 +5458,7 @@ window.deletePassRecord = async (id) => {
       D.passRecords = D.passRecords.filter(r=>r.id!==id);
     }
     renderPassRecords();
+    if(fromEdit) closePassAddScreen();
     showToast('삭제됐어요');
   });
 };
@@ -5195,51 +5467,42 @@ function renderPassRecords(){
   const el = document.getElementById('pass-records-list');
   if(!el) return;
   if(!D.passRecords.length){
-    el.innerHTML = '<div style="font-size:12px;color:var(--t3);padding:8px 0 4px">등록된 인증이 없어요</div>';
+    el.innerHTML = '<div class="setting-item" style="color:var(--t3);font-size:13px">등록된 기록이 없어요</div>';
     return;
   }
   const todayStr = today();
   el.innerHTML = D.passRecords.map(r=>{
-    // 만료 여부 판별
-    let statusBadge = '';
+    let statusText='인증 완료', statusBg='var(--gr-bg)', statusColor='var(--gr-txt)';
     if(r.expireDate){
       const diff = diffDays(r.expireDate, todayStr);
-      if(diff < 0){
-        statusBadge = `<span style="font-size:10px;background:#fee2e2;color:var(--re);border-radius:6px;padding:2px 7px;font-weight:700;white-space:nowrap">만료됨</span>`;
-      } else if(diff <= 90){
-        statusBadge = `<span style="font-size:10px;background:var(--am-bg);color:var(--am-txt);border-radius:6px;padding:2px 7px;font-weight:700;white-space:nowrap">만료 임박</span>`;
-      } else {
-        statusBadge = `<span style="font-size:10px;background:var(--gr-bg);color:var(--gr-txt);border-radius:6px;padding:2px 7px;font-weight:700;white-space:nowrap">인증 완료</span>`;
-      }
-    } else {
-      statusBadge = `<span style="font-size:10px;background:var(--gr-bg);color:var(--gr-txt);border-radius:6px;padding:2px 7px;font-weight:700;white-space:nowrap">인증 완료</span>`;
+      if(diff < 0){ statusText='만료됨'; statusBg='#fee2e2'; statusColor='var(--re)'; }
+      else if(diff <= 90){ statusText='만료 임박'; statusBg='var(--am-bg)'; statusColor='var(--am-txt)'; }
     }
-    const expireLbl = r.expireDate
-      ? `만료 ${r.expireDate.slice(2).replace(/-/g,'.')} `
-      : '';
+    const expireLbl = r.expireDate ? `만료 ${r.expireDate.slice(2).replace(/-/g,'.')}` : '';
+    const subLine = [
+      r.examName ? esc(r.examName) : '',
+      r.grade ? esc(r.grade)+(r.grade.match(/^[0-9]/)&&!r.grade.includes('급')&&!r.grade.includes('등급')?'점':'') : ''
+    ].filter(Boolean).join(' · ');
+    const isFirst = D.passRecords.indexOf(r)===0;
     return `
-    <div style="padding:10px 0;border-bottom:0.5px solid var(--bd);display:flex;align-items:center;gap:8px" onclick="openPassEdit('${r.id}')" style="cursor:pointer">
-      <div style="flex:1;min-width:0;cursor:pointer" onclick="openPassEdit('${r.id}')">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
-          <span style="font-size:13px;font-weight:700;color:var(--t1)">${esc(r.subject)}</span>
-          ${statusBadge}
-        </div>
-        <div style="font-size:11px;color:var(--t3)">
-          ${r.examName?esc(r.examName)+' · ':''}${esc(r.grade||'')}점
-          ${expireLbl?'<span style="margin-left:4px">'+expireLbl+'</span>':''}
-        </div>
+    <div class="setting-item" onclick="openPassEdit('${r.id}')" style="cursor:pointer${isFirst?';border-top:0.5px solid var(--bd)':''}">
+      <div style="min-width:0;flex:1">
+        <div class="setting-label">${esc(r.subject)}</div>
+        ${subLine?`<div style="font-size:11px;color:var(--t3);margin-top:2px">${subLine}</div>`:''}
       </div>
-      <button onclick="event.stopPropagation();deletePassRecord('${r.id}')"
-        style="background:none;border:none;cursor:pointer;color:var(--t3);padding:4px;flex-shrink:0">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
-      </button>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;margin-left:10px">
+        <span style="font-size:10px;background:${statusBg};color:${statusColor};border-radius:6px;padding:2px 8px;font-weight:700;white-space:nowrap">${statusText}</span>
+        ${expireLbl?`<span style="font-size:10px;color:var(--t3)">${expireLbl}</span>`:''}
+      </div>
     </div>`;
   }).join('');
 }
 
 // ── SETTINGS ─────────────────────────────────────────────
 function renderSettings(){
+  renderSubjectManage();
   renderPassRecords();
+  setSyncDot(useLocal?'ok':'ok');
   const cfg=D.config;
   const t=document.getElementById('set-exam-target'); if(t) t.textContent=cfg.examTarget||'-';
   const d=document.getElementById('set-exam-date');   if(d) d.textContent=cfg.examDate||'-';
@@ -5452,7 +5715,7 @@ function renderSearchResults(kw, wns, rvs, lecs, scs, total){
     html+=wns.map(w=>{
       const col=(w.subject||'')==='형사법'?'#e05252':(w.subject==='경찰학개론'?'#4b6bfb':'#0891b2');
       return `<div onclick="openWNDetail('${w.id}');closeSearch()" style="background:var(--sur);border:0.5px solid var(--bd);border-radius:11px;padding:10px 12px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px">
-        <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></div>
+        <div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></div>
         <div style="flex:1;min-width:0">
           <div style="font-size:13px;font-weight:600;color:var(--t1)">${h(w.topic)}</div>
           <div style="font-size:11px;color:var(--t3);margin-top:2px">${w.subject||''} · ${w.wrongType?'<span style="font-size:10px;font-weight:600">'+w.wrongType+'</span>':''} ${D.reviewLogs.filter(r=>r.noteId===w.id&&!r.completedAt).length?'· 복습 '+D.reviewLogs.filter(r=>r.noteId===w.id&&!r.completedAt).length+'회 남음':''}</div>
@@ -5469,7 +5732,7 @@ function renderSearchResults(kw, wns, rvs, lecs, scs, total){
       const wn=D.wrongNotes.find(w=>w.id===r.noteId);
       const col=(wn?.subject||'')==='형사법'?'#e05252':(wn?.subject==='경찰학개론'?'#4b6bfb':'#0891b2');
       return `<div onclick="setStudySubTab('review',document.querySelector('[data-study-tab=review]'));switchTab('study',document.querySelector('[data-tab=study]'));closeSearch()" style="background:var(--sur);border:0.5px solid var(--bd);border-radius:11px;padding:10px 12px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px">
-        <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></div>
+        <div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></div>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:600;color:var(--t1)">${h(wn?.topic||'항목')} · ${r.round}회차</div>
           <div style="font-size:11px;color:var(--t3);margin-top:2px">복습 예정 · ${r.scheduledAt||''}</div>
@@ -5486,7 +5749,7 @@ function renderSearchResults(kw, wns, rvs, lecs, scs, total){
       const col=(l.subject||'')==='형사법'?'#e05252':(l.subject==='경찰학개론'?'#4b6bfb':'#0891b2');
       const pct=l.totalEp?Math.round((l.currentEp||0)/l.totalEp*100):0;
       return `<div onclick="switchTab('progress',document.querySelector('[data-tab=progress]'));closeSearch()" style="background:var(--sur);border:0.5px solid var(--bd);border-radius:11px;padding:10px 12px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px">
-        <div style="width:7px;height:7px;border-radius:50%;background:${col};flex-shrink:0"></div>
+        <div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></div>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:600;color:var(--t1)">${h(l.title)}</div>
           <div style="font-size:11px;color:var(--t3);margin-top:2px">${l.subject||''} · ${l.currentEp||0}/${l.totalEp}강 · ${pct}%</div>
@@ -5501,7 +5764,7 @@ function renderSearchResults(kw, wns, rvs, lecs, scs, total){
     html+=`<div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:6px">성적</div>`;
     html+=scs.map(s=>`
       <div onclick="switchTab('scores',document.querySelector('[data-tab=scores]'));closeSearch()" style="background:var(--sur);border:0.5px solid var(--bd);border-radius:11px;padding:10px 12px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px">
-        <div style="width:7px;height:7px;border-radius:50%;background:var(--t3);flex-shrink:0"></div>
+        <div style="width:3px;height:16px;border-radius:2px;background:var(--t3);flex-shrink:0"></div>
         <div style="flex:1">
           <div style="font-size:13px;font-weight:600;color:var(--t1)">${h(s.examName)}</div>
           <div style="font-size:11px;color:var(--t3);margin-top:2px">${s.examDate||''} · ${s.examType||''}</div>
@@ -5569,6 +5832,8 @@ window.showScreen = name => {
   if(name==='wn-add') resetWNAddForm();
   if(name==='daily-log') renderDailyLog();
   if(name==='pass-add') resetPassAddForm();
+  if(name==='score-add'){ renderScoreInputs(); renderSubjectSelects(); }
+  if(name==='lec-add'||name==='lec-edit') renderSubjectSelects();
 };
 window.closeScreen = name => { const id=screenMap[name]; if(id) document.getElementById(id).classList.remove('show'); };
 
@@ -5614,7 +5879,7 @@ window.addSTSubject = () => {
   const row=document.createElement('div');
   row.className='st-subject-row';
   row.style.cssText='display:flex;align-items:center;gap:8px;margin-bottom:8px';
-  row.innerHTML=`<span style="width:8px;height:8px;border-radius:50%;background:${col};flex-shrink:0"></span>
+  row.innerHTML=`<span style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></span>
     <input type="text" class="form-input" style="flex:1" placeholder="과목명">
     <input type="number" class="form-input" value="100" min="1" style="width:60px;text-align:center">
     <span style="font-size:12px;color:var(--t3)">점</span>
