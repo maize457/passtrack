@@ -1,9 +1,9 @@
-# PassTrack — 경찰 9급 공채 학습 관리 PWA
+# PWA
 
-경찰 9급 공채 수험생을 위한 스마트 학습 관리 앱입니다.
+.
 
-## 배포 URL
-**https://maize457.github.io/passtrack/passtrack-firebase.html**
+## 
+****
 
 ---
 
