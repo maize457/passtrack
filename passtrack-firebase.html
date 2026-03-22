@@ -1338,6 +1338,11 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       <div class="form-label">틀린 이유</div>
       <input type="text" class="form-input" id="wn-reason" placeholder="왜 틀렸는지 간단히">
     </div>
+    <!-- 참고서/페이지 -->
+    <div class="form-group">
+      <div class="form-label">참고서 / 페이지</div>
+      <input type="text" class="form-input" id="wn-reference" placeholder="예: 신광은 형사법 p.142">
+    </div>
     <!-- 오답 유형 -->
     <div class="form-group">
       <div class="form-label">오답 유형</div>
@@ -1394,6 +1399,14 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     <div class="form-group">
       <div class="form-label">정답/해설</div>
       <textarea class="form-input" id="wn-edit-answer"></textarea>
+    </div>
+    <div class="form-group">
+      <div class="form-label">틀린 이유</div>
+      <input type="text" class="form-input" id="wn-edit-reason" placeholder="왜 틀렸는지 간단히">
+    </div>
+    <div class="form-group">
+      <div class="form-label">참고서 / 페이지</div>
+      <input type="text" class="form-input" id="wn-edit-reference" placeholder="예: 신광은 형사법 p.142">
     </div>
     <div class="form-group">
       <div class="form-label">오답 유형</div>
@@ -3072,10 +3085,12 @@ function resetWNAddForm(){
   const a = document.getElementById('wn-answer');
   const t = document.getElementById('wn-topic');
   const r = document.getElementById('wn-reason');
+  const ref = document.getElementById('wn-reference');
   if(q){ q.value=''; q.style.height=''; }
   if(a){ a.value=''; a.style.height=''; }
   if(t) t.value='';
   if(r) r.value='';
+  if(ref) ref.value='';
   // 과목 기본값
   const s = document.getElementById('wn-subject');
   if(s) s.value='형사법';
@@ -3177,7 +3192,8 @@ window.saveWrongNote = async () => {
     question:(document.getElementById('wn-question')?.value||'').trim(),
     answer:  (document.getElementById('wn-answer')?.value||'').trim(),
     wrongType:_selectedWNType,
-    reason:document.getElementById('wn-reason')?.value.trim()||''
+    reason:document.getElementById('wn-reason')?.value.trim()||'',
+    reference:document.getElementById('wn-reference')?.value.trim()||''
   };
   let id;
   if(useLocal){
@@ -3197,7 +3213,7 @@ window.saveWrongNote = async () => {
   }
   if(useLocal){ saveLocal(); renderReview(); renderHomeReview(); }
   closeScreen('wn-add');
-  ['wn-topic','wn-question','wn-answer','wn-reason'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['wn-topic','wn-question','wn-answer','wn-reason','wn-reference'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   _selectedWNType='';
   document.querySelectorAll('#wn-type-chips .chip').forEach(c=>c.classList.remove('on'));
   showToast('저장 완료 · 복습 일정 5회차가 생성됐어요');
@@ -3210,17 +3226,44 @@ window.openWNDetail = id => {
   if(!w) return;
   const logs = D.reviewLogs.filter(r=>r.noteId===id).sort((a,b)=>a.round-b.round);
   const offsets=['+1일','+3일','+7일','+14일','+30일'];
+  // 틀린 횟수 = 복습 완료 횟수 (completedAt이 있는 reviewLog 수)
+  const wrongCount = logs.filter(r=>r.completedAt).length;
+
   document.getElementById('wn-detail-body').innerHTML = `
-    <div class="flex items-center gap-8 mb-14">
-      <div class="dot dot-${w.subject||'형사법'}"></div>
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+      <div class="dot dot-${w.subject||'형사법'}" style="flex-shrink:0"></div>
       <span class="tag tag-${tagClass(w.wrongType||'개념 부족')}">${w.wrongType||'유형 없음'}</span>
       <span class="fs-12 col-t3">${w.subject||''}</span>
+      ${w.reference?`<span style="font-size:10px;background:var(--sur2);color:var(--t3);border-radius:6px;padding:2px 8px;border:0.5px solid var(--bd)">${esc(w.reference)}</span>`:''}
+      ${wrongCount>0?`<span style="margin-left:auto;background:var(--re-bg);color:var(--re);font-size:11px;font-weight:700;border-radius:8px;padding:2px 9px;white-space:nowrap">${wrongCount}회 틀림</span>`:''}
     </div>
-    <div class="form-label mb-10">문제</div>
-    <div class="wnd-question">${escNL(w.question||'문제 내용 없음')}</div>
-    <div class="form-label mb-10">정답/해설</div>
-    <div class="wnd-answer">${escNL(w.answer||'해설 없음')}</div>
-    <div class="form-label mt-14 mb-10">복습 일정</div>
+    <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:8px">${esc(w.topic||'')}</div>
+    <div style="margin-bottom:8px">
+      <div class="form-label mb-10">문제</div>
+      <div class="wnd-question">${escNL(w.question||'문제 내용 없음')}</div>
+    </div>
+    <!-- 정답/해설 접기/펼치기 -->
+    <div style="border:0.5px solid var(--bd);border-radius:11px;overflow:hidden;margin-bottom:14px">
+      <button onclick="toggleWNAnswer(this)"
+        style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--sur);border:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--t1)">
+        <span>정답 / 해설</span>
+        <svg id="wn-answer-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .2s"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div id="wn-answer-body" style="display:none;padding:13px;background:var(--sur2);border-top:0.5px solid var(--bd);font-size:13px;color:var(--t2);line-height:1.6;word-break:break-word">
+        ${escNL(w.answer||'해설 없음')}
+      </div>
+    </div>
+    ${w.reason?`
+    <!-- 틀린 이유 접기/펼치기 -->
+    <div style="border:0.5px solid var(--bd);border-radius:11px;overflow:hidden;margin-bottom:14px">
+      <button onclick="toggleWNReason(this)"
+        style="width:100%;display:flex;align-items:center;justify-content:space-between;padding:11px 13px;background:var(--sur);border:none;cursor:pointer;font-size:13px;font-weight:600;color:var(--t1)">
+        <span>틀린 이유</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .2s"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <div style="display:none;padding:13px;background:var(--sur2);border-top:0.5px solid var(--bd);font-size:13px;color:var(--t2);line-height:1.6">${escNL(w.reason||'')}</div>
+    </div>`:''}
+    <div class="form-label mb-10">복습 일정</div>
     <div class="review-sched">
       ${logs.map((r,i)=>`
       <div class="review-sched-item ${r.completedAt?'done-item':''}">
@@ -3232,6 +3275,21 @@ window.openWNDetail = id => {
   showScreen('wn-detail');
 };
 
+window.toggleWNAnswer = (btn) => {
+  const body = document.getElementById('wn-answer-body');
+  const chevron = document.getElementById('wn-answer-chevron');
+  const open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  if(chevron) chevron.style.transform = open ? 'rotate(90deg)' : '';
+};
+window.toggleWNReason = (btn) => {
+  const body = btn.nextElementSibling;
+  const chevron = btn.querySelector('svg');
+  const open = body.style.display === 'none';
+  body.style.display = open ? 'block' : 'none';
+  if(chevron) chevron.style.transform = open ? 'rotate(90deg)' : '';
+};
+
 window.openWNEdit = () => {
   const w = D.wrongNotes.find(x=>x.id===_openWNId);
   if(!w) return;
@@ -3240,6 +3298,10 @@ window.openWNEdit = () => {
   document.getElementById('wn-edit-topic').value    = w.topic||'';
   document.getElementById('wn-edit-question').value = w.question||'';
   document.getElementById('wn-edit-answer').value   = w.answer||'';
+  const editReasonEl = document.getElementById('wn-edit-reason');
+  const editRefEl    = document.getElementById('wn-edit-reference');
+  if(editReasonEl) editReasonEl.value = w.reason||'';
+  if(editRefEl)    editRefEl.value    = w.reference||'';
   document.querySelectorAll('#wn-edit-type-chips .chip').forEach(c=>{ if(c.textContent===w.wrongType) c.classList.add('on'); else c.classList.remove('on'); });
   _selectedWNEditType = w.wrongType||'';
   showScreen('wn-edit');
@@ -3258,7 +3320,9 @@ window.updateWrongNote = async () => {
     topic:  (document.getElementById('wn-edit-topic')?.value||'').trim(),
     question:(document.getElementById('wn-edit-question')?.value||'').trim(),
     answer:  (document.getElementById('wn-edit-answer')?.value||'').trim(),
-    wrongType:_selectedWNEditType
+    wrongType:_selectedWNEditType,
+    reason:   (document.getElementById('wn-edit-reason')?.value||'').trim(),
+    reference:(document.getElementById('wn-edit-reference')?.value||'').trim()
   };
   if(useLocal){
     const i=D.wrongNotes.findIndex(x=>x.id===id);
@@ -3324,7 +3388,10 @@ function renderReview(){
     const done = !!r.completedAt;
     const subj = wn?.subject||'형사법';
     const col  = subj==='형사법'?'#e05252':subj==='경찰학개론'?'#4b6bfb':'#0891b2';
-    return `<div style="background:var(--sur);border-radius:11px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:9px;border:0.5px solid var(--bd);${done?'opacity:.55':''}">
+    const clickable = !!wn;
+    return `<div
+      style="background:var(--sur);border-radius:11px;padding:10px 12px;margin-bottom:7px;display:flex;align-items:center;gap:9px;border:0.5px solid var(--bd);${done?'opacity:.55':''};${clickable?'cursor:pointer':''}"
+      ${clickable?`onclick="openWNDetail('${wn.id}')"`:''}>
       <div style="width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--t2);flex-shrink:0;background:var(--sur2);border:0.5px solid var(--bd)">${r.round}</div>
       <div style="flex:1;min-width:0">
         <div style="font-size:12px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${done?'text-decoration:line-through':''}">${esc(wn?.topic||'삭제된 항목')}</div>
@@ -3333,22 +3400,24 @@ function renderReview(){
           ${subj} · ${r.scheduledAt}
         </div>
       </div>
-      ${done
-        ? `<span style="background:var(--gr-bg);color:var(--gr-txt);font-size:10px;font-weight:700;border-radius:6px;padding:2px 8px">완료</span>`
-        : `<button onclick="completeReview('${r.id}')" style="background:var(--sur2);color:var(--t2);font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 9px;cursor:pointer;white-space:nowrap">완료</button>`
-      }
+      <button onclick="event.stopPropagation();completeReview('${r.id}')"
+        style="background:${done?'var(--gr-bg)':'var(--sur2)'};color:${done?'var(--gr-txt)':'var(--t2)'};font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 9px;cursor:pointer;white-space:nowrap">
+        ${done?'완료':'미완료'}
+      </button>
     </div>`;
   }).join('');
 }
 
 window.completeReview = async id => {
-  const completedAt = nowISO();
+  const r = D.reviewLogs.find(x=>x.id===id);
+  if(!r) return;
+  const isDone = !!r.completedAt;
+  const newVal = isDone ? null : nowISO(); // 완료 → 미완료 토글
   if(useLocal){
-    const r=D.reviewLogs.find(x=>x.id===id);
-    if(r) r.completedAt=completedAt;
+    r.completedAt = newVal;
     saveLocal(); renderReview(); renderHomeReview(); renderTodayProgress();
-  } else { await fsSet('reviewLogs',id,{completedAt}); }
-  showToast('복습 완료!');
+  } else { await fsSet('reviewLogs', id, {completedAt: newVal}); }
+  showToast(isDone ? '미완료로 변경됐어요' : '복습 완료!');
 };
 
 function renderHomeReview(){
@@ -3366,20 +3435,25 @@ function renderHomeReview(){
     el.innerHTML=`<div style="padding:6px 0;font-size:12px;color:var(--t3);text-align:center">${all.length?'오늘 복습 완료 ✓':'오늘 복습 예정 없음'}</div>`;
     return;
   }
-  el.innerHTML = list.map((r,i)=>{
+  // 완료/미완료 모두 표시 (토글 가능)
+  el.innerHTML = all.slice(0,3).map((r,i,arr)=>{
     const wn = D.wrongNotes.find(w=>w.id===r.noteId);
+    const done = !!r.completedAt;
     const subj = wn?.subject||'형사법';
     const dotColor = subj==='형사법'?'#e05252':subj==='경찰학개론'?'#4b6bfb':'#0891b2';
-    const isLast = i===list.length-1;
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;${isLast?'':'border-bottom:0.5px solid var(--bd)'}">
-      <div style="display:flex;align-items:center;gap:7px">
+    const isLast = i===arr.length-1;
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;${isLast?'':'border-bottom:0.5px solid var(--bd)'};${done?'opacity:.55':''}">
+      <div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0;cursor:pointer" onclick="openWNDetail('${r.noteId}')">
         <div style="width:7px;height:7px;border-radius:50%;background:${dotColor};flex-shrink:0"></div>
-        <div>
-          <div style="font-size:12px;font-weight:500;color:var(--t1)">${esc(wn?.topic||'항목')}</div>
+        <div style="min-width:0">
+          <div style="font-size:12px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${done?'text-decoration:line-through':''}">${esc(wn?.topic||'항목')}</div>
           <div style="font-size:10px;color:var(--t3)">${subj} ${r.round}회차</div>
         </div>
       </div>
-      <button onclick="completeReview('${r.id}')" style="background:var(--sur2);color:var(--t2);font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:pointer">완료</button>
+      <button onclick="completeReview('${r.id}')"
+        style="background:${done?'var(--gr-bg)':'var(--sur2)'};color:${done?'var(--gr-txt)':'var(--t2)'};font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:pointer;flex-shrink:0;margin-left:8px">
+        ${done?'완료':'미완료'}
+      </button>
     </div>`;
   }).join('');
 }
@@ -5093,7 +5167,8 @@ window.setStudySubTab = (t,el) => {
   document.getElementById('study-wn').style.display    = t==='wn'?'block':'none';
   document.getElementById('study-review').style.display= t==='review'?'block':'none';
   const oxEl=document.getElementById('study-ox'); if(oxEl) oxEl.style.display= t==='ox'?'block':'none';
-  document.getElementById('study-add-btn').onclick = t==='wn' ? ()=>showScreen('wn-add') : t==='ox' ? ()=>generateOX() : null;
+  // 모든 탭에서 오답 추가 버튼은 wn-add로 연결
+  document.getElementById('study-add-btn').onclick = ()=>showScreen('wn-add');
 };
 
 // ── NAV ───────────────────────────────────────────────────
