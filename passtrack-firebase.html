@@ -247,6 +247,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .tag-실수{background:var(--am-bg);color:var(--am-txt)}
 .tag-시간{background:var(--re-bg);color:var(--re)}
 .tag-함정{background:#e0f2fe;color:#0891b2}
+.tag-복습{background:#f0fdf4;color:#16a34a}
 
 /* ===== TOGGLE ===== */
 .toggle-wrap{display:flex;align-items:center;gap:10px}
@@ -572,6 +573,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
 [data-theme="dark"] .tag-실수{background:#3b0a0a;color:#fca5a5}
 [data-theme="dark"] .tag-시간{background:#3b2002;color:#fcd34d}
 [data-theme="dark"] .tag-함정{background:#0c2233;color:#7dd3fc}
+[data-theme="dark"] .tag-복습{background:#052e16;color:#4ade80}
 [data-theme="dark"] .pomo-overlay{background:var(--bg)}
 [data-theme="dark"] #search-overlay{background:var(--bg)}
 [data-theme="dark"] .study-bar-wrap{background:var(--bg)}
@@ -755,6 +757,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
         <button class="chip" onclick="setWNFilter('type','실수',this)">실수</button>
         <button class="chip" onclick="setWNFilter('type','시간 부족',this)">시간 부족</button>
         <button class="chip" onclick="setWNFilter('type','함정 문제',this)">함정 문제</button>
+        <button class="chip" onclick="setWNFilter('type','복습',this)">복습</button>
       </div>
       <div style="padding:0 18px 20px" id="wn-list"></div>
     </div>
@@ -1330,6 +1333,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
         <button class="chip" onclick="selectWNType('실수',this)">실수</button>
         <button class="chip" onclick="selectWNType('시간 부족',this)">시간 부족</button>
         <button class="chip" onclick="selectWNType('함정 문제',this)">함정 문제</button>
+        <button class="chip" onclick="selectWNType('복습',this)">복습</button>
       </div>
     </div>
   </div>
@@ -1394,6 +1398,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
         <button class="chip" onclick="selectWNEditType('실수',this)">실수</button>
         <button class="chip" onclick="selectWNEditType('시간 부족',this)">시간 부족</button>
         <button class="chip" onclick="selectWNEditType('함정 문제',this)">함정 문제</button>
+        <button class="chip" onclick="selectWNEditType('복습',this)">복습</button>
       </div>
     </div>
     <button class="btn btn-danger btn-full" onclick="deleteWNFromEdit()">이 오답 삭제</button>
@@ -3095,10 +3100,9 @@ function renderTodayProgress(){
 let pomoState = { active:false, phase:'focus', remaining:0, focusSec:25*60, breakSec:5*60, sets:0, totalSets:4, lecId:null, place:'', interval:null, startTime:null, totalFocusSec:0 };
 
 window.quickStartPomo = id => {
-  // 기본값(마지막 사용 장소 또는 독서실, 25분/5분)으로 즉시 시작
-  const place = _selectedPlace || '독서실';
-  const focusSec = 25*60;
-  const breakSec = 5*60;
+  const place = lsGet('pt_last_place') || _selectedPlace || '독서실';
+  const focusSec = (lsGet('pt_last_focus_min') || 25) * 60;
+  const breakSec = (lsGet('pt_last_break_min') || 5) * 60;
   pomoStart(id, place, focusSec, breakSec);
 };
 
@@ -3111,9 +3115,10 @@ window.openPlaceSel = id => {
       <div><div class="fw-600 fs-14">${esc(l.title)}</div><div class="fs-12 col-t3">${esc(l.instructor||'')} · ${l.currentEp||0}/${l.totalEp}강</div></div>
     </div>` : '';
   showScreen('place-sel');
+  _restorePlaceSelUI();
 };
 
-let _selectedPlace = '독서실';
+let _selectedPlace = lsGet('pt_last_place') || '독서실';
 window.selectPlace = (p,el) => {
   document.querySelectorAll('.place-item').forEach(e=>e.classList.remove('sel'));
   el.classList.add('sel');
@@ -3121,16 +3126,53 @@ window.selectPlace = (p,el) => {
   document.getElementById('custom-place-input').style.display = p==='직접입력'?'block':'none';
 };
 
+function _restorePlaceSelUI(){
+  // 장소 선택 복원
+  const placeItems = document.querySelectorAll('.place-item');
+  let matched = false;
+  placeItems.forEach(el => {
+    const onclick = el.getAttribute('onclick')||'';
+    const m = onclick.match(/selectPlace\('([^']+)'/);
+    if(m && m[1]===_selectedPlace){ el.classList.add('sel'); matched=true; }
+    else el.classList.remove('sel');
+  });
+  // 직접입력이거나 매칭 없으면 커스텀 처리
+  const customItem = document.getElementById('custom-place-item');
+  const customInput = document.getElementById('custom-place-input');
+  if(!matched && customItem && customInput){
+    customItem.classList.add('sel');
+    customInput.style.display='block';
+    customInput.value=_selectedPlace;
+  } else if(customInput){
+    if(_selectedPlace!=='직접입력') customInput.style.display='none';
+  }
+  // 집중/휴식 시간 복원
+  const lastFocus = lsGet('pt_last_focus_min') || 25;
+  const lastBreak = lsGet('pt_last_break_min') || 5;
+  const focusEl = document.getElementById('pomo-focus-time');
+  const breakEl = document.getElementById('pomo-break-time');
+  const focusLbl = document.getElementById('pomo-focus-lbl');
+  const breakLbl = document.getElementById('pomo-break-lbl');
+  if(focusEl){ focusEl.value=lastFocus; if(focusLbl) focusLbl.textContent=lastFocus+'분'; }
+  if(breakEl){ breakEl.value=lastBreak; if(breakLbl) breakLbl.textContent=lastBreak+'분'; }
+}
+
 window.startPomo = () => {
   const lecId = document.getElementById('place-lec-id').value;
   const place = _selectedPlace==='직접입력' ? document.getElementById('custom-place-input').value||'기타' : _selectedPlace;
   const focusSec = parseInt(document.getElementById('pomo-focus-time').value)*60;
   const breakSec = parseInt(document.getElementById('pomo-break-time').value)*60;
+  // 마지막 사용 장소/시간 저장
+  lsSet('pt_last_place', place);
+  lsSet('pt_last_focus_min', focusSec/60);
+  lsSet('pt_last_break_min', breakSec/60);
+  _selectedPlace = place;
   closeScreen('place-sel');
   pomoStart(lecId, place, focusSec, breakSec);
 };
 
 function pomoStart(lecId, place, focusSec, breakSec){
+  if(pomoState.interval) clearInterval(pomoState.interval);
   pomoState = { active:true, phase:'focus', remaining:focusSec, focusSec, breakSec, sets:0, totalSets:4, lecId, place, interval:null, startTime:Date.now(), totalFocusSec:0 };
   // 진도 탭 카드에 활성 표시
   const badge = document.getElementById('pomo-active-badge');
@@ -3184,14 +3226,16 @@ function renderPomoUI(){
 }
 
 window.endPomo = () => {
+  if(!pomoState.active) return;
   clearInterval(pomoState.interval);
+  pomoState.interval = null;
   const badge = document.getElementById('pomo-active-badge');
   const barAct = document.getElementById('pomo-bar-actions');
   const clkEl  = document.getElementById('prog-clock-lbl');
   if(badge) badge.style.display='none';
   if(barAct) barAct.style.display='none';
   if(clkEl) clkEl.style.color='';
-  if(pomoState.active) showSessionSummary();
+  showSessionSummary();
   pomoState.active = false;
   renderStudyBar(); // 저장된 세션 기준으로 복원
 };
@@ -3253,6 +3297,7 @@ window.nextLecture = async () => {
   await saveSession();
   closeScreen('session-summary');
   showScreen('place-sel');
+  _restorePlaceSelUI();
 };
 async function saveSession(){
   const s = pomoState;
@@ -3366,7 +3411,7 @@ function renderWN(){
         <div style="font-size:12px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(w.topic)}</div>
         <div style="font-size:10px;color:var(--t3);margin-top:2px;display:flex;align-items:center;gap:3px;flex-wrap:wrap">
           ${esc(w.subject||'')}
-          ${w.wrongType?`· <span style="background:${tagCls==='개념'?'#f0f4ff':tagCls==='실수'?'#fff0f0':tagCls==='시간'?'#fffbeb':'#e0f2fe'};color:${tagCls==='개념'?'#4b6bfb':tagCls==='실수'?'#e05252':tagCls==='시간'?'#b45309':'#0891b2'};font-size:10px;font-weight:700;border-radius:5px;padding:1px 6px">${esc(w.wrongType)}</span>`:''}
+          ${w.wrongType?`· <span style="background:${tagCls==='개념'?'#f0f4ff':tagCls==='실수'?'#fff0f0':tagCls==='시간'?'#fffbeb':tagCls==='복습'?'#f0fdf4':'#e0f2fe'};color:${tagCls==='개념'?'#4b6bfb':tagCls==='실수'?'#e05252':tagCls==='시간'?'#b45309':tagCls==='복습'?'#16a34a':'#0891b2'};font-size:10px;font-weight:700;border-radius:5px;padding:1px 6px">${esc(w.wrongType)}</span>`:''}
           ${pending?`· 복습 ${pending}회차 예정`:''}
         </div>
       </div>
@@ -3375,7 +3420,7 @@ function renderWN(){
   }).join('');
 }
 
-const tagClass = t => t==='개념 부족'?'개념':t==='실수'?'실수':t==='시간 부족'?'시간':'함정';
+const tagClass = t => t==='개념 부족'?'개념':t==='실수'?'실수':t==='시간 부족'?'시간':t==='복습'?'복습':'함정';
 
 window.saveWrongNote = async () => {
   const subject = document.getElementById('wn-subject')?.value||'형사법';
@@ -5509,15 +5554,19 @@ function renderScoreTypeChips(){
   if(filterRow){
     const cur = filterRow.querySelector('.chip.on')?.textContent||'전체';
     filterRow.innerHTML = `<button class="chip ${cur==='전체'?'on':''}" onclick="setScoreFilter('전체',this)">전체</button>`
-      + types.map(t=>`<button class="chip ${cur===t.name?'on':''}" onclick="setScoreFilter('${t.name}',this)">${esc(t.name)}</button>`).join('')
-      + `<button class="chip" onclick="showScreen('score-type-add')" style="color:var(--pol)">+ 추가</button>`;
+      + types.map(t=>`<span style="display:inline-flex;align-items:center;gap:0;border-radius:8px;border:1px solid var(--bd);overflow:hidden;flex-shrink:0">
+          <button class="chip ${cur===t.name?'on':''}" onclick="setScoreFilter('${esc(t.name)}',this)" style="border:none;border-radius:0;margin:0">${esc(t.name)}</button>
+          <button onclick="openScoreTypeEdit('${esc(t.name)}')" style="background:var(--sur);border:none;border-left:1px solid var(--bd);padding:4px 6px;cursor:pointer;color:var(--t3);display:flex;align-items:center" title="수정"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button onclick="deleteScoreType('${esc(t.name)}')" style="background:var(--sur);border:none;border-left:1px solid var(--bd);padding:4px 6px;cursor:pointer;color:var(--t3);display:flex;align-items:center" title="삭제"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+        </span>`).join('')
+      + `<button class="chip" onclick="openScoreTypeAdd()" style="color:var(--pol)">+ 추가</button>`;
   }
   // 성적 추가 칩
   const addChips = document.getElementById('score-type-chips');
   if(addChips){
     const curAdd = _scoreAddType||'경찰시험';
     addChips.innerHTML = types.map(t=>`<button class="chip ${curAdd===t.name?'on':''}" onclick="selectScoreType('${t.name}',this)">${esc(t.name)}</button>`).join('')
-      + `<button class="chip" onclick="showScreen('score-type-add')" style="color:var(--pol)">+ 새로 만들기</button>`;
+      + `<button class="chip" onclick="openScoreTypeAdd()" style="color:var(--pol)">+ 새로 만들기</button>`;
   }
   // 성적 편집 칩
   const editChips = document.getElementById('score-edit-type-chips');
@@ -6172,10 +6221,19 @@ window.deleteScoreType = async (name) => {
 };
 
 // 시험 종류 수정 버튼 — 해당 종류 데이터로 폼 채워서 열기
+window.openScoreTypeAdd = () => {
+  document.getElementById('st-name').value = '';
+  const titleEl = document.querySelector('#fs-score-type-add .fs-header-title');
+  if(titleEl) titleEl.textContent = '시험 종류';
+  showScreen('score-type-add');
+};
+
 window.openScoreTypeEdit = (name) => {
   const t = getScoreTypeByName(name);
   if(!t) return;
   document.getElementById('st-name').value = name;
+  const titleEl = document.querySelector('#fs-score-type-add .fs-header-title');
+  if(titleEl) titleEl.textContent = '시험 종류 수정';
   const list = document.getElementById('st-subjects-list');
   if(list){
     list.innerHTML = (t.subjects||[]).map((s,i)=>{
