@@ -816,7 +816,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
               <button id="graph-sub-btn" onclick="setGraphMode('sub',this)" style="font-size:10px;background:var(--sur2);color:var(--t3);border:0.5px solid var(--bd);border-radius:5px;padding:3px 8px;cursor:pointer;font-weight:600">과목별</button>
             </div>
           </div>
-          <div id="score-graph-scroll" style="overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none;margin:0 -14px;padding:0 14px">
+          <div id="score-graph-scroll" style="overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-ms-overflow-style:none">
             <svg id="score-graph" class="graph-svg" height="130" style="display:block"></svg>
           </div>
           <div style="display:flex;justify-content:space-around;margin-top:8px" id="graph-legend"></div>
@@ -3718,7 +3718,30 @@ window.completeReview = async id => {
   renderReview(); renderHomeReview(); renderTodayProgress();
   // 오답 상세 열려있으면 복습 일정도 갱신
   if(_openWNId && document.getElementById('fs-wn-detail')?.classList.contains('show')) openWNDetail(_openWNId);
-  showToast(isDone ? '미완료로 변경됐어요' : '복습 완료!');
+
+  if(!isDone){
+    // 오늘 예정 로그가 모두 완료됐는지 확인
+    const todayLogs = D.reviewLogs.filter(r=>r.scheduledAt===today());
+    const todayAllDone = todayLogs.length > 0 && todayLogs.every(r=>r.completedAt);
+    if(todayAllDone){
+      // 오늘 이전 날짜에 예정됐으나 미완료인 로그 중 가장 낮은 회차
+      const overdue = D.reviewLogs
+        .filter(r=>!r.completedAt && r.scheduledAt < today())
+        .sort((a,b)=> a.scheduledAt < b.scheduledAt ? -1 : a.scheduledAt > b.scheduledAt ? 1 : (a.round||0)-(b.round||0));
+      if(overdue.length > 0){
+        const oldest = overdue[0];
+        const wn = D.wrongNotes.find(w=>w.id===oldest.noteId);
+        const label = wn?.topic ? `[${wn.topic}] ${oldest.round}회차` : `${oldest.round}회차`;
+        showToast(`오늘 복습 완료! 미완료 ${label} 남아있어요`);
+      } else {
+        showToast('오늘 복습 완료!');
+      }
+    } else {
+      showToast('복습 완료!');
+    }
+  } else {
+    showToast('미완료로 변경됐어요');
+  }
 };
 
 function renderHomeReview(){
@@ -4216,7 +4239,13 @@ function renderScoreGraph(list){
 
   // 포인트당 최소 간격 36px, 카드 내부 너비 기준 최소폭
   const scrollWrap = document.getElementById('score-graph-scroll');
-  const containerW = scrollWrap ? (scrollWrap.offsetWidth || 292) : 292;
+  // offsetWidth가 0(렌더 전)이면 카드 또는 탭 너비에서 추정
+  let containerW = scrollWrap?.offsetWidth || 0;
+  if(!containerW){
+    const card = scrollWrap?.closest('.card');
+    containerW = card ? (card.offsetWidth - 28) : (document.getElementById('tab-scores')?.offsetWidth || window.innerWidth) - 56;
+  }
+  containerW = Math.max(containerW, 260);
   const MIN_STEP = 36;
   const LPad=26, RPad=8, TPad=12, BPad=18, DPad=16;
   const minW = list.length > 1 ? Math.max(containerW, LPad + RPad + DPad*2 + (list.length-1)*MIN_STEP) : containerW;
