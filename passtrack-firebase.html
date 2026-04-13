@@ -647,7 +647,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     <!-- FOCUS FORECAST -->
     <div id="focus-card" style="border-radius:11px;padding:9px 11px;margin:0 14px 9px;border:0.5px solid var(--bd);background:var(--sur)">
       <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px">
-        <svg id="focus-icon-svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <svg id="focus-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gr)" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         <span style="font-size:12px;font-weight:700;color:var(--t1)" id="focus-title">컨디션 양호</span>
         <span style="font-size:10px;font-weight:600;margin-left:auto;color:var(--gr)" id="focus-badge"></span>
         <button id="focus-dismiss-btn" style="background:none;border:none;cursor:pointer;color:var(--t3);padding:0 0 0 4px;line-height:1;display:none" onclick="document.getElementById('focus-card').style.display='none'">
@@ -670,17 +670,17 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
           <span style="font-size:10px;color:var(--t3)" id="weekly-period-lbl"></span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:8px">
-          <div style="background:var(--sur2);border-radius:8px;padding:6px 4px;text-align:center">
-            <div style="font-size:15px;font-weight:700;color:var(--t1)" id="weekly-study-time">0m</div>
-            <div style="font-size:9px;color:var(--t3);margin-top:1px">순공</div>
+          <div style="background:var(--sur2);border-radius:8px;padding:8px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+            <div style="font-size:14px;font-weight:700;color:var(--t1);line-height:1" id="weekly-study-time">0m</div>
+            <div style="font-size:9px;color:var(--t3)">순공</div>
           </div>
-          <div style="background:var(--sur2);border-radius:8px;padding:6px 4px;text-align:center">
-            <div style="font-size:12px;font-weight:700;color:var(--t1)" id="weekly-best-day">—</div>
-            <div style="font-size:9px;color:var(--t3);margin-top:1px">최고 집중</div>
+          <div style="background:var(--sur2);border-radius:8px;padding:8px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+            <div style="font-size:14px;font-weight:700;color:var(--t1);line-height:1" id="weekly-best-day">—</div>
+            <div style="font-size:9px;color:var(--t3)">최고 집중</div>
           </div>
-          <div style="background:var(--re-bg);border-radius:8px;padding:6px 4px;text-align:center">
-            <div style="font-size:12px;font-weight:700;color:var(--re)" id="weekly-weak-subj">—</div>
-            <div style="font-size:9px;color:var(--re);margin-top:1px">오답 1위</div>
+          <div style="background:var(--re-bg);border-radius:8px;padding:8px 4px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+            <div style="font-size:14px;font-weight:700;color:var(--re);line-height:1" id="weekly-weak-subj">—</div>
+            <div style="font-size:9px;color:var(--re)">오답 1위</div>
           </div>
         </div>
         <div style="font-size:11px;color:var(--t2);line-height:1.6;border-top:0.5px solid var(--bd);padding-top:7px" id="ai-weekly-body">학습 데이터가 쌓이면 AI가 맞춤 분석을 제공해요.</div>
@@ -1209,7 +1209,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
         </div>
         <div style="width:0.5px;background:#374151"></div>
         <div style="flex:1;text-align:center">
-          <div style="font-size:14px;font-weight:700;color:#fff" id="session-place-lbl">—</div>
+          <div style="font-size:16px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="session-place-lbl">—</div>
           <div style="font-size:9px;color:#6b7280;margin-top:2px">공부 장소</div>
         </div>
       </div>
@@ -1737,17 +1737,17 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
           <span style="background:var(--sur2);color:var(--t3);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;border:0.5px solid var(--bd)">AI 생성</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:11px">
-          <div style="background:var(--sur2);border-radius:9px;padding:8px 5px;text-align:center">
-            <div style="font-size:17px;font-weight:700;color:var(--t1)" id="report-study-time">0m</div>
-            <div style="font-size:9px;color:var(--t3);margin-top:2px">순공 시간</div>
+          <div style="background:var(--sur2);border-radius:9px;padding:8px 5px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+            <div style="font-size:16px;font-weight:700;color:var(--t1);line-height:1" id="report-study-time">0m</div>
+            <div style="font-size:9px;color:var(--t3)">순공 시간</div>
           </div>
-          <div style="background:var(--sur2);border-radius:9px;padding:8px 5px;text-align:center">
-            <div style="font-size:17px;font-weight:700;color:var(--t1)" id="report-best-day">—</div>
-            <div style="font-size:9px;color:var(--t3);margin-top:2px">최고 집중</div>
+          <div style="background:var(--sur2);border-radius:9px;padding:8px 5px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+            <div style="font-size:16px;font-weight:700;color:var(--t1);line-height:1" id="report-best-day">—</div>
+            <div style="font-size:9px;color:var(--t3)">최고 집중</div>
           </div>
-          <div style="background:var(--re-bg);border-radius:9px;padding:8px 5px;text-align:center">
-            <div style="font-size:13px;font-weight:700;color:var(--re)" id="report-weak-subj">—</div>
-            <div style="font-size:9px;color:var(--re);margin-top:2px">오답률 1위</div>
+          <div style="background:var(--re-bg);border-radius:9px;padding:8px 5px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+            <div style="font-size:16px;font-weight:700;color:var(--re);line-height:1" id="report-weak-subj">—</div>
+            <div style="font-size:9px;color:var(--re)">오답률 1위</div>
           </div>
         </div>
         <!-- 요일별 바 차트 -->
@@ -2820,17 +2820,32 @@ function renderLectures(){
   </div>`;
     return;
   }
+  // 오늘 강의별 세션 수
+  const todayStr = today();
+  const todaySessMap = {};
+  D.sessions.filter(s=>s.date===todayStr&&s.lecId).forEach(s=>{
+    todaySessMap[s.lecId] = (todaySessMap[s.lecId]||0)+1;
+  });
   el.innerHTML = D.lectures.map(l => {
     const pct  = l.totalEp ? Math.round((l.currentEp||0)/l.totalEp*100) : 0;
     const sub  = l.subject||'형사법';
     const col  = getSubjectColor(sub);
     const done = pct>=100;
-    // week chips: show current ep rounded to nearest 5 as past sessions
+    // 오늘 세션 수 기반 칩 (5개 슬롯, 초과는 +N 표시)
+    const todaySets = todaySessMap[l.id]||0;
     const chips = [];
-    const shown = Math.min(l.currentEp||0, 5);
     for(let i=1;i<=5;i++){
-      if(i<=shown) chips.push(`<div style="width:22px;height:22px;border-radius:5px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;background:${col};color:#fff">${i}</div>`);
-      else chips.push(`<div style="width:22px;height:22px;border-radius:5px;font-size:9px;font-weight:600;display:flex;align-items:center;justify-content:center;background:var(--sur2);color:var(--t3);border:0.5px solid var(--bd)">${i}</div>`);
+      if(i<5){
+        const filled = i<=todaySets;
+        chips.push(`<div style="width:22px;height:22px;border-radius:5px;font-size:9px;font-weight:${filled?'700':'600'};display:flex;align-items:center;justify-content:center;background:${filled?col:'var(--sur2)'};color:${filled?'#fff':'var(--t3)'};border:0.5px solid ${filled?'transparent':'var(--bd)'}">${i}</div>`);
+      } else {
+        // 5번째 슬롯: 5세트 이상이면 총 세트 수 표시
+        if(todaySets>=5){
+          chips.push(`<div style="width:22px;height:22px;border-radius:5px;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;background:${col};color:#fff">${todaySets>5?todaySets:5}</div>`);
+        } else {
+          chips.push(`<div style="width:22px;height:22px;border-radius:5px;font-size:9px;font-weight:600;display:flex;align-items:center;justify-content:center;background:var(--sur2);color:var(--t3);border:0.5px solid var(--bd)">5</div>`);
+        }
+      }
     }
     return `<div class="card" style="margin-bottom:8px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
@@ -2851,7 +2866,7 @@ function renderLectures(){
         <div style="width:${pct}%;height:100%;background:${col};border-radius:2px;transition:width .4s"></div>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="display:flex;flex-wrap:wrap;gap:3px">${chips.join('')}</div>
+        <div style="display:flex;flex-wrap:nowrap;gap:3px">${chips.join('')}</div>
         ${done
           ? `<span style="background:var(--gr-bg);color:var(--gr-txt);border-radius:16px;padding:5px 12px;font-size:11px;font-weight:700">완강 ✓</span>`
           : `<div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px"><button onclick="quickStartPomo('${l.id}')" style="background:var(--t1);border:none;border-radius:16px;padding:5px 13px;font-size:11px;font-weight:700;color:#fff;cursor:pointer;display:flex;align-items:center;gap:4px;flex-shrink:0"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>시작</button><span onclick="openPlaceSel('${l.id}')" style="font-size:9px;color:var(--t3);cursor:pointer;text-decoration:underline">장소/시간 설정</span></div>`
@@ -2909,6 +2924,7 @@ function renderHomeLec(){
   el.style.cssText = sorted.length > 3 ? 'max-height:132px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none' : '';
   el.innerHTML = (sorted.length > 3 ? '<style>#today-lec-list::-webkit-scrollbar{display:none}</style>' : '')
     + sorted.map((l,i)=>makeRow(l, i===sorted.length-1)).join('');
+  el.scrollTop = 0; // 정렬 후 맨 위로
 }
 
 window.quickLecDone = async id => {
@@ -2948,7 +2964,7 @@ function openCompleteScreen(l){
   const nextEl = document.getElementById('complete-next-lec');
   if(others.length && nextEl){
     const nx = others[0];
-    const col = (nx.subject||'형사법')==='형사법'?'#e05252':nx.subject==='경찰학개론'?'#4b6bfb':'#0891b2';
+    const col = getSubjectColor(nx.subject||'');
     nextEl.innerHTML=`<div style="display:flex;align-items:center;gap:8px"><div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></div><div><div style="font-size:12px;font-weight:600;color:var(--t1)">${esc(nx.title)}</div><div style="font-size:10px;color:var(--t3)">${nx.currentEp||0}/${nx.totalEp}강 진행 중</div></div></div>`;
   } else if(nextEl){ nextEl.innerHTML='<div style="font-size:12px;color:var(--t3)">다음 강의가 없어요</div>'; }
   showScreen('lec-complete');
@@ -3293,7 +3309,7 @@ async function showSessionSummary(){
     </div>
     <div style="width:0.5px;background:#374151"></div>
     <div style="flex:1;text-align:center">
-      <div style="font-size:14px;font-weight:700;color:#fff">${esc(s.place)}</div>
+      <div style="font-size:16px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(s.place)}</div>
       <div style="font-size:9px;color:#6b7280;margin-top:2px">공부 장소</div>
     </div>`;
   const lblEl=document.getElementById('session-lec-lbl');
@@ -3439,7 +3455,7 @@ function renderWN(){
   }
   el.innerHTML = list.map(w=>{
     const pending = D.reviewLogs.filter(r=>r.noteId===w.id&&!r.completedAt).length;
-    const col = (w.subject||'형사법')==='형사법'?'#e05252':(w.subject==='경찰학개론'?'#4b6bfb':'#0891b2');
+    const col = getSubjectColor(w.subject||'');
     const tagCls = tagClass(w.wrongType||'');
     return `<div style="background:var(--sur);border-radius:11px;padding:9px 10px;margin-bottom:6px;border:0.5px solid var(--bd);display:flex;align-items:center;gap:7px;cursor:pointer" onclick="openWNDetail('${w.id}')">
       <div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0;margin-top:3px"></div>
@@ -3720,29 +3736,38 @@ window.completeReview = async id => {
   if(_openWNId && document.getElementById('fs-wn-detail')?.classList.contains('show')) openWNDetail(_openWNId);
 
   if(!isDone){
-    // 오늘 예정 로그가 모두 완료됐는지 확인
-    const todayLogs = D.reviewLogs.filter(r=>r.scheduledAt===today());
-    const todayAllDone = todayLogs.length > 0 && todayLogs.every(r=>r.completedAt);
-    if(todayAllDone){
-      // 오늘 이전 날짜에 예정됐으나 미완료인 로그 중 가장 낮은 회차
-      const overdue = D.reviewLogs
-        .filter(r=>!r.completedAt && r.scheduledAt < today())
-        .sort((a,b)=> a.scheduledAt < b.scheduledAt ? -1 : a.scheduledAt > b.scheduledAt ? 1 : (a.round||0)-(b.round||0));
-      if(overdue.length > 0){
-        const oldest = overdue[0];
-        const wn = D.wrongNotes.find(w=>w.id===oldest.noteId);
-        const label = wn?.topic ? `[${wn.topic}] ${oldest.round}회차` : `${oldest.round}회차`;
-        showToast(`오늘 복습 완료! 미완료 ${label} 남아있어요`);
-      } else {
-        showToast('오늘 복습 완료!');
-      }
-    } else {
-      showToast('복습 완료!');
-    }
+    showToast('복습 완료!');
   } else {
     showToast('미완료로 변경됐어요');
   }
 };
+
+function _renderOverdueList(el, list){
+  // 과거 미완료 복습 로그 목록 렌더 (최대 스크롤)
+  const makeRow = (r, isLast) => {
+    const wn = D.wrongNotes.find(w=>w.id===r.noteId);
+    const subj = wn?.subject||'형사법';
+    const dotColor = getSubjectColor(subj);
+    const daysAgo = Math.max(0, Math.floor((new Date(today()) - new Date(r.scheduledAt)) / 86400000));
+    const agoLbl = daysAgo===0?'오늘':daysAgo+'일 전';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:5px 0;${isLast?'':'border-bottom:0.5px solid var(--bd)'}">
+      <div style="display:flex;align-items:center;gap:7px;flex:1;min-width:0;cursor:pointer" onclick="openWNDetail('${r.noteId}')">
+        <div style="width:3px;height:16px;border-radius:2px;background:${dotColor};flex-shrink:0"></div>
+        <div style="min-width:0">
+          <div style="font-size:12px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(wn?.topic||'항목')}</div>
+          <div style="font-size:10px;color:var(--re)">${subj} ${r.round}회차 · ${agoLbl}</div>
+        </div>
+      </div>
+      <button onclick="completeReview('${r.id}')"
+        style="background:var(--sur2);color:var(--t2);font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:pointer;flex-shrink:0;margin-left:8px">
+        미완료
+      </button>
+    </div>`;
+  };
+  el.style.cssText = list.length>3 ? 'max-height:120px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none' : '';
+  el.innerHTML = (list.length>3?'<style>#today-review-list::-webkit-scrollbar{display:none}</style>':'')
+    + list.map((r,i)=>makeRow(r,i===list.length-1)).join('');
+}
 
 function renderHomeReview(){
   const all = D.reviewLogs.filter(r=>r.scheduledAt===today());
@@ -3755,11 +3780,29 @@ function renderHomeReview(){
     else { badge.textContent='—'; }
   }
   if(!all.length){
-    el.innerHTML=`<div style="padding:6px 0;font-size:12px;color:var(--t3);text-align:center">오늘 복습 예정 없음</div>`;
+    // 오늘 예정 없음 — 과거 미완료 로그 확인
+    const overdue = D.reviewLogs
+      .filter(r=>!r.completedAt && r.scheduledAt < today())
+      .sort((a,b)=> a.scheduledAt<b.scheduledAt?-1:a.scheduledAt>b.scheduledAt?1:(a.round||0)-(b.round||0));
+    if(overdue.length>0){
+      if(badge){ badge.textContent='밀린 복습 '+overdue.length+'개'; badge.style.color='var(--re)'; }
+      _renderOverdueList(el, overdue);
+    } else {
+      el.innerHTML=`<div style="padding:6px 0;font-size:12px;color:var(--t3);text-align:center">오늘 복습 예정 없음</div>`;
+    }
     return;
   }
   if(!pending.length){
-    el.innerHTML=`<div style="padding:6px 0;font-size:12px;color:var(--t3);text-align:center">오늘 복습 완료 ✓</div>`;
+    // 오늘 예정 모두 완료 — 과거 미완료 로그 확인
+    const overdue = D.reviewLogs
+      .filter(r=>!r.completedAt && r.scheduledAt < today())
+      .sort((a,b)=> a.scheduledAt<b.scheduledAt?-1:a.scheduledAt>b.scheduledAt?1:(a.round||0)-(b.round||0));
+    if(overdue.length>0){
+      if(badge){ badge.textContent='밀린 복습 '+overdue.length+'개'; badge.style.color='var(--re)'; }
+      _renderOverdueList(el, overdue);
+    } else {
+      el.innerHTML=`<div style="padding:6px 0;font-size:12px;color:var(--t3);text-align:center">오늘 복습 완료 ✓</div>`;
+    }
     return;
   }
   // 미완료 우선, 완료는 뒤로 정렬
@@ -4210,24 +4253,24 @@ function renderScoreStats(list){
   const statsEl = document.getElementById('score-stats-row');
   if(!statsEl) return;
   statsEl.innerHTML = `
-    <div style="flex:1;text-align:center;padding:4px 0">
-      <div style="font-size:9px;color:var(--t3);margin-bottom:3px">최고</div>
-      <div style="font-size:15px;font-weight:800;color:var(--pol)">${maxV}${maxV!=='-'?'%':''}</div>
+    <div style="flex:1;text-align:center;padding:4px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+      <div style="font-size:15px;font-weight:800;color:var(--pol);line-height:1">${maxV}${maxV!=='-'?'%':''}</div>
+      <div style="font-size:9px;color:var(--t3)">최고</div>
     </div>
     <div style="width:0.5px;background:var(--bd)"></div>
-    <div style="flex:1;text-align:center;padding:4px 0">
-      <div style="font-size:9px;color:var(--t3);margin-bottom:3px">최근</div>
-      <div style="font-size:15px;font-weight:800;color:var(--t1)">${recentV}${recentV!=='-'?'%':''}</div>
+    <div style="flex:1;text-align:center;padding:4px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+      <div style="font-size:15px;font-weight:800;color:var(--t1);line-height:1">${recentV}${recentV!=='-'?'%':''}</div>
+      <div style="font-size:9px;color:var(--t3)">최근</div>
     </div>
     <div style="width:0.5px;background:var(--bd)"></div>
-    <div style="flex:1;text-align:center;padding:4px 0">
-      <div style="font-size:9px;color:var(--t3);margin-bottom:3px">평균</div>
-      <div style="font-size:15px;font-weight:800;color:var(--t1)">${avgV}${avgV!=='-'?'%':''}</div>
+    <div style="flex:1;text-align:center;padding:4px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+      <div style="font-size:15px;font-weight:800;color:var(--t1);line-height:1">${avgV}${avgV!=='-'?'%':''}</div>
+      <div style="font-size:9px;color:var(--t3)">평균</div>
     </div>
     <div style="width:0.5px;background:var(--bd)"></div>
-    <div style="flex:1;text-align:center;padding:4px 0">
-      <div style="font-size:9px;color:var(--t3);margin-bottom:3px">변화</div>
-      <div style="font-size:15px;font-weight:800;color:${chgColor}">${chg!=='-'?(Number(chg)>0?'+':'')+chg+'%':'-'}</div>
+    <div style="flex:1;text-align:center;padding:4px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+      <div style="font-size:15px;font-weight:800;color:${chgColor};line-height:1">${chg!=='-'?(Number(chg)>0?'+':'')+chg+'%':'-'}</div>
+      <div style="font-size:9px;color:var(--t3)">변화</div>
     </div>
   `;
 }
@@ -4620,7 +4663,7 @@ function renderOXQuiz(){
   el.innerHTML=_oxQuizList.map((q,i)=>`
     <div class="card mb-10" id="ox-card-${i}">
       <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px">
-        ${q.subject?`<span style="font-size:9px;background:${q.subject==='형사법'?'#fee2e2':q.subject==='경찰학개론'?'#eff6ff':'#e0f2fe'};color:${q.subject==='형사법'?'#e05252':q.subject==='경찰학개론'?'#4b6bfb':'#0891b2'};border-radius:5px;padding:1px 6px;font-weight:700">${esc(q.subject)}</span>`:''}
+        ${q.subject?`<span style="font-size:9px;background:${getSubjectColor(q.subject)}22;color:${getSubjectColor(q.subject)};border-radius:5px;padding:1px 6px;font-weight:700">${esc(q.subject)}</span>`:''}
         ${q.topic?`<span style="font-size:9px;color:var(--t3)">${esc(q.topic)}</span>`:''}
       </div>
       <div class="fs-14 fw-600 mb-10">${esc(q.q)}</div>
@@ -6135,7 +6178,7 @@ function renderSearchResults(kw, wns, rvs, lecs, scs, total){
   if(wnShow){
     html+=`<div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:6px">오답노트</div>`;
     html+=wns.map(w=>{
-      const col=(w.subject||'')==='형사법'?'#e05252':(w.subject==='경찰학개론'?'#4b6bfb':'#0891b2');
+      const col=getSubjectColor(w.subject||'');
       return `<div onclick="openWNDetail('${w.id}');closeSearch()" style="background:var(--sur);border:0.5px solid var(--bd);border-radius:11px;padding:10px 12px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px">
         <div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></div>
         <div style="flex:1;min-width:0">
@@ -6152,7 +6195,7 @@ function renderSearchResults(kw, wns, rvs, lecs, scs, total){
     html+=`<div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:6px">복습 일정</div>`;
     html+=rvs.slice(0,5).map(r=>{
       const wn=D.wrongNotes.find(w=>w.id===r.noteId);
-      const col=(wn?.subject||'')==='형사법'?'#e05252':(wn?.subject==='경찰학개론'?'#4b6bfb':'#0891b2');
+      const col=getSubjectColor(wn?.subject||'');
       return `<div onclick="setStudySubTab('review',document.querySelector('[data-study-tab=review]'));switchTab('study',document.querySelector('[data-tab=study]'));closeSearch()" style="background:var(--sur);border:0.5px solid var(--bd);border-radius:11px;padding:10px 12px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px">
         <div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></div>
         <div style="flex:1">
@@ -6168,7 +6211,7 @@ function renderSearchResults(kw, wns, rvs, lecs, scs, total){
   if(lcShow){
     html+=`<div style="font-size:11px;font-weight:700;color:var(--t3);margin-bottom:6px">강의</div>`;
     html+=lecs.map(l=>{
-      const col=(l.subject||'')==='형사법'?'#e05252':(l.subject==='경찰학개론'?'#4b6bfb':'#0891b2');
+      const col=getSubjectColor(l.subject||'');
       const pct=l.totalEp?Math.round((l.currentEp||0)/l.totalEp*100):0;
       return `<div onclick="switchTab('progress',document.querySelector('[data-tab=progress]'));closeSearch()" style="background:var(--sur);border:0.5px solid var(--bd);border-radius:11px;padding:10px 12px;margin-bottom:6px;cursor:pointer;display:flex;align-items:center;gap:10px">
         <div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></div>
@@ -6235,7 +6278,15 @@ window.switchTab = (name, el, skipHistory=false) => {
 };
 
 // 뒤로가기 이벤트 처리
+let _screenClosingByButton = false;
 window.addEventListener('popstate', e => {
+  if(_screenClosingByButton){ _screenClosingByButton = false; return; }
+  const screenName = e.state?.screen;
+  if(screenName){
+    const id = screenMap[screenName];
+    if(id) document.getElementById(id)?.classList.remove('show');
+    return;
+  }
   const tab = e.state?.tab || 'home';
   switchTab(tab, null, true);
 });
@@ -6271,8 +6322,17 @@ window.showScreen = name => {
   if(name==='pass-add') resetPassAddForm();
   if(name==='score-add'){ renderScoreTypeChips(); updateScoreInputsByType(_scoreAddType||'경찰시험'); renderSubjectSelects(); }
   if(name==='lec-add'||name==='lec-edit') renderSubjectSelects();
+  // 뒤로가기로 닫을 수 있도록 history에 등록
+  history.pushState({screen: name, tab: history.state?.tab||'home'}, '', '#'+name);
 };
-window.closeScreen = name => { const id=screenMap[name]; if(id) document.getElementById(id).classList.remove('show'); };
+window.closeScreen = name => {
+  const id=screenMap[name]; if(id) document.getElementById(id).classList.remove('show');
+  // 버튼으로 닫을 때 history entry 제거 (popstate 중복 방지)
+  if(history.state?.screen === name){
+    _screenClosingByButton = true;
+    history.back();
+  }
+};
 
 // ── SHEETS ────────────────────────────────────────────────
 window.showSheet = id => document.getElementById(id).classList.add('show');
