@@ -53,7 +53,7 @@ body{display:flex;justify-content:center;align-items:center;font-family:'Apple S
 input,textarea,select,button{font-family:inherit;font-size:inherit}
 a{color:inherit;text-decoration:none}
 ul,ol{list-style:none}
-button{cursor:pointer;border:none;background:none;outline:none}
+button{cursor:pointer;border:none;background:none;outline:none;display:inline-flex;align-items:center;justify-content:center;line-height:1.2}
 
 /* ===== APP SHELL ===== */
 #app {
@@ -380,7 +380,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .review-item.done-item{opacity:.5}
 .review-item.done-item .review-topic{text-decoration:line-through}
 .review-topic{flex:1;font-size:13px;font-weight:500;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.review-badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--sur2);color:var(--t3);white-space:nowrap}
+.review-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:6px;background:var(--sur2);color:var(--t3);white-space:nowrap;display:inline-flex;align-items:center;line-height:1.2}
 
 /* ===== WRONG NOTE DETAIL ===== */
 .wnd-question{background:var(--sur2);border-radius:11px;padding:13px;font-size:13px;line-height:1.7;margin-bottom:10px;word-break:break-word}
@@ -424,7 +424,7 @@ select.form-input{appearance:none;background-image:url("data:image/svg+xml,%3Csv
 .routine-check{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:all .15s}
 .routine-check.checked{background:var(--t1);border-color:var(--t1);color:#fff}
 .routine-name{flex:1;font-size:13px;font-weight:500}
-.routine-del{font-size:14px;color:var(--t3);padding:2px 4px}
+.routine-del{font-size:14px;color:var(--t3);padding:4px 6px;display:inline-flex;align-items:center;line-height:1.2}
 
 /* ===== PERIOD CALENDAR ===== */
 .period-cal{padding:0 18px}
@@ -630,7 +630,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     <div class="card" style="margin:0 14px 9px">
       <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:7px;display:flex;align-items:center;gap:4px">
         오늘 강의 진도
-        <span style="margin-left:auto;background:var(--sur2);color:var(--t2);font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;border:0.5px solid var(--bd)" id="lec-badge"></span>
+        <span style="margin-left:auto;background:var(--sur2);color:var(--t2);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;border:0.5px solid var(--bd);display:inline-flex;align-items:center;line-height:1.2;white-space:nowrap" id="lec-badge"></span>
       </div>
       <div id="today-lec-list"></div>
     </div>
@@ -639,7 +639,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     <div class="card" style="margin:0 14px 9px">
       <div style="font-size:11px;font-weight:600;color:var(--t2);margin-bottom:7px;display:flex;align-items:center;gap:4px">
         오늘 복습 예정
-        <span style="margin-left:auto;background:var(--sur2);color:var(--t2);font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;border:0.5px solid var(--bd)" id="review-badge"></span>
+        <span style="margin-left:auto;background:var(--sur2);color:var(--t2);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;border:0.5px solid var(--bd);display:inline-flex;align-items:center;line-height:1.2;white-space:nowrap" id="review-badge"></span>
       </div>
       <div id="today-review-list"></div>
     </div>
@@ -665,7 +665,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
           <div style="display:flex;align-items:center;gap:5px">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--pol)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
             <span style="font-size:12px;font-weight:700;color:var(--t1)">주간 리포트</span>
-            <span style="font-size:9px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:1px 5px;font-weight:700">AI</span>
+            <span style="font-size:9px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:3px 5px;font-weight:700;display:inline-flex;align-items:center;line-height:1.2">AI</span>
           </div>
           <span style="font-size:10px;color:var(--t3)" id="weekly-period-lbl"></span>
         </div>
@@ -701,7 +701,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       <div class="study-dark-card" style="border-radius:12px;padding:10px 13px;margin-bottom:10px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
           <div style="font-size:9px;color:rgba(255,255,255,.5)">오늘 공부 현황</div>
-          <div id="pomo-active-badge" style="display:none;font-size:9px;font-weight:700;color:#34d399;background:rgba(52,211,153,.15);border-radius:4px;padding:1px 6px">● 집중 중</div>
+          <div id="pomo-active-badge" style="display:none;font-size:9px;font-weight:700;color:#34d399;background:rgba(52,211,153,.15);border-radius:4px;padding:3px 8px;line-height:1.2">● 집중 중</div>
         </div>
         <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:7px">
           <span style="font-size:20px;font-weight:700;color:#fff;letter-spacing:1px" id="prog-clock-lbl">00:00:00</span>
@@ -716,8 +716,8 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
         <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
           <div style="font-size:9px;color:rgba(255,255,255,.4)" id="prog-pomo-tip">25분 집중 + 5분 휴식 = 1세트</div>
           <div id="pomo-bar-actions" style="display:none;gap:6px">
-            <button onclick="skipPomo()" style="font-size:9px;color:rgba(255,255,255,.5);background:none;border:0.5px solid rgba(255,255,255,.2);border-radius:4px;padding:1px 7px;cursor:pointer">건너뛰기</button>
-            <button onclick="endPomo()" style="font-size:9px;color:#ff6b6b;background:none;border:0.5px solid rgba(255,0,0,.3);border-radius:4px;padding:1px 7px;cursor:pointer">종료</button>
+            <button onclick="skipPomo()" style="font-size:9px;color:rgba(255,255,255,.5);background:none;border:0.5px solid rgba(255,255,255,.2);border-radius:4px;padding:3px 8px;cursor:pointer;line-height:1.2">건너뛰기</button>
+            <button onclick="endPomo()" style="font-size:9px;color:#ff6b6b;background:none;border:0.5px solid rgba(255,0,0,.3);border-radius:4px;padding:3px 8px;cursor:pointer;line-height:1.2">종료</button>
           </div>
         </div>
       </div>
@@ -936,7 +936,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       <div id="manage-ai-result" style="display:none;margin-top:10px">
         <div style="font-size:11px;font-weight:700;color:var(--t2);margin-bottom:6px;display:flex;align-items:center;gap:5px">
           AI 학습 분석
-          <span style="font-size:9px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:1px 5px;font-weight:700">AI</span>
+          <span style="font-size:9px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:3px 5px;font-weight:700;display:inline-flex;align-items:center;line-height:1.2">AI</span>
           <span style="margin-left:auto;font-size:9px;color:var(--t3)" id="manage-ai-time">방금 전</span>
         </div>
         <div style="font-size:12px;color:var(--t1);line-height:1.75" id="manage-ai-body"></div>
@@ -1228,7 +1228,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     <div class="card mb-14">
       <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px">
         <span style="font-size:11px;font-weight:700;color:var(--t2)">AI 분석</span>
-        <span style="font-size:9px;background:#eff6ff;color:#4b6bfb;border-radius:5px;padding:1px 5px;font-weight:700">AI</span>
+        <span style="font-size:9px;background:#eff6ff;color:#4b6bfb;border-radius:5px;padding:3px 5px;font-weight:700;display:inline-flex;align-items:center;line-height:1.2">AI</span>
       </div>
       <div style="font-size:12px;color:var(--t1);line-height:1.7" id="session-ai-body">분석 중...</div>
     </div>
@@ -1267,7 +1267,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     <div class="form-group">
       <div class="form-label" style="display:flex;align-items:center;gap:6px">
         문제 내용
-        <span style="font-size:10px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:1px 6px;font-weight:700">AI 자동 입력</span>
+        <span style="font-size:10px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:3px 6px;font-weight:700;display:inline-flex;align-items:center;line-height:1.2">AI 자동 입력</span>
       </div>
       <!-- 이미지 업로드 영역 -->
       <div id="wn-img-zone" style="background:var(--sur2);border:1.5px dashed var(--bd);border-radius:10px;padding:18px;text-align:center;margin-bottom:8px">
@@ -1289,7 +1289,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
     <div class="form-group">
       <div class="form-label" style="display:flex;align-items:center;gap:6px">
         정답 / 해설
-        <span style="font-size:10px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:1px 6px;font-weight:700">AI 자동 입력</span>
+        <span style="font-size:10px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:3px 6px;font-weight:700;display:inline-flex;align-items:center;line-height:1.2">AI 자동 입력</span>
       </div>
       <div id="wn-ans-img-zone" style="background:var(--sur2);border:1.5px dashed var(--bd);border-radius:10px;padding:18px;text-align:center;margin-bottom:8px">
         <input type="file" id="wn-ans-img-input" accept="image/*" style="display:none" onchange="handleWNAnsImage(this)">
@@ -1528,7 +1528,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0">
         <span style="font-size:12px;color:var(--t2)">집중력 예보 연동</span>
-        <div style="display:flex;background:var(--sur2);border-radius:18px;padding:2px;gap:1px;border:0.5px solid var(--bd)">
+        <div style="display:flex;background:var(--sur2);border-radius:18px;padding:2px;gap:1px;border:0.5px solid var(--bd);display:inline-flex;align-items:center;line-height:1.2">
           <button style="background:var(--sur);border:none;border-radius:16px;padding:3px 10px;font-size:11px;color:var(--t1);cursor:pointer;font-weight:600">켜짐</button>
           <button style="background:none;border:none;border-radius:16px;padding:3px 10px;font-size:11px;color:var(--t3);cursor:pointer;font-weight:600">꺼짐</button>
         </div>
@@ -1734,7 +1734,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       <div class="card" style="margin-bottom:9px">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
           <div style="font-size:12px;font-weight:700;color:var(--t1)" id="report-period-lbl">주간 리포트</div>
-          <span style="background:var(--sur2);color:var(--t3);font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;border:0.5px solid var(--bd)">AI 생성</span>
+          <span style="background:var(--sur2);color:var(--t3);font-size:10px;font-weight:600;padding:3px 9px;border-radius:10px;border:0.5px solid var(--bd);display:inline-flex;align-items:center;line-height:1.2">AI 생성</span>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:11px">
           <div style="background:var(--sur2);border-radius:9px;padding:8px 5px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
@@ -1758,7 +1758,7 @@ mark{background:#fef08a;border-radius:3px;padding:0 2px}
       <div class="card" style="margin-bottom:9px">
         <div style="display:flex;align-items:center;gap:5px;margin-bottom:7px">
           <span style="font-size:11px;font-weight:700;color:var(--t2)">AI 분석 코멘트</span>
-          <span style="font-size:9px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:1px 5px;font-weight:700">AI</span>
+          <span style="font-size:9px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:3px 5px;font-weight:700;display:inline-flex;align-items:center;line-height:1.2">AI</span>
         </div>
         <div style="font-size:12px;color:var(--t1);line-height:1.8" id="report-ai-comment">분석 중...</div>
       </div>
@@ -2768,7 +2768,7 @@ function renderFocusForecast(){
   let warn = false; const tagChips = []; let periodTag = '';
   if(sh!==null && sh<6){
     warn=true;
-    tagChips.push(`<span style="font-size:10px;background:var(--sur2);color:var(--t2);border-radius:5px;padding:1px 6px;border:0.5px solid var(--bd)">수면 부족</span>`);
+    tagChips.push(`<span style="font-size:10px;background:var(--sur2);color:var(--t2);border-radius:5px;padding:3px 8px;border:0.5px solid var(--bd);display:inline-flex;align-items:center;line-height:1.2">수면 부족</span>`);
   }
   if(cfg.periodLast && cfg.periodCycle){
     const cyc = Number(cfg.periodCycle)||28;
@@ -2777,8 +2777,8 @@ function renderFocusForecast(){
     const diff = diffDays(toLocalDate(next), today());
     if(diff>=0 && diff<=3){
       warn=true; periodTag='생리 D-'+diff;
-      tagChips.push(`<span style="font-size:10px;background:var(--am-bg);color:var(--am-txt);border-radius:5px;padding:1px 6px">생리 전 증후군</span>`);
-      tagChips.push(`<span style="font-size:10px;background:#fef3c7;color:#92400e;border-radius:5px;padding:1px 6px">도서관 집중도 ↑</span>`);
+      tagChips.push(`<span style="font-size:10px;background:var(--am-bg);color:var(--am-txt);border-radius:5px;padding:3px 8px;display:inline-flex;align-items:center;line-height:1.2">생리 전 증후군</span>`);
+      tagChips.push(`<span style="font-size:10px;background:#fef3c7;color:#92400e;border-radius:5px;padding:3px 8px;display:inline-flex;align-items:center;line-height:1.2">도서관 집중도 ↑</span>`);
     }
   }
   const card    = document.getElementById('focus-card');
@@ -2918,7 +2918,7 @@ function renderHomeLec(){
         <div style="font-size:12px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;${todayDone?'text-decoration:line-through':''}">${esc(l.title)}</div>
         <div style="font-size:10px;color:var(--t3)">목표 ${dayGoal}강 · ${l.currentEp||0}/${l.totalEp}</div>
       </div>
-      <button data-lecid="${l.id}" data-done="${todayDone}" onclick="if(!this.dataset.done||this.dataset.done==='false')quickLecDone(this.dataset.lecid)" style="background:${todayDone?'var(--gr-bg)':'var(--sur2)'};color:${todayDone?'var(--gr-txt)':'var(--t2)'};font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:${todayDone?'default':'pointer'};white-space:nowrap">${todayDone?'완료':'미완료'}</button>
+      <button data-lecid="${l.id}" data-done="${todayDone}" onclick="if(!this.dataset.done||this.dataset.done==='false')quickLecDone(this.dataset.lecid)" style="background:${todayDone?'var(--gr-bg)':'var(--sur2)'};color:${todayDone?'var(--gr-txt)':'var(--t2)'};font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:4px 10px;cursor:${todayDone?'default':'pointer'};white-space:nowrap;display:inline-flex;align-items:center;line-height:1.2">${todayDone?'완료':'미완료'}</button>
     </div>`;
   };
   el.style.cssText = sorted.length > 3 ? 'max-height:132px;overflow-y:auto;scrollbar-width:none;-ms-overflow-style:none' : '';
@@ -3463,7 +3463,7 @@ function renderWN(){
         <div style="font-size:12px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(w.topic)}</div>
         <div style="font-size:10px;color:var(--t3);margin-top:2px;display:flex;align-items:center;gap:3px;flex-wrap:wrap">
           ${esc(w.subject||'')}
-          ${w.wrongType?`· <span style="background:${tagCls==='개념'?'#f0f4ff':tagCls==='실수'?'#fff0f0':tagCls==='시간'?'#fffbeb':tagCls==='복습'?'#f0fdf4':'#e0f2fe'};color:${tagCls==='개념'?'#4b6bfb':tagCls==='실수'?'#e05252':tagCls==='시간'?'#b45309':tagCls==='복습'?'#16a34a':'#0891b2'};font-size:10px;font-weight:700;border-radius:5px;padding:1px 6px">${esc(w.wrongType)}</span>`:''}
+          ${w.wrongType?`· <span style="background:${tagCls==='개념'?'#f0f4ff':tagCls==='실수'?'#fff0f0':tagCls==='시간'?'#fffbeb':tagCls==='복습'?'#f0fdf4':'#e0f2fe'};color:${tagCls==='개념'?'#4b6bfb':tagCls==='실수'?'#e05252':tagCls==='시간'?'#b45309':tagCls==='복습'?'#16a34a':'#0891b2'};font-size:10px;font-weight:700;border-radius:5px;padding:3px 6px;display:inline-flex;align-items:center;line-height:1.2">${esc(w.wrongType)}</span>`:''}
           ${pending?`· 복습 ${pending}회차 예정`:''}
         </div>
       </div>
@@ -3538,8 +3538,8 @@ window.openWNDetail = id => {
       <div class="dot dot-${w.subject||'형사법'}" style="flex-shrink:0"></div>
       <span class="tag tag-${tagClass(w.wrongType||'개념 부족')}">${w.wrongType||'유형 없음'}</span>
       <span class="fs-12 col-t3">${w.subject||''}</span>
-      ${w.reference?`<span style="font-size:10px;background:var(--sur2);color:var(--t3);border-radius:6px;padding:2px 8px;border:0.5px solid var(--bd)">${esc(w.reference)}</span>`:''}
-      ${doneCount>0?`<span style="margin-left:auto;background:var(--gr-bg);color:var(--gr);font-size:11px;font-weight:700;border-radius:8px;padding:2px 9px;white-space:nowrap">${doneCount}/${totalCount}회 복습 완료</span>`:''}
+      ${w.reference?`<span style="font-size:10px;background:var(--sur2);color:var(--t3);border-radius:6px;padding:3px 8px;border:0.5px solid var(--bd);display:inline-flex;align-items:center;line-height:1.2">${esc(w.reference)}</span>`:''}
+      ${doneCount>0?`<span style="margin-left:auto;background:var(--gr-bg);color:var(--gr);font-size:11px;font-weight:700;border-radius:8px;padding:4px 10px;white-space:nowrap;display:inline-flex;align-items:center;line-height:1.2">${doneCount}/${totalCount}회 복습 완료</span>`:''}
     </div>
     <div style="font-size:13px;font-weight:700;color:var(--t1);margin-bottom:8px">${esc(w.topic||'')}</div>
     <div style="margin-bottom:8px">
@@ -3576,7 +3576,7 @@ window.openWNDetail = id => {
         <span class="fs-13">${r.scheduledAt} (${offsets[i]||''})</span>
         ${r.completedAt
           ?'<span class="fs-12" style="color:var(--gr);margin-left:auto">완료 ✓</span>'
-          :'<span class="fs-12" style="color:var(--t3);margin-left:auto;border:0.5px solid var(--bd);border-radius:5px;padding:1px 6px">미완료</span>'}
+          :'<span class="fs-12" style="color:var(--t3);margin-left:auto;border:0.5px solid var(--bd);border-radius:5px;padding:3px 8px;display:inline-flex;align-items:center;line-height:1.2">미완료</span>'}
       </div>`).join('')}
     </div>`;
   showScreen('wn-detail');
@@ -3713,7 +3713,7 @@ function renderReview(){
         </div>
       </div>
       <button onclick="event.stopPropagation();completeReview('${r.id}')"
-        style="background:${done?'var(--gr-bg)':'var(--sur2)'};color:${done?'var(--gr-txt)':'var(--t2)'};font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 9px;cursor:pointer;white-space:nowrap">
+        style="background:${done?'var(--gr-bg)':'var(--sur2)'};color:${done?'var(--gr-txt)':'var(--t2)'};font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:4px 10px;cursor:pointer;white-space:nowrap;display:inline-flex;align-items:center;line-height:1.2">
         ${done?'완료':'미완료'}
       </button>
     </div>`;
@@ -3759,7 +3759,7 @@ function _renderOverdueList(el, list){
         </div>
       </div>
       <button onclick="completeReview('${r.id}')"
-        style="background:var(--sur2);color:var(--t2);font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:pointer;flex-shrink:0;margin-left:8px">
+        style="background:var(--sur2);color:var(--t2);font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:4px 10px;cursor:pointer;flex-shrink:0;margin-left:8px;display:inline-flex;align-items:center;line-height:1.2">
         미완료
       </button>
     </div>`;
@@ -3824,7 +3824,7 @@ function renderHomeReview(){
         </div>
       </div>
       <button onclick="completeReview('${r.id}')"
-        style="background:${done?'var(--gr-bg)':'var(--sur2)'};color:${done?'var(--gr-txt)':'var(--t2)'};font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:pointer;flex-shrink:0;margin-left:8px">
+        style="background:${done?'var(--gr-bg)':'var(--sur2)'};color:${done?'var(--gr-txt)':'var(--t2)'};font-size:10px;font-weight:600;border:0.5px solid var(--bd);border-radius:7px;padding:4px 10px;cursor:pointer;flex-shrink:0;margin-left:8px;display:inline-flex;align-items:center;line-height:1.2">
         ${done?'완료':'미완료'}
       </button>
     </div>`;
@@ -3916,10 +3916,10 @@ window.handleWNImage = async (input) => {
     }
     zone.innerHTML = `<div style="position:relative">
       <img src="${previewUrl}" style="width:100%;border-radius:8px;max-height:80px;object-fit:cover">
-      <div style="position:absolute;top:4px;right:4px;background:#10b981;border-radius:6px;padding:2px 8px">
+      <div style="position:absolute;top:4px;right:4px;background:#10b981;border-radius:6px;padding:3px 8px;display:inline-flex;align-items:center;line-height:1.2">
         <span style="color:#fff;font-size:10px;font-weight:700">✓ 입력 완료</span>
       </div>
-      <div style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.5);border-radius:5px;padding:2px 7px">
+      <div style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.5);border-radius:5px;padding:3px 7px;display:inline-flex;align-items:center;line-height:1.2">
         <span style="color:#fff;font-size:10px;cursor:pointer" onclick="event.stopPropagation();document.getElementById('wn-img-input').click()">다시 선택</span>
       </div>
     </div>`;
@@ -4007,10 +4007,10 @@ window.handleWNAnsImage = async (input) => {
     }
     zone.innerHTML = `<div style="position:relative">
       <img src="${previewUrl}" style="width:100%;border-radius:8px;max-height:80px;object-fit:cover">
-      <div style="position:absolute;top:4px;right:4px;background:var(--gr);border-radius:6px;padding:2px 7px">
+      <div style="position:absolute;top:4px;right:4px;background:var(--gr);border-radius:6px;padding:3px 7px;display:inline-flex;align-items:center;line-height:1.2">
         <span style="color:#fff;font-size:10px;font-weight:700">✓ 완료</span>
       </div>
-      <div style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.5);border-radius:5px;padding:2px 7px">
+      <div style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.5);border-radius:5px;padding:3px 7px;display:inline-flex;align-items:center;line-height:1.2">
         <span style="color:#fff;font-size:10px;cursor:pointer" onclick="event.stopPropagation();document.getElementById('wn-ans-img-input').click()">다시 선택</span>
       </div>
     </div>`;
@@ -4604,7 +4604,7 @@ window.runAIAnalysis = async (ctx) => {
         return `<div style="display:flex;align-items:center;gap:8px">
           <div style="width:3px;height:16px;border-radius:2px;background:${col};flex-shrink:0"></div>
           <div style="flex:1"><div style="font-size:11px;font-weight:600;color:var(--t1)">${esc(w.topic||'')}</div><div style="font-size:10px;color:var(--t3)">${esc(w.subject||'')}</div></div>
-          ${w.type?`<span style="font-size:10px;font-weight:700;border-radius:5px;padding:1px 6px;background:${tBg};color:${tCl}">${esc(w.type)}</span>`:''}
+          ${w.type?`<span style="font-size:10px;font-weight:700;border-radius:5px;padding:3px 6px;background:${tBg};color:${tCl};display:inline-flex;align-items:center;line-height:1.2">${esc(w.type)}</span>`:''}
         </div>`;
       }).join('');
       if(actionEl&&parsed.actions) actionEl.innerHTML=(parsed.actions||[]).map((a,i)=>`
@@ -4663,7 +4663,7 @@ function renderOXQuiz(){
   el.innerHTML=_oxQuizList.map((q,i)=>`
     <div class="card mb-10" id="ox-card-${i}">
       <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px">
-        ${q.subject?`<span style="font-size:9px;background:${getSubjectColor(q.subject)}22;color:${getSubjectColor(q.subject)};border-radius:5px;padding:1px 6px;font-weight:700">${esc(q.subject)}</span>`:''}
+        ${q.subject?`<span style="font-size:9px;background:${getSubjectColor(q.subject)}22;color:${getSubjectColor(q.subject)};border-radius:5px;padding:3px 6px;font-weight:700;display:inline-flex;align-items:center;line-height:1.2">${esc(q.subject)}</span>`:''}
         ${q.topic?`<span style="font-size:9px;color:var(--t3)">${esc(q.topic)}</span>`:''}
       </div>
       <div class="fs-14 fw-600 mb-10">${esc(q.q)}</div>
@@ -5150,7 +5150,7 @@ async function renderPeriodPattern(){
       <div class="card" style="margin-bottom:10px" id="pattern-ai-card">
         <div style="display:flex;align-items:center;gap:5px;margin-bottom:7px">
           <span style="font-size:11px;font-weight:700;color:var(--t2)">AI 패턴 분석</span>
-          <span style="font-size:9px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:1px 5px;font-weight:700">AI</span>
+          <span style="font-size:9px;background:#eff6ff;color:var(--pol);border-radius:5px;padding:3px 5px;font-weight:700;display:inline-flex;align-items:center;line-height:1.2">AI</span>
         </div>
         <div style="font-size:12px;color:var(--t1);line-height:1.75" id="pattern-ai-body">분석 중...</div>
       </div>
@@ -5180,7 +5180,7 @@ async function renderPeriodPattern(){
           <div style="display:flex;align-items:center;padding:8px 0;${i<arr.length-1?'border-bottom:0.5px solid var(--bd)':''}">
             <div style="flex:2;font-size:12px;color:var(--t1)">${c.start.slice(5).replace('-','월 ')}일</div>
             <div style="flex:1;text-align:center;font-size:12px;color:var(--t2)">${c.dur}일</div>
-            <div style="flex:2;display:flex;gap:3px;flex-wrap:wrap">${(c.symptoms||[]).slice(0,2).map(s=>`<span style="font-size:9px;background:var(--am-bg);color:var(--am-txt);border-radius:4px;padding:1px 5px">${s}</span>`).join('')}</div>
+            <div style="flex:2;display:flex;gap:3px;flex-wrap:wrap">${(c.symptoms||[]).slice(0,2).map(s=>`<span style="font-size:9px;background:var(--am-bg);color:var(--am-txt);border-radius:4px;padding:3px 5px;display:inline-flex;align-items:center;line-height:1.2">${s}</span>`).join('')}</div>
           </div>`).join('')}
       </div>`:'<div style="text-align:center;padding:20px;font-size:12px;color:var(--t3)">기록이 부족해요</div>'}
     </div>`;
@@ -5238,7 +5238,7 @@ function renderDailyLog(){
         <div style="display:flex;align-items:center;gap:6px">
           <span style="font-size:13px;font-weight:700;color:var(--t1)">${dateLabel}</span>
           <span style="font-size:11px;color:${isSun?'var(--re)':isSat?'var(--pol)':'var(--t3)'}">${dow}</span>
-          ${isToday?'<span style="font-size:9px;background:var(--t1);color:var(--bg);border-radius:4px;padding:1px 5px;font-weight:700">오늘</span>':''}
+          ${isToday?'<span style="font-size:9px;background:var(--t1);color:var(--bg);border-radius:4px;padding:3px 5px;font-weight:700;display:inline-flex;align-items:center;line-height:1.2">오늘</span>':''}
         </div>
         <button onclick="openDailyLogEdit('${date}')"
           style="font-size:11px;color:var(--t2);background:var(--sur2);border:0.5px solid var(--bd);border-radius:7px;padding:3px 8px;cursor:pointer">
@@ -5956,7 +5956,7 @@ function renderPassRecords(){
         ${subLine?`<div style="font-size:11px;color:var(--t3);margin-top:2px">${subLine}</div>`:''}
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;margin-left:10px">
-        <span style="font-size:10px;background:${statusBg};color:${statusColor};border-radius:6px;padding:2px 8px;font-weight:700;white-space:nowrap">${statusText}</span>
+        <span style="font-size:10px;background:${statusBg};color:${statusColor};border-radius:6px;padding:3px 8px;font-weight:700;white-space:nowrap;display:inline-flex;align-items:center;line-height:1.2">${statusText}</span>
         ${expireLbl?`<span style="font-size:10px;color:var(--t3)">${expireLbl}</span>`:''}
       </div>
     </div>`;
